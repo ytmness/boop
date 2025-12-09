@@ -1,0 +1,78 @@
+name: boop
+description: Aplicación móvil de eventos BOOP con Flutter y Supabase
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  
+  # State Management
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+  
+  # Supabase
+  supabase_flutter: ^2.0.0
+  
+  # Scanner QR
+  mobile_scanner: ^5.2.3
+  
+  # Payments
+  # stripe_flutter: ^10.1.1  # Comentado temporalmente - se usará Stripe Payment Sheet vía web
+  
+  # Maps
+  google_maps_flutter: ^2.5.0
+  
+  # Notifications
+  # firebase_core: ^2.24.2  # Comentado temporalmente - problemas de compatibilidad con web
+  # firebase_messaging: ^14.7.10  # Comentado temporalmente - problemas de compatibilidad con web
+  
+  # QR Code Generation
+  qr_flutter: ^4.1.0
+  
+  # Image Picker
+  image_picker: ^1.0.7
+  
+  # Internationalization
+  # intl ya está incluido en flutter_localizations
+  
+  # HTTP
+  http: ^1.1.2
+  
+  # Path Provider
+  path_provider: ^2.1.1
+  
+  # Shared Preferences
+  shared_preferences: ^2.2.2
+  
+  # URL Launcher
+  url_launcher: ^6.2.2
+  
+  # Cached Network Image
+  cached_network_image: ^3.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  build_runner: ^2.4.7
+  riverpod_generator: ^2.3.9
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/icons/
+
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+
