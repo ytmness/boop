@@ -5,20 +5,20 @@ import '../../../shared/models/user_model.dart';
 
 class AuthService {
   SupabaseClient? get _supabase => SupabaseConfig.client;
-  
+
   // Modo demo - usuario mock almacenado en memoria
   User? _demoUser;
   final _authStateController = StreamController<AuthState>.broadcast();
   bool _initialStateEmitted = false;
-  
+
   bool get isDemoMode => _supabase == null;
-  
+
   AuthService() {
     // Emitir estado inicial en modo demo
     if (isDemoMode && !_initialStateEmitted) {
       _initialStateEmitted = true;
       Future.microtask(() {
-        _authStateController.add(AuthState(
+        _authStateController.add(const AuthState(
           AuthChangeEvent.signedOut,
           null,
         ));
@@ -70,7 +70,7 @@ class AuthService {
     if (isDemoMode) {
       // En modo demo, aceptar cualquier código y crear usuario mock
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       // Crear usuario mock
       _demoUser = User(
         id: 'demo-user-${DateTime.now().millisecondsSinceEpoch}',
@@ -81,7 +81,7 @@ class AuthService {
         aud: 'authenticated',
         createdAt: DateTime.now().toIso8601String(),
       );
-      
+
       // Emitir evento de autenticación
       _authStateController.add(AuthState(
         AuthChangeEvent.signedIn,
@@ -93,7 +93,7 @@ class AuthService {
           user: _demoUser!,
         ),
       ));
-      
+
       return AuthResponse(
         session: Session(
           accessToken: 'demo-token',
@@ -149,7 +149,7 @@ class AuthService {
     if (isDemoMode) {
       // En modo demo, aceptar cualquier código y crear usuario mock
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       // Crear usuario mock
       _demoUser = User(
         id: 'demo-user-${DateTime.now().millisecondsSinceEpoch}',
@@ -161,7 +161,7 @@ class AuthService {
         createdAt: DateTime.now().toIso8601String(),
         email: email,
       );
-      
+
       // Emitir evento de autenticación
       _authStateController.add(AuthState(
         AuthChangeEvent.signedIn,
@@ -173,7 +173,7 @@ class AuthService {
           user: _demoUser!,
         ),
       ));
-      
+
       return AuthResponse(
         session: Session(
           accessToken: 'demo-token',
@@ -224,7 +224,8 @@ class AuthService {
   Future<void> signOut() async {
     if (isDemoMode) {
       _demoUser = null;
-      _authStateController.add(AuthState(AuthChangeEvent.signedOut, null));
+      _authStateController
+          .add(const AuthState(AuthChangeEvent.signedOut, null));
       return;
     }
     try {
@@ -239,15 +240,15 @@ class AuthService {
     if (isDemoMode) {
       final user = currentUser;
       if (user == null) return null;
-      
+
       // Retornar perfil mock
       return UserModel(
         id: user.id,
         email: user.email ?? user.userMetadata?['email'] as String?,
         phone: user.phone ?? user.userMetadata?['phone'] as String?,
-        name: user.userMetadata?['name'] as String? ?? 
-              user.email?.split('@')[0] ?? 
-              'Usuario Demo',
+        name: user.userMetadata?['name'] as String? ??
+            user.email?.split('@')[0] ??
+            'Usuario Demo',
         avatarUrl: null,
         bio: null,
         city: 'Ciudad Demo',
@@ -256,7 +257,7 @@ class AuthService {
         updatedAt: null,
       );
     }
-    
+
     final user = currentUser;
     if (user == null) return null;
 
@@ -320,4 +321,3 @@ class AuthService {
     }
   }
 }
-

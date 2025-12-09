@@ -10,11 +10,11 @@ class TicketsManagementScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
+    return const CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
         middle: Text('Tickets'),
       ),
-      child: const SafeArea(
+      child: SafeArea(
         child: Center(
           child: Text('Gestión de tickets\n(Se implementará en Fase 5)'),
         ),
@@ -22,4 +22,3 @@ class TicketsManagementScreen extends StatelessWidget {
     );
   }
 }
-

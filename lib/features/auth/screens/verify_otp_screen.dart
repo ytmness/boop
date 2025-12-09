@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 import '../services/auth_service.dart';
-import '../widgets/primary_button.dart';
+import '../../../shared/components/buttons/glass_button.dart';
+import '../../../shared/components/glass/glass_container.dart';
+import '../../../core/branding/branding.dart';
 import '../../../routes/route_names.dart';
 import '../../../shared/widgets/error_dialog.dart';
 
@@ -156,7 +158,7 @@ class _VerifyOTPScreenState extends ConsumerState<VerifyOTPScreen> {
               const SizedBox(height: 8),
               Text(
                 'Enviamos un código a ${widget.phoneOrEmail}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   color: CupertinoColors.secondaryLabel,
                 ),
@@ -169,31 +171,28 @@ class _VerifyOTPScreenState extends ConsumerState<VerifyOTPScreen> {
                   return SizedBox(
                     width: 45,
                     height: 55,
-                    child: CupertinoTextField(
-                      controller: _controllers[index],
-                      focusNode: _focusNodes[index],
-                      textAlign: TextAlign.center,
-                      keyboardType: TextInputType.number,
-                      maxLength: 1,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      decoration: BoxDecoration(
-                        color: CupertinoColors.secondarySystemBackground,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: CupertinoColors.separator,
-                          width: 0.5,
+                    child: GlassContainer(
+                      borderRadius: Branding.radiusLarge,
+                      padding: EdgeInsets.zero,
+                      child: CupertinoTextField(
+                        controller: _controllers[index],
+                        focusNode: _focusNodes[index],
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        maxLength: 1,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
                         ),
+                        decoration: const BoxDecoration(),
+                        onChanged: (value) => _onCodeChanged(index, value),
                       ),
-                      onChanged: (value) => _onCodeChanged(index, value),
                     ),
                   );
                 }),
               ),
               const Spacer(),
-              PrimaryButton(
+              PrimaryGlassButton(
                 text: 'Verificar',
                 onPressed: _verifyCode,
                 isLoading: _isLoading,
@@ -202,7 +201,7 @@ class _VerifyOTPScreenState extends ConsumerState<VerifyOTPScreen> {
               CupertinoButton(
                 padding: EdgeInsets.zero,
                 onPressed: _resendCode,
-                child: Text(
+                child: const Text(
                   'Reenviar código',
                   style: TextStyle(
                     color: CupertinoColors.systemBlue,
@@ -217,4 +216,3 @@ class _VerifyOTPScreenState extends ConsumerState<VerifyOTPScreen> {
     );
   }
 }
-

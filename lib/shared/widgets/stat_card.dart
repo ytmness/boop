@@ -41,7 +41,7 @@ class StatCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               color: CupertinoColors.secondaryLabel,
             ),
@@ -51,4 +51,3 @@ class StatCard extends StatelessWidget {
     );
   }
 }
-

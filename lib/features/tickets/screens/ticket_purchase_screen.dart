@@ -3,9 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../events/providers/events_provider.dart';
 import '../services/payment_service.dart';
 import '../../auth/providers/auth_provider.dart';
-import '../../../shared/widgets/primary_button.dart';
+import '../../../shared/components/buttons/glass_button.dart';
 import '../../../shared/widgets/error_dialog.dart';
-import '../../../routes/route_names.dart';
 
 class TicketPurchaseScreen extends ConsumerStatefulWidget {
   final String eventId;
@@ -16,7 +15,8 @@ class TicketPurchaseScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<TicketPurchaseScreen> createState() => _TicketPurchaseScreenState();
+  ConsumerState<TicketPurchaseScreen> createState() =>
+      _TicketPurchaseScreenState();
 }
 
 class _TicketPurchaseScreenState extends ConsumerState<TicketPurchaseScreen> {
@@ -146,7 +146,7 @@ class _TicketPurchaseScreenState extends ConsumerState<TicketPurchaseScreen> {
                     ],
                   ),
                   const Spacer(),
-                  PrimaryButton(
+                  PrimaryGlassButton(
                     text: 'Comprar tickets',
                     onPressed: _purchaseTickets,
                     isLoading: _isLoading,
@@ -166,4 +166,3 @@ class _TicketPurchaseScreenState extends ConsumerState<TicketPurchaseScreen> {
     );
   }
 }
-

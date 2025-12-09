@@ -63,7 +63,7 @@ class CommunityDetailScreen extends ConsumerWidget {
                           const SizedBox(height: 8),
                           Text(
                             community.city!,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16,
                               color: CupertinoColors.secondaryLabel,
                             ),
@@ -140,4 +140,3 @@ class CommunityDetailScreen extends ConsumerWidget {
     );
   }
 }
-

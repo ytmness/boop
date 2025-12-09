@@ -22,16 +22,16 @@ class ActivityFeedScreen extends ConsumerWidget {
                 // TODO: Refrescar feed
               },
             ),
-            SliverToBoxAdapter(
+            const SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SectionHeader(title: 'Actividad reciente'),
-                    const SizedBox(height: 16),
+                    SectionHeader(title: 'Actividad reciente'),
+                    SizedBox(height: 16),
                     // TODO: Mostrar items del feed cuando se implemente el provider
-                    const Center(
+                    Center(
                       child: Padding(
                         padding: EdgeInsets.all(32.0),
                         child: Text(
@@ -53,4 +53,3 @@ class ActivityFeedScreen extends ConsumerWidget {
     );
   }
 }
-

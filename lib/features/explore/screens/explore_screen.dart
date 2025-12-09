@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../events/providers/events_provider.dart';
-import '../../../shared/widgets/event_card.dart';
+import '../../../shared/components/cards/glass_event_card.dart';
 import '../../../shared/widgets/section_header.dart';
 import '../../../routes/route_names.dart';
 import '../../profile/providers/profile_provider.dart';
+import '../../../core/branding/branding.dart';
 
 class ExploreScreen extends ConsumerWidget {
   const ExploreScreen({super.key});
@@ -13,7 +14,7 @@ class ExploreScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(currentProfileProvider);
     final city = profileAsync.valueOrNull?.city;
-    
+
     final eventsAsync = ref.watch(
       publicEventsProvider({
         'city': city,
@@ -40,21 +41,21 @@ class ExploreScreen extends ConsumerWidget {
             ),
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(Branding.spacingM),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SectionHeader(title: 'Eventos destacados'),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: Branding.spacingM),
                     eventsAsync.when(
                       data: (events) => events.isEmpty
                           ? const Center(
                               child: Padding(
-                                padding: EdgeInsets.all(32.0),
+                                padding: EdgeInsets.all(Branding.spacingXL),
                                 child: Text(
                                   'No hay eventos disponibles',
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: Branding.fontSizeBody,
                                     color: CupertinoColors.secondaryLabel,
                                   ),
                                 ),
@@ -62,7 +63,7 @@ class ExploreScreen extends ConsumerWidget {
                             )
                           : Column(
                               children: events.map((event) {
-                                return EventCard(
+                                return GlassEventCard(
                                   event: event,
                                   onTap: () {
                                     Navigator.pushNamed(
@@ -75,14 +76,20 @@ class ExploreScreen extends ConsumerWidget {
                             ),
                       loading: () => const Center(
                         child: Padding(
-                          padding: EdgeInsets.all(32.0),
+                          padding: EdgeInsets.all(Branding.spacingXL),
                           child: CupertinoActivityIndicator(),
                         ),
                       ),
                       error: (error, stack) => Center(
                         child: Padding(
-                          padding: const EdgeInsets.all(32.0),
-                          child: Text('Error: $error'),
+                          padding: const EdgeInsets.all(Branding.spacingXL),
+                          child: Text(
+                            'Error: $error',
+                            style: const TextStyle(
+                              color: CupertinoColors.systemRed,
+                              fontSize: Branding.fontSizeBody,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -96,4 +103,3 @@ class ExploreScreen extends ConsumerWidget {
     );
   }
 }
-

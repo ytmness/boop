@@ -3,10 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../providers/event_management_provider.dart';
-import '../services/event_management_service.dart';
 import '../../profile/services/storage_service.dart';
 import '../../auth/providers/auth_provider.dart';
-import '../../auth/widgets/primary_button.dart';
 import '../../../shared/widgets/error_dialog.dart';
 import '../../../routes/route_names.dart';
 
@@ -23,7 +21,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _cityController = TextEditingController();
   final _addressController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  
+
   DateTime? _startTime;
   DateTime? _endTime;
   File? _selectedImage;
@@ -105,7 +103,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       if (_selectedImage != null) {
         // Generar un ID temporal para el evento
         final tempEventId = DateTime.now().millisecondsSinceEpoch.toString();
-        imageUrl = await storageService.uploadEventImage(tempEventId, _selectedImage!);
+        imageUrl =
+            await storageService.uploadEventImage(tempEventId, _selectedImage!);
       }
 
       final eventService = ref.read(eventManagementServiceProvider);
@@ -337,4 +336,3 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     );
   }
 }
-

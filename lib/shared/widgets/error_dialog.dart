@@ -15,12 +15,11 @@ class ErrorDialog {
         content: Text(message),
         actions: [
           CupertinoDialogAction(
-            child: Text(buttonText ?? 'OK'),
             onPressed: onPressed ?? () => Navigator.of(context).pop(),
+            child: Text(buttonText ?? 'OK'),
           ),
         ],
       ),
     );
   }
 }
-

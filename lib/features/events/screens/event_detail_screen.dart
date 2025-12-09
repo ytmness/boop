@@ -2,9 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../providers/events_provider.dart';
-import '../services/events_service.dart';
 import '../../../routes/route_names.dart';
-import '../../auth/widgets/primary_button.dart';
+import '../../../shared/components/buttons/glass_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class EventDetailScreen extends ConsumerWidget {
@@ -89,7 +88,8 @@ class EventDetailScreen extends ConsumerWidget {
                                 ),
                               ],
                             ),
-                            if (event.city != null || event.address != null) ...[
+                            if (event.city != null ||
+                                event.address != null) ...[
                               const SizedBox(height: 12),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,7 +108,8 @@ class EventDetailScreen extends ConsumerWidget {
                                 ],
                               ),
                             ],
-                            if (event.description != null && event.description!.isNotEmpty) ...[
+                            if (event.description != null &&
+                                event.description!.isNotEmpty) ...[
                               const SizedBox(height: 24),
                               const Text(
                                 'Descripción',
@@ -136,7 +137,7 @@ class EventDetailScreen extends ConsumerWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        PrimaryButton(
+                        PrimaryGlassButton(
                           text: 'Comprar Ticket',
                           onPressed: () {
                             Navigator.pushNamed(
@@ -163,4 +164,3 @@ class EventDetailScreen extends ConsumerWidget {
     );
   }
 }
-

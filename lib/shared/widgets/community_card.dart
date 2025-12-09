@@ -45,7 +45,7 @@ class CommunityCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       community.city!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: CupertinoColors.secondaryLabel,
                       ),
@@ -55,7 +55,7 @@ class CommunityCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '${community.followersCount} seguidores',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         color: CupertinoColors.secondaryLabel,
                       ),
@@ -76,4 +76,3 @@ class CommunityCard extends StatelessWidget {
     );
   }
 }
-

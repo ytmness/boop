@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'route_names.dart';
+import '../core/splash/splash_screen.dart';
 import '../features/auth/screens/onboarding_screen.dart';
 import '../features/auth/screens/phone_login_screen.dart';
 import '../features/auth/screens/verify_otp_screen.dart';
@@ -28,6 +29,11 @@ class AppRouter {
     final args = settings.arguments;
     
     switch (settings.name) {
+      case RouteNames.splash:
+        return CupertinoPageRoute(
+          builder: (_) => const SplashScreen(),
+        );
+      
       case RouteNames.onboarding:
         return CupertinoPageRoute(
           builder: (_) => const OnboardingScreen(),

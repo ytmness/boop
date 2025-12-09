@@ -5,11 +5,11 @@ class MyTicketsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
+    return const CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
         middle: Text('Mis tickets'),
       ),
-      child: const SafeArea(
+      child: SafeArea(
         child: Center(
           child: Text('Lista de tickets\n(Se implementará próximamente)'),
         ),
@@ -17,4 +17,3 @@ class MyTicketsScreen extends StatelessWidget {
     );
   }
 }
-

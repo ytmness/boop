@@ -10,11 +10,11 @@ class OrdersListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
+    return const CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
         middle: Text('Órdenes'),
       ),
-      child: const SafeArea(
+      child: SafeArea(
         child: Center(
           child: Text('Lista de órdenes\n(Se implementará en Fase 5)'),
         ),
@@ -22,4 +22,3 @@ class OrdersListScreen extends StatelessWidget {
     );
   }
 }
-

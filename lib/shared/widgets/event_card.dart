@@ -31,7 +31,8 @@ class EventCard extends StatelessWidget {
           children: [
             // Imagen del evento
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
               child: event.imageUrl != null && event.imageUrl!.isNotEmpty
                   ? CachedNetworkImage(
                       imageUrl: event.imageUrl!,
@@ -90,7 +91,7 @@ class EventCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         '${dateFormat.format(event.startTime)} • ${timeFormat.format(event.startTime)}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           color: CupertinoColors.secondaryLabel,
                         ),
@@ -109,7 +110,7 @@ class EventCard extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           event.city!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: CupertinoColors.secondaryLabel,
                           ),
@@ -146,4 +147,3 @@ class EventCard extends StatelessWidget {
     );
   }
 }
-

@@ -56,7 +56,7 @@ class ProfileScreen extends ConsumerWidget {
                           const SizedBox(height: 8),
                           Text(
                             profile.bio!,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16,
                               color: CupertinoColors.secondaryLabel,
                             ),
@@ -76,7 +76,7 @@ class ProfileScreen extends ConsumerWidget {
                               const SizedBox(width: 4),
                               Text(
                                 profile.city!,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 14,
                                   color: CupertinoColors.secondaryLabel,
                                 ),
@@ -98,7 +98,7 @@ class ProfileScreen extends ConsumerWidget {
                             const SizedBox(width: 4),
                             Text(
                               user?.email ?? user?.phone ?? '',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: CupertinoColors.secondaryLabel,
                               ),
@@ -123,7 +123,8 @@ class ProfileScreen extends ConsumerWidget {
                               'Editar perfil',
                               CupertinoIcons.person,
                               () {
-                                Navigator.pushNamed(context, RouteNames.settings);
+                                Navigator.pushNamed(
+                                    context, RouteNames.settings);
                               },
                             ),
                             _buildMenuItem(
@@ -154,7 +155,8 @@ class ProfileScreen extends ConsumerWidget {
                               'Mis comunidades',
                               CupertinoIcons.group,
                               () {
-                                Navigator.pushNamed(context, RouteNames.communities);
+                                Navigator.pushNamed(
+                                    context, RouteNames.communities);
                               },
                             ),
                             _buildMenuItem(
@@ -162,7 +164,8 @@ class ProfileScreen extends ConsumerWidget {
                               'Amigos',
                               CupertinoIcons.person_2,
                               () {
-                                Navigator.pushNamed(context, RouteNames.friends);
+                                Navigator.pushNamed(
+                                    context, RouteNames.friends);
                               },
                             ),
                           ],
@@ -171,20 +174,24 @@ class ProfileScreen extends ConsumerWidget {
                         CupertinoButton(
                           color: CupertinoColors.destructiveRed,
                           onPressed: () async {
-                            final shouldLogout = await showCupertinoDialog<bool>(
+                            final shouldLogout =
+                                await showCupertinoDialog<bool>(
                               context: context,
                               builder: (context) => CupertinoAlertDialog(
                                 title: const Text('Cerrar sesión'),
-                                content: const Text('¿Estás seguro de que quieres cerrar sesión?'),
+                                content: const Text(
+                                    '¿Estás seguro de que quieres cerrar sesión?'),
                                 actions: [
                                   CupertinoDialogAction(
                                     child: const Text('Cancelar'),
-                                    onPressed: () => Navigator.pop(context, false),
+                                    onPressed: () =>
+                                        Navigator.pop(context, false),
                                   ),
                                   CupertinoDialogAction(
                                     isDestructiveAction: true,
                                     child: const Text('Cerrar sesión'),
-                                    onPressed: () => Navigator.pop(context, true),
+                                    onPressed: () =>
+                                        Navigator.pop(context, true),
                                   ),
                                 ],
                               ),
@@ -222,7 +229,8 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSection(BuildContext context, String title, List<Widget> children) {
+  Widget _buildSection(
+      BuildContext context, String title, List<Widget> children) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -230,7 +238,7 @@ class ProfileScreen extends ConsumerWidget {
           padding: const EdgeInsets.only(left: 4, bottom: 8),
           child: Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: CupertinoColors.secondaryLabel,
@@ -279,4 +287,3 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 }
-

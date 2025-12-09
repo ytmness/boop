@@ -1,13 +1,17 @@
 import 'package:flutter/cupertino.dart';
+import '../branding/branding.dart';
 
 class AppColors {
-  // Colores principales (rojo en lugar de azul según preferencias)
-  static const Color primary = Color(0xFFDC2626); // Rojo principal
-  static const Color primaryDark = Color(0xFFB91C1C);
-  static const Color primaryLight = Color(0xFFEF4444);
+  // Colores principales (esquema morado/lavanda)
+  static const Color primary = Branding.primaryPurple;
+  static const Color primaryDark = Branding.primaryPurpleDark;
+  static const Color primaryLight = Branding.primaryPurpleLight;
   
   // Colores de acento
-  static const Color accent = Color(0xFFFF6B6B);
+  static const Color accent = Branding.accentLavender;
+  static const Color accentViolet = Branding.accentViolet;
+  static const Color accentPink = Branding.accentPink;
+  static const Color accentBlue = Branding.accentBlue;
   
   // Colores de fondo
   static const Color background = CupertinoColors.systemBackground;
@@ -31,5 +35,9 @@ class AppColors {
   
   // Colores de overlay
   static const Color overlay = Color(0x80000000);
+  
+  // Colores glass
+  static const Color glassBackgroundLight = Branding.glassBackgroundLight;
+  static const Color glassBackgroundDark = Branding.glassBackgroundDark;
 }
 

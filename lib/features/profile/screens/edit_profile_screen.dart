@@ -3,11 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../providers/profile_provider.dart';
-import '../services/profile_service.dart';
 import '../services/storage_service.dart';
 import '../../../shared/widgets/profile_avatar.dart';
 import '../../../shared/widgets/error_dialog.dart';
-import '../../../shared/widgets/loading_spinner.dart';
 import '../../auth/providers/auth_provider.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
@@ -100,8 +98,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       await profileService.updateProfile(
         name: _nameController.text.trim(),
         avatarUrl: newAvatarUrl,
-        bio: _bioController.text.trim().isEmpty ? null : _bioController.text.trim(),
-        city: _cityController.text.trim().isEmpty ? null : _cityController.text.trim(),
+        bio: _bioController.text.trim().isEmpty
+            ? null
+            : _bioController.text.trim(),
+        city: _cityController.text.trim().isEmpty
+            ? null
+            : _cityController.text.trim(),
       );
 
       // Invalidar provider para refrescar datos
@@ -157,9 +159,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         child: Stack(
                           children: [
                             ProfileAvatar(
-                              imageUrl: _selectedImage != null
-                                  ? null
-                                  : _avatarUrl,
+                              imageUrl:
+                                  _selectedImage != null ? null : _avatarUrl,
                               name: _nameController.text.isEmpty
                                   ? null
                                   : _nameController.text,
@@ -257,4 +258,3 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     );
   }
 }
-

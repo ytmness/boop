@@ -43,7 +43,7 @@ class SupportScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
+              const Text(
                 'Estamos aquí para ayudarte. Elige una opción para contactarnos:',
                 style: TextStyle(
                   fontSize: 16,
@@ -56,14 +56,14 @@ class SupportScreen extends StatelessWidget {
                 color: CupertinoColors.secondarySystemBackground,
                 borderRadius: BorderRadius.circular(16),
                 onPressed: _openWhatsApp,
-                child: Row(
+                child: const Row(
                   children: [
-                    const Icon(
+                    Icon(
                       CupertinoIcons.chat_bubble_2,
                       size: 24,
                     ),
-                    const SizedBox(width: 16),
-                    const Expanded(
+                    SizedBox(width: 16),
+                    Expanded(
                       child: Text(
                         'WhatsApp',
                         style: TextStyle(
@@ -85,14 +85,14 @@ class SupportScreen extends StatelessWidget {
                 color: CupertinoColors.secondarySystemBackground,
                 borderRadius: BorderRadius.circular(16),
                 onPressed: _openEmail,
-                child: Row(
+                child: const Row(
                   children: [
-                    const Icon(
+                    Icon(
                       CupertinoIcons.mail,
                       size: 24,
                     ),
-                    const SizedBox(width: 16),
-                    const Expanded(
+                    SizedBox(width: 16),
+                    Expanded(
                       child: Text(
                         'Correo electrónico',
                         style: TextStyle(
@@ -115,4 +115,3 @@ class SupportScreen extends StatelessWidget {
     );
   }
 }
-

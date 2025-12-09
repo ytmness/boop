@@ -10,16 +10,16 @@ class PromoCodesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
+    return const CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
         middle: Text('Códigos promocionales'),
       ),
-      child: const SafeArea(
+      child: SafeArea(
         child: Center(
-          child: Text('Gestión de códigos promocionales\n(Se implementará próximamente)'),
+          child: Text(
+              'Gestión de códigos promocionales\n(Se implementará próximamente)'),
         ),
       ),
     );
   }
 }
-

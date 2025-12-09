@@ -110,7 +110,7 @@ class FeedItem extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       content!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: CupertinoColors.secondaryLabel,
                       ),
@@ -148,7 +148,7 @@ class FeedItem extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         _getTimeAgo(),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: CupertinoColors.secondaryLabel,
                         ),
@@ -164,4 +164,3 @@ class FeedItem extends StatelessWidget {
     );
   }
 }
-

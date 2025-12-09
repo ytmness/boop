@@ -1,81 +1,73 @@
 import 'package:flutter/cupertino.dart';
-import 'dart:ui';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/branding/branding.dart';
-import '../../../shared/components/glass/glass_container.dart';
+import '../glass/glass_container.dart';
 
-class AuthTextField extends StatelessWidget {
-  final String? placeholder;
+/// Input con efecto Glass tipo Apple
+class GlassInput extends StatelessWidget {
   final TextEditingController? controller;
-  final bool obscureText;
+  final String? placeholder;
   final TextInputType? keyboardType;
+  final bool obscureText;
+  final bool enabled;
   final String? Function(String?)? validator;
-  final ValueChanged<String>? onChanged;
+  final void Function(String)? onChanged;
   final Widget? prefix;
   final Widget? suffix;
-  final bool enabled;
   final int? maxLines;
+  final int? maxLength;
 
-  const AuthTextField({
+  const GlassInput({
     super.key,
-    this.placeholder,
     this.controller,
-    this.obscureText = false,
+    this.placeholder,
     this.keyboardType,
+    this.obscureText = false,
+    this.enabled = true,
     this.validator,
     this.onChanged,
     this.prefix,
     this.suffix,
-    this.enabled = true,
     this.maxLines = 1,
+    this.maxLength,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = CupertinoTheme.brightnessOf(context) == Brightness.dark;
-    
+
     return GlassContainer(
-      borderRadius: Branding.radiusLarge, // Más redondeado (16px)
-      backgroundColor: isDark
-          ? Branding.glassBackgroundDark
-          : Branding.glassBackgroundLight,
+      borderRadius: Branding.radiusLarge, // Más redondeado
+      backgroundColor:
+          isDark ? Branding.glassBackgroundDark : Branding.glassBackgroundLight,
       border: Border.all(
         color: isDark
             ? CupertinoColors.white.withOpacity(0.1)
-            : CupertinoColors.black.withOpacity(0.08),
+            : CupertinoColors.black.withOpacity(0.1),
         width: 0.5,
       ),
-      blur: Branding.glassBlur,
       padding: EdgeInsets.zero,
       child: CupertinoTextField(
         controller: controller,
         placeholder: placeholder,
-        obscureText: obscureText,
         keyboardType: keyboardType,
+        obscureText: obscureText,
         enabled: enabled,
+        onChanged: onChanged,
         maxLines: maxLines,
+        maxLength: maxLength,
         padding: const EdgeInsets.symmetric(
           horizontal: Branding.spacingM,
           vertical: Branding.spacingM,
         ),
-        decoration: const BoxDecoration(),
-        prefix: prefix != null
-            ? Padding(
-                padding: const EdgeInsets.only(left: Branding.spacingM),
-                child: prefix,
-              )
-            : null,
-        suffix: suffix,
-        onChanged: onChanged,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: Branding.fontSizeBody,
           letterSpacing: -0.4,
-          color: isDark ? CupertinoColors.white : AppColors.textPrimary,
         ),
-        placeholderStyle: TextStyle(
-          fontSize: Branding.fontSizeBody,
+        placeholderStyle: const TextStyle(
           color: CupertinoColors.placeholderText,
+          fontSize: Branding.fontSizeBody,
         ),
+        decoration: const BoxDecoration(),
       ),
     );
   }

@@ -75,22 +75,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                       setState(() => _language = 'es');
                                       Navigator.pop(context);
                                     },
-                                    child: const Text('Español'),
                                     isDefaultAction: _language == 'es',
+                                    child: const Text('Español'),
                                   ),
                                   CupertinoActionSheetAction(
                                     onPressed: () {
                                       setState(() => _language = 'en');
                                       Navigator.pop(context);
                                     },
-                                    child: const Text('English'),
                                     isDefaultAction: _language == 'en',
+                                    child: const Text('English'),
                                   ),
                                 ],
                                 cancelButton: CupertinoActionSheetAction(
                                   onPressed: () => Navigator.pop(context),
-                                  child: const Text('Cancelar'),
                                   isDestructiveAction: true,
+                                  child: const Text('Cancelar'),
                                 ),
                               ),
                             );
@@ -110,7 +110,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             Navigator.push(
                               context,
                               CupertinoPageRoute(
-                                builder: (_) => const NotificationsSettingsScreen(),
+                                builder: (_) =>
+                                    const NotificationsSettingsScreen(),
                               ),
                             );
                           },
@@ -171,7 +172,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           padding: const EdgeInsets.only(left: 4, bottom: 8),
           child: Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: CupertinoColors.secondaryLabel,
@@ -268,7 +269,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 17,
               color: CupertinoColors.secondaryLabel,
             ),
@@ -284,4 +285,3 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 }
-

@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 import '../services/auth_service.dart';
 import '../widgets/auth_text_field.dart';
-import '../widgets/primary_button.dart';
+import '../../../shared/components/buttons/glass_button.dart';
+import '../../../shared/components/glass/glass_container.dart';
+import '../../../core/branding/branding.dart';
 import '../../../routes/route_names.dart';
 import '../../../shared/widgets/error_dialog.dart';
 
@@ -18,7 +20,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
   final _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
-  String _countryCode = '+1';
+  final String _countryCode = '+1';
 
   @override
   void dispose() {
@@ -91,7 +93,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
+                const Text(
                   'Te enviaremos un código de verificación',
                   style: TextStyle(
                     fontSize: 16,
@@ -103,22 +105,19 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                   children: [
                     SizedBox(
                       width: 80,
-                      child: CupertinoTextField(
-                        placeholder: _countryCode,
-                        controller: TextEditingController(text: _countryCode),
-                        readOnly: true,
-                        textAlign: TextAlign.center,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: CupertinoColors.secondarySystemBackground,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: CupertinoColors.separator,
-                            width: 0.5,
+                      child: GlassContainer(
+                        borderRadius: Branding.radiusLarge,
+                        padding: EdgeInsets.zero,
+                        child: CupertinoTextField(
+                          placeholder: _countryCode,
+                          controller: TextEditingController(text: _countryCode),
+                          readOnly: true,
+                          textAlign: TextAlign.center,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 12,
                           ),
+                          decoration: const BoxDecoration(),
                         ),
                       ),
                     ),
@@ -134,7 +133,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                   ],
                 ),
                 const Spacer(),
-                PrimaryButton(
+                PrimaryGlassButton(
                   text: 'Enviar código',
                   onPressed: _sendOTP,
                   isLoading: _isLoading,
@@ -145,7 +144,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                   onPressed: () {
                     Navigator.pushNamed(context, RouteNames.support);
                   },
-                  child: Text(
+                  child: const Text(
                     '¿Problemas con el código?',
                     style: TextStyle(
                       color: CupertinoColors.secondaryLabel,
@@ -161,4 +160,3 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
     );
   }
 }
-

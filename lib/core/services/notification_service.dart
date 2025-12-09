@@ -29,11 +29,12 @@ class NotificationService {
   }
 
   Future<void> _saveToken(String token) async {
-    final user = supabase.auth.currentUser;
+    if (supabase == null) return;
+    final user = supabase!.auth.currentUser;
     if (user == null) return;
 
     try {
-      await supabase.from('user_devices').upsert({
+      await supabase!.from('user_devices').upsert({
         'user_id': user.id,
         'device_token': token,
         'platform': 'ios', // TODO: Detectar plataforma real

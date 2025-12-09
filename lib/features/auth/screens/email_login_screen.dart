@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 import '../services/auth_service.dart';
 import '../widgets/auth_text_field.dart';
-import '../widgets/primary_button.dart';
+import '../../../shared/components/buttons/glass_button.dart';
+import '../../../core/branding/branding.dart';
 import '../../../routes/route_names.dart';
 import '../../../shared/widgets/error_dialog.dart';
 
@@ -93,7 +94,7 @@ class _EmailLoginScreenState extends ConsumerState<EmailLoginScreen> {
                   _codeSent
                       ? 'Te hemos enviado un código de verificación a ${_emailController.text}'
                       : 'Te enviaremos un código de verificación',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     color: CupertinoColors.secondaryLabel,
                   ),
@@ -111,7 +112,7 @@ class _EmailLoginScreenState extends ConsumerState<EmailLoginScreen> {
                   const SizedBox.shrink(),
                 const Spacer(),
                 if (!_codeSent)
-                  PrimaryButton(
+                  PrimaryGlassButton(
                     text: 'Enviar código',
                     onPressed: _sendCode,
                     isLoading: _isLoading,
@@ -119,7 +120,7 @@ class _EmailLoginScreenState extends ConsumerState<EmailLoginScreen> {
                 else
                   Column(
                     children: [
-                      PrimaryButton(
+                      PrimaryGlassButton(
                         text: 'Verificar código',
                         onPressed: () {
                           Navigator.pushNamed(
@@ -148,7 +149,7 @@ class _EmailLoginScreenState extends ConsumerState<EmailLoginScreen> {
                   onPressed: () {
                     Navigator.pushNamed(context, RouteNames.support);
                   },
-                  child: Text(
+                  child: const Text(
                     '¿Necesitas ayuda?',
                     style: TextStyle(
                       color: CupertinoColors.secondaryLabel,
@@ -164,4 +165,3 @@ class _EmailLoginScreenState extends ConsumerState<EmailLoginScreen> {
     );
   }
 }
-

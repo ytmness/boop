@@ -10,11 +10,11 @@ class AdvancedStatsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
+    return const CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
         middle: Text('Estadísticas avanzadas'),
       ),
-      child: const SafeArea(
+      child: SafeArea(
         child: Center(
           child: Text('Estadísticas avanzadas\n(Se implementará próximamente)'),
         ),
@@ -22,4 +22,3 @@ class AdvancedStatsScreen extends StatelessWidget {
     );
   }
 }
-

@@ -1,4 +1,7 @@
 class RouteNames {
+  // Splash
+  static const String splash = '/splash';
+  
   // Auth Routes
   static const String onboarding = '/auth/start';
   static const String phoneLogin = '/auth/phone';
