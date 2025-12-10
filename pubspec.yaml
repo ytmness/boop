@@ -73,7 +73,6 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-    - Psychedelic_Liquid_Metal_Animation.mp4
 
   # fonts:
   #   - family: Schyler
