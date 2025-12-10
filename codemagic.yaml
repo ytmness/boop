@@ -39,11 +39,12 @@ workflows:
     instance_type: mac_mini_m1
     environment:
       flutter: stable
-      android_signing:
-        - keystore_reference
+      # android_signing se puede agregar aquí cuando tengas credenciales configuradas
+      # android_signing:
+      #   - keystore_reference
       groups:
         - app_config
-        - android_credentials
+        # - android_credentials  # Descomentar cuando configures credenciales de Android
       vars:
         APP_ID: "com.boop.app"
         APP_NAME: "BOOP"
@@ -55,10 +56,10 @@ workflows:
       - name: Run tests
         script: |
           flutter test
-      - name: Build APK
+      - name: Build APK (sin firma)
         script: |
           flutter build apk --release
-      - name: Build App Bundle
+      - name: Build App Bundle (sin firma)
         script: |
           flutter build appbundle --release
     artifacts:
@@ -80,12 +81,13 @@ workflows:
       flutter: stable
       xcode: latest
       cocoapods: default
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.boop.app
+      # ios_signing se puede agregar aquí cuando tengas credenciales configuradas
+      # ios_signing:
+      #   distribution_type: app_store
+      #   bundle_identifier: com.boop.app
       groups:
         - app_config
-        - ios_credentials
+        # - ios_credentials  # Descomentar cuando configures credenciales de iOS
       vars:
         APP_ID: "com.boop.app"
         APP_NAME: "BOOP"
@@ -100,11 +102,11 @@ workflows:
       - name: Install CocoaPods dependencies
         script: |
           cd ios && pod install
-      - name: Build iOS
+      - name: Build iOS (sin firma)
         script: |
           flutter build ios --release --no-codesign
     artifacts:
-      - build/ios/ipa/*.ipa
+      - build/ios/**/*.app
       - /tmp/xcodebuild_logs/*.log
       - flutter_drive.log
     publishing:
