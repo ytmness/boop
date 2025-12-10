@@ -1,0 +1,117 @@
+workflows:
+  boop-web:
+    name: BOOP Web Build
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      groups:
+        - app_config
+      vars:
+        APP_ID: "com.boop.app"
+        APP_NAME: "BOOP"
+        PACKAGE_NAME: "com.boop.app"
+    scripts:
+      - name: Get Flutter dependencies
+        script: |
+          flutter pub get
+      - name: Run tests
+        script: |
+          flutter test
+      - name: Build web
+        script: |
+          flutter build web --release --base-href "/"
+    artifacts:
+      - build/web/**
+    publishing:
+      email:
+        recipients:
+          - user@example.com
+        notify:
+          success: true
+          failure: false
+
+  boop-android:
+    name: BOOP Android Build
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      flutter: stable
+      android_signing:
+        - keystore_reference
+      groups:
+        - app_config
+        - android_credentials
+      vars:
+        APP_ID: "com.boop.app"
+        APP_NAME: "BOOP"
+        PACKAGE_NAME: "com.boop.app"
+    scripts:
+      - name: Get Flutter dependencies
+        script: |
+          flutter pub get
+      - name: Run tests
+        script: |
+          flutter test
+      - name: Build APK
+        script: |
+          flutter build apk --release
+      - name: Build App Bundle
+        script: |
+          flutter build appbundle --release
+    artifacts:
+      - build/app/outputs/flutter-apk/**/*.apk
+      - build/app/outputs/bundle/**/*.aab
+    publishing:
+      email:
+        recipients:
+          - user@example.com
+        notify:
+          success: true
+          failure: false
+
+  boop-ios:
+    name: BOOP iOS Build
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.boop.app
+      groups:
+        - app_config
+        - ios_credentials
+      vars:
+        APP_ID: "com.boop.app"
+        APP_NAME: "BOOP"
+        PACKAGE_NAME: "com.boop.app"
+    scripts:
+      - name: Get Flutter dependencies
+        script: |
+          flutter pub get
+      - name: Run tests
+        script: |
+          flutter test
+      - name: Install CocoaPods dependencies
+        script: |
+          cd ios && pod install
+      - name: Build iOS
+        script: |
+          flutter build ios --release --no-codesign
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - user@example.com
+        notify:
+          success: true
+          failure: false
+
