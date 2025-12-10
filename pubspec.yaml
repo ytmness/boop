@@ -56,6 +56,9 @@ dependencies:
   
   # Cached Network Image
   cached_network_image: ^3.3.0
+  
+  # Video Player
+  video_player: ^2.8.2
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +73,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - Psychedelic_Liquid_Metal_Animation.mp4
 
   # fonts:
   #   - family: Schyler

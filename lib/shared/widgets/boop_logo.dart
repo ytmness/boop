@@ -123,53 +123,67 @@ class _BoopLogoState extends State<BoopLogo>
       return Center(child: icon);
     }
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        icon,
-        SizedBox(width: widget.size == LogoSize.large ? 32 : 24),
-        // Texto con efecto glow animado (parpadeo suave)
-        AnimatedBuilder(
-          animation: _glowAnimation,
-          builder: (context, child) {
-            final glowValue = _glowAnimation.value;
-            return Text(
-              'boop',
-              style: TextStyle(
-                fontSize: _textSize,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.02,
-                color: CupertinoColors.white,
-                fontFamily: '-apple-system',
-                shadows: [
-                  // Glow blanco interno (animado)
-                  Shadow(
-                    color: CupertinoColors.white.withOpacity(0.9 * glowValue),
-                    blurRadius: 8 * glowValue,
-                  ),
-                  // Glow blanco medio (animado)
-                  Shadow(
-                    color: CupertinoColors.white.withOpacity(0.6 * glowValue),
-                    blurRadius: 20 * glowValue,
-                  ),
-                  // Glow morado (animado)
-                  Shadow(
-                    color: const Color(0xFF8E5AFF).withOpacity(0.5 * glowValue),
-                    blurRadius: 30 * glowValue,
-                  ),
-                  // Glow lavanda exterior (animado)
-                  Shadow(
-                    color: const Color(0xFFB89CFF).withOpacity(0.4 * glowValue),
-                    blurRadius: 40 * glowValue,
-                  ),
-                ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Calcular el tamaño disponible para el texto
+        final iconWidth = widget.size == LogoSize.large ? 128.0 : 96.0;
+        final spacing = widget.size == LogoSize.large ? 32.0 : 24.0;
+        final availableWidth = constraints.maxWidth - iconWidth - spacing;
+        
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            icon,
+            SizedBox(width: spacing),
+            // Texto con efecto neon glow eléctrico animado
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: availableWidth > 0 ? availableWidth : double.infinity,
               ),
-              overflow: TextOverflow.visible,
-              softWrap: false,
-            );
-          },
-        ),
-      ],
+              child: AnimatedBuilder(
+                animation: _glowAnimation,
+                builder: (context, child) {
+                  final glowValue = _glowAnimation.value;
+                  return Text(
+                    'boop',
+                    style: TextStyle(
+                      fontSize: _textSize,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.02,
+                      color: CupertinoColors.white,
+                      fontFamily: '-apple-system',
+                      shadows: [
+                        // Glow blanco brillante interno (animado)
+                        Shadow(
+                          color: CupertinoColors.white.withOpacity(1.0 * glowValue),
+                          blurRadius: 15 * glowValue,
+                        ),
+                        // Glow blanco medio (animado)
+                        Shadow(
+                          color: CupertinoColors.white.withOpacity(0.8 * glowValue),
+                          blurRadius: 30 * glowValue,
+                        ),
+                        // Glow blanco suave exterior (animado)
+                        Shadow(
+                          color: CupertinoColors.white.withOpacity(0.5 * glowValue),
+                          blurRadius: 50 * glowValue,
+                        ),
+                        // Glow blanco muy suave (animado)
+                        Shadow(
+                          color: CupertinoColors.white.withOpacity(0.3 * glowValue),
+                          blurRadius: 70 * glowValue,
+                        ),
+                      ],
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: false,
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -184,16 +198,26 @@ class _BoopLogoState extends State<BoopLogo>
         alignment: Alignment.center,
         clipBehavior: Clip.none,
         children: [
-          // Glow effect exterior (más suave)
+          // Glow effect exterior blanco (más pronunciado)
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF8E5AFF).withOpacity(0.2),
-                    blurRadius: 30,
-                    spreadRadius: -8,
+                    color: CupertinoColors.white.withOpacity(0.4),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                  ),
+                  BoxShadow(
+                    color: CupertinoColors.white.withOpacity(0.2),
+                    blurRadius: 40,
+                    spreadRadius: 4,
+                  ),
+                  BoxShadow(
+                    color: CupertinoColors.white.withOpacity(0.1),
+                    blurRadius: 60,
+                    spreadRadius: 6,
                   ),
                 ],
               ),
@@ -216,35 +240,38 @@ class _BoopLogoState extends State<BoopLogo>
                 width: 2,
               ),
             ),
-            child: ClipOval(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      const Color(0xFF8E5AFF).withOpacity(0.1),
-                      Colors.transparent,
-                      const Color(0xFFB89CFF).withOpacity(0.1),
-                    ],
+              child: ClipOval(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        CupertinoColors.white.withOpacity(0.1),
+                        Colors.transparent,
+                        CupertinoColors.white.withOpacity(0.05),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
           ),
 
           // Primera partícula (cyan) - rotación normal 4s, posición 3 o'clock
           AnimatedBuilder(
             animation: _controller1,
             builder: (context, child) {
-              return Transform.rotate(
-                angle: _controller1.value * 2 * math.pi,
-                child: _buildParticle(
-                  iconSize: iconSize,
-                  particleSize: particleSize,
-                  offset: Offset(iconSize / 2, 0), // 3 o'clock position
-                  color: const Color(0xFF00F0FF),
-                ),
+              final angle = _controller1.value * 2 * math.pi;
+              final baseOffset = Offset(iconSize / 2, 0); // 3 o'clock position
+              final rotatedOffset = Offset(
+                baseOffset.dx * math.cos(angle) - baseOffset.dy * math.sin(angle),
+                baseOffset.dx * math.sin(angle) + baseOffset.dy * math.cos(angle),
+              );
+              return _buildParticle(
+                iconSize: iconSize,
+                particleSize: particleSize,
+                offset: rotatedOffset,
+                color: const Color(0xFF00F0FF),
               );
             },
           ),
@@ -253,14 +280,17 @@ class _BoopLogoState extends State<BoopLogo>
           AnimatedBuilder(
             animation: _controller2,
             builder: (context, child) {
-              return Transform.rotate(
-                angle: -_controller2.value * 2 * math.pi,
-                child: _buildParticle(
-                  iconSize: iconSize,
-                  particleSize: particleSize,
-                  offset: Offset(-iconSize / 2 * 0.7, iconSize / 2 * 0.7), // 7 o'clock position
-                  color: const Color(0xFFE8B5FF), // Lavanda más suave/rosa
-                ),
+              final angle = -_controller2.value * 2 * math.pi;
+              final baseOffset = Offset(-iconSize / 2 * 0.7, iconSize / 2 * 0.7); // 7 o'clock position
+              final rotatedOffset = Offset(
+                baseOffset.dx * math.cos(angle) - baseOffset.dy * math.sin(angle),
+                baseOffset.dx * math.sin(angle) + baseOffset.dy * math.cos(angle),
+              );
+              return _buildParticle(
+                iconSize: iconSize,
+                particleSize: particleSize,
+                offset: rotatedOffset,
+                color: const Color(0xFFE8B5FF), // Lavanda más suave/rosa
               );
             },
           ),
@@ -281,7 +311,7 @@ class _BoopLogoState extends State<BoopLogo>
             ),
             child: Stack(
               children: [
-                // Gradient background más suave
+                // Gradient background blanco más suave
                 Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -289,8 +319,8 @@ class _BoopLogoState extends State<BoopLogo>
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        const Color(0xFF8E5AFF).withOpacity(0.3),
-                        const Color(0xFFB89CFF).withOpacity(0.3),
+                        CupertinoColors.white.withOpacity(0.3),
+                        CupertinoColors.white.withOpacity(0.1),
                       ],
                     ),
                   ),

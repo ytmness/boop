@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' show Colors;
 import 'dart:ui';
 import '../../../core/branding/branding.dart';
 
@@ -33,9 +34,6 @@ class GlassContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = CupertinoTheme.brightnessOf(context) == Brightness.dark;
-    final defaultBackground = isDark
-        ? Branding.glassBackgroundDark
-        : Branding.glassBackgroundLight;
 
     return Container(
       width: width,
@@ -43,17 +41,69 @@ class GlassContainer extends StatelessWidget {
       margin: margin,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(borderRadius),
-        color: backgroundColor ?? defaultBackground,
-        border: border,
-        boxShadow: boxShadow ?? Branding.shadowMedium,
+        gradient: backgroundColor != null
+            ? null
+            : LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isDark
+                    ? [
+                        CupertinoColors.white.withOpacity(0.12),
+                        CupertinoColors.white.withOpacity(0.08),
+                        CupertinoColors.white.withOpacity(0.05),
+                      ]
+                    : [
+                        CupertinoColors.white.withOpacity(0.8),
+                        CupertinoColors.white.withOpacity(0.6),
+                        CupertinoColors.white.withOpacity(0.4),
+                      ],
+              ),
+        color: backgroundColor,
+        border: border ??
+            Border.all(
+              color: isDark
+                  ? CupertinoColors.white.withOpacity(0.15)
+                  : CupertinoColors.black.withOpacity(0.08),
+              width: 0.5,
+            ),
+        boxShadow: boxShadow ?? [
+          BoxShadow(
+            color: CupertinoColors.white.withOpacity(0.1),
+            blurRadius: 20,
+            spreadRadius: -5,
+            offset: const Offset(0, 10),
+          ),
+          BoxShadow(
+            color: CupertinoColors.black.withOpacity(0.1),
+            blurRadius: 30,
+            spreadRadius: -10,
+            offset: const Offset(0, 15),
+          ),
+        ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-          child: Padding(
-            padding: padding ?? EdgeInsets.zero,
-            child: child,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(borderRadius),
+              gradient: backgroundColor == null && isDark
+                  ? LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        CupertinoColors.white.withOpacity(0.08),
+                        Colors.transparent,
+                        CupertinoColors.white.withOpacity(0.05),
+                      ],
+                    )
+                  : null,
+            ),
+            child: Padding(
+              padding: padding ?? EdgeInsets.zero,
+              child: child,
+            ),
           ),
         ),
       ),

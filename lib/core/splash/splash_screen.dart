@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:ui';
 import '../../routes/route_names.dart';
-import '../branding/branding.dart';
-import '../../shared/widgets/boop_logo.dart';
+import '../branding/boop_styles.dart';
+import '../../shared/widgets/boop_glow_icon.dart';
 import '../../features/auth/providers/auth_provider.dart';
 
-/// Pantalla de Splash con logo y efecto Glass
+/// Pantalla de Splash premium tipo iOS con logo animado y liquid glass
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
@@ -16,28 +17,20 @@ class SplashScreen extends ConsumerStatefulWidget {
 class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: Branding.animationSlow,
+      duration: const Duration(milliseconds: 2000),
       vsync: this,
-    );
-
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Branding.curveEaseOut,
-      ),
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Branding.curveEaseInOut,
+        curve: Curves.easeInOut,
       ),
     );
 
@@ -46,7 +39,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _navigateToNext() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 3));
 
     if (!mounted) return;
 
@@ -68,61 +61,38 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = CupertinoTheme.brightnessOf(context) == Brightness.dark;
-
     return CupertinoPageScaffold(
-      backgroundColor: isDark 
-          ? const Color(0xFF1A1A2E) // Gris oscuro suave en lugar de negro puro
-          : const Color(0xFFF5F5F7), // Gris muy claro tipo Apple
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isDark
-                ? [
-                    const Color(0xFF1A1A2E), // Gris oscuro suave
-                    Branding.primaryPurpleDark.withOpacity(0.15), // Menos opaco
-                  ]
-                : [
-                    const Color(0xFFF5F5F7), // Gris muy claro
-                    Branding.accentLavender.withOpacity(0.1), // Más suave
-                  ],
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: ScaleTransition(
-                scale: _scaleAnimation,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Logo BOOP con efecto Orbit
-                    BoopLogo(
-                      darkMode: isDark,
-                      size: LogoSize.large,
-                      iconOnly: false,
-                    ),
-
-                    const SizedBox(height: Branding.spacingXL),
-
-                    // Subtítulo
-                    const Text(
-                      'Eventos increíbles',
-                      style: TextStyle(
-                        fontSize: Branding.fontSizeHeadline,
-                        color: CupertinoColors.secondaryLabel,
-                        letterSpacing: -0.4,
-                      ),
-                    ),
-                  ],
-                ),
+      backgroundColor: BoopStyles.darkBackground,
+      child: Stack(
+        children: [
+          // Fondo degradado oscuro con blur suave
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF1B1029), // Morado oscuro
+                  Color(0xFF000000), // Negro puro
+                ],
+              ),
+            ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+              child: Container(
+                color: CupertinoColors.transparent,
               ),
             ),
           ),
-        ),
+          
+          // Logo centrado con animación fade-in y cambio de color
+          Center(
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: const BoopGlowIcon(size: 180),
+            ),
+          ),
+        ],
       ),
     );
   }

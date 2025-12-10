@@ -1,30 +1,45 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:ui';
 import '../../../routes/route_names.dart';
 import '../../../shared/components/buttons/glass_button.dart';
 import '../../../shared/components/animations/apple_animations.dart';
 import '../../../shared/widgets/boop_logo.dart';
+import '../../../shared/widgets/youtube_video_background.dart';
 import '../../../core/branding/branding.dart';
 
-class OnboardingScreen extends ConsumerWidget {
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
+
+  @override
+  Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      backgroundColor: const Color(0xFFF5F5F7), // Gris muy claro tipo Apple
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFFF5F5F7),
-              Branding.accentLavender.withOpacity(0.05),
-            ],
+      backgroundColor: CupertinoColors.black,
+      child: Stack(
+        children: [
+          // Video de YouTube como fondo - streaming optimizado
+          // Usa el video de 10 horas que siempre se verá diferente
+          YoutubeVideoBackground(
+            youtubeVideoId: '0WQTZvunC2Q', // ID del video de YouTube
+            opacity: 0.9,
           ),
-        ),
-        child: SafeArea(
+          
+          // Capa de blur suave tipo liquid glass
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            child: Container(
+              color: CupertinoColors.black.withOpacity(0.1),
+            ),
+          ),
+          
+          // Contenido principal
+          SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: Branding.spacingXL),
           child: Column(
@@ -32,12 +47,12 @@ class OnboardingScreen extends ConsumerWidget {
             children: [
               const Spacer(flex: 2),
 
-              // Logo BOOP con efecto Orbit
+              // Logo BOOP con efecto Orbit (sin título duplicado)
               Center(
                 child: AppleScaleTransition(
                   visible: true,
                   child: BoopLogo(
-                    darkMode: false,
+                    darkMode: true, // Mejor contraste sobre el video
                     size: LogoSize.large,
                     iconOnly: false,
                   ),
@@ -46,23 +61,7 @@ class OnboardingScreen extends ConsumerWidget {
 
               const SizedBox(height: Branding.spacingXXL),
 
-              // Título con animación
-              const AppleFadeTransition(
-                visible: true,
-                child: Text(
-                  'BOOP',
-                  style: TextStyle(
-                    fontSize: Branding.fontSizeLargeTitle * 1.4,
-                    fontWeight: Branding.weightBold,
-                    letterSpacing: 0.37,
-                    color: CupertinoColors.label,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: Branding.spacingM),
-
-              // Subtítulo
+              // Subtítulo con sombra para visibilidad sobre el video
               const AppleSlideTransition(
                 visible: true,
                 offset: Offset(0, 0.1),
@@ -71,8 +70,15 @@ class OnboardingScreen extends ConsumerWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: Branding.fontSizeHeadline,
-                    color: CupertinoColors.secondaryLabel,
+                    color: CupertinoColors.white,
                     letterSpacing: -0.4,
+                    shadows: [
+                      Shadow(
+                        color: CupertinoColors.black,
+                        blurRadius: 10,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -98,6 +104,8 @@ class OnboardingScreen extends ConsumerWidget {
                 offset: const Offset(0, 0.2),
                 child: GlassButton(
                   text: 'Continuar con Apple',
+                  width: double.infinity, // Mismo ancho que el botón principal
+                  height: 50, // Misma altura que el botón principal
                   onPressed: () {
                     showCupertinoDialog(
                       context: context,
@@ -127,9 +135,16 @@ class OnboardingScreen extends ConsumerWidget {
                 child: const Text(
                   'Iniciar sesión con Email',
                   style: TextStyle(
-                    color: Branding.primaryPurple,
+                    color: CupertinoColors.white,
                     fontSize: Branding.fontSizeBody,
                     fontWeight: Branding.weightMedium,
+                    shadows: [
+                      Shadow(
+                        color: CupertinoColors.black,
+                        blurRadius: 8,
+                        offset: Offset(0, 1),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -145,8 +160,15 @@ class OnboardingScreen extends ConsumerWidget {
                 child: const Text(
                   '¿Necesitas ayuda?',
                   style: TextStyle(
-                    color: CupertinoColors.secondaryLabel,
+                    color: CupertinoColors.white,
                     fontSize: Branding.fontSizeSubhead,
+                    shadows: [
+                      Shadow(
+                        color: CupertinoColors.black,
+                        blurRadius: 6,
+                        offset: Offset(0, 1),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -156,6 +178,7 @@ class OnboardingScreen extends ConsumerWidget {
           ),
         ),
         ),
+        ],
       ),
     );
   }
