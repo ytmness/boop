@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' show Colors;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:ui';
 import '../../routes/route_names.dart';
@@ -68,14 +69,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         children: [
           // Fondo degradado oscuro con blur suave
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color(0xFF1B1029), // Morado oscuro
-                  Color(0xFF000000), // Negro puro
+                  BoopStyles.darkBackground, // #080C32
+                  Colors.black,
+                  BoopStyles.darkBackground.withOpacity(0.8),
                 ],
+                stops: const [0.0, 0.5, 1.0],
               ),
             ),
             child: BackdropFilter(

@@ -39,11 +39,13 @@ class EmptyEventsPlaceholder extends StatelessWidget {
               ),
               gradient: LinearGradient(
                 colors: [
-                  Branding.primaryPurple.withOpacity(0.3),
-                  Branding.accentViolet.withOpacity(0.2),
+                  Branding.darkBackground.withOpacity(0.4),
+                  Colors.black.withOpacity(0.3),
+                  Branding.darkBackground.withOpacity(0.2),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
+                stops: const [0.0, 0.5, 1.0],
               ),
             ),
             child: ClipRRect(
@@ -133,7 +135,7 @@ class EmptyEventsPlaceholder extends StatelessWidget {
                     Icon(
                       CupertinoIcons.info,
                       size: 16,
-                      color: Branding.primaryPurple.withOpacity(0.8),
+                      color: Branding.darkBackground.withOpacity(0.8),
                     ),
                     const SizedBox(width: Branding.spacingXS),
                     const Expanded(
