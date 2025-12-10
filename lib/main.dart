@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/config/supabase_config.dart';
 import 'core/theme/theme_provider.dart';
 import 'routes/app_router.dart';
@@ -11,6 +12,14 @@ void main() async {
 
   // Inicializar Supabase
   await SupabaseConfig.initialize();
+
+  // Manejar deep links de autenticación (magic links)
+  SupabaseConfig.client?.auth.onAuthStateChange.listen((data) {
+    final AuthChangeEvent event = data.event;
+    if (event == AuthChangeEvent.signedIn) {
+      // Usuario autenticado vía magic link
+    }
+  });
 
   runApp(
     const ProviderScope(

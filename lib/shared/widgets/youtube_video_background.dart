@@ -65,8 +65,6 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
     final width = html.window.innerWidth ?? 1920;
     final height = html.window.innerHeight ?? 1080;
 
-    debugPrint('📐 Actualizando tamaño: ${width}x${height}');
-
     // Forzar tamaño del contenedor usando píxeles y viewport units
     _container!.style.setProperty('width', '100vw', 'important');
     _container!.style.setProperty('height', '100vh', 'important');
@@ -105,17 +103,10 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
     // También establecer atributos directamente
     _iframe!.setAttribute('width', '$width');
     _iframe!.setAttribute('height', '$height');
-
-    debugPrint(
-        '✅ Tamaño actualizado: contenedor=${_container!.style.width}x${_container!.style.height}, iframe=${_iframe!.style.width}x${_iframe!.style.height}');
-    debugPrint(
-        '📐 Computed size: container=${_container!.getComputedStyle().width}x${_container!.getComputedStyle().height}, iframe=${_iframe!.getComputedStyle().width}x${_iframe!.getComputedStyle().height}');
   }
 
   void _createIframe() {
     if (!kIsWeb || _container != null || _containerId == null) return;
-
-    debugPrint('🎬 Creando iframe de YouTube...');
 
     // Generar tiempo de inicio aleatorio si no se especifica (para variación)
     final startTime = widget.startSeconds ??
@@ -124,9 +115,6 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
     // Extraer ID del video si es una URL completa
     final videoId =
         YoutubeVideoBackground.extractVideoId(widget.youtubeVideoId);
-
-    debugPrint('📹 Video ID extraído: $videoId');
-    debugPrint('⏰ Tiempo de inicio: $startTime segundos');
 
     // Construir URL de embed de YouTube optimizada
     final embedUrl = 'https://www.youtube.com/embed/$videoId?'
@@ -145,8 +133,6 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
         'cc_load_policy=0&' // Sin subtítulos
         'fs=0&' // Sin pantalla completa
         'disablekb=1'; // Deshabilitar teclado
-
-    debugPrint('📐 Creando contenedor con dimensiones de viewport');
 
     // Crear contenedor usando unidades de viewport para llenar toda la pantalla
     _container = html.DivElement()
@@ -216,8 +202,6 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
 
     // Agregar listener para cuando el iframe esté cargado
     _iframe!.onLoad.listen((_) {
-      debugPrint('✅ Iframe de YouTube cargado completamente');
-      // Actualizar tamaño múltiples veces para asegurar que se aplique
       _updateSize();
       Future.delayed(const Duration(milliseconds: 100), () => _updateSize());
       Future.delayed(const Duration(milliseconds: 500), () => _updateSize());
@@ -234,16 +218,6 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
     // Insertar directamente en el body al inicio
     if (html.document.body != null) {
       html.document.body!.insertAdjacentElement('afterbegin', _container!);
-      debugPrint('✅ Iframe insertado en el body con src: $embedUrl');
-      debugPrint('📐 Container ID: $_containerId');
-
-      // Verificar que el contenedor esté en el DOM
-      final containerCheck = html.document.getElementById(_containerId!);
-      if (containerCheck != null) {
-        debugPrint('✅ Contenedor verificado en DOM');
-      } else {
-        debugPrint('❌ Contenedor NO encontrado en DOM');
-      }
 
       // Forzar estilos con !important después de insertar usando viewport units
       Future.delayed(const Duration(milliseconds: 50), () {
@@ -290,9 +264,6 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
                 .setProperty('filter', 'blur(8px)', 'important');
             iframeInContainer.style
                 .setProperty('-webkit-filter', 'blur(8px)', 'important');
-            debugPrint('✅ Iframe encontrado y estilos aplicados');
-          } else {
-            debugPrint('❌ Iframe NO encontrado en contenedor');
           }
         }
       });
@@ -332,8 +303,6 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
             iframe.style.setProperty('filter', 'blur(8px)', 'important');
             iframe.style
                 .setProperty('-webkit-filter', 'blur(8px)', 'important');
-
-            debugPrint('🔧 Tamaño forzado: ${width}x${height}');
           }
         }
       });
@@ -347,7 +316,6 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
         if (mounted) {
           setState(() {
             _isReady = true;
-            debugPrint('✅ Iframe listo y visible');
           });
         }
       });
@@ -382,7 +350,6 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
           if (mounted) {
             setState(() {
               _isReady = true;
-              debugPrint('✅ Contenedor encontrado en DOM, marcando como listo');
             });
           }
         });
@@ -412,7 +379,6 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
   void dispose() {
     if (kIsWeb && _container != null) {
       _container!.remove();
-      debugPrint('🗑️ Contenedor de YouTube removido');
     }
     super.dispose();
   }

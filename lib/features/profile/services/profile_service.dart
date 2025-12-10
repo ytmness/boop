@@ -13,7 +13,8 @@ class ProfileService {
     try {
       final response = await _supabase!
           .from('profiles')
-          .select()
+          .select(
+              'user_id, name, avatar_url, bio, city, is_verified, created_at, updated_at')
           .eq('user_id', userId)
           .maybeSingle();
 
@@ -29,7 +30,12 @@ class ProfileService {
     if (_supabase == null) return null;
     final user = _supabase!.auth.currentUser;
     if (user == null) return null;
-    return getProfile(user.id);
+
+    try {
+      return await getProfile(user.id);
+    } catch (e) {
+      return null;
+    }
   }
 
   // Actualizar perfil
@@ -58,7 +64,8 @@ class ProfileService {
           .from('profiles')
           .update(updates)
           .eq('user_id', user.id)
-          .select()
+          .select(
+              'user_id, name, avatar_url, bio, city, is_verified, created_at, updated_at')
           .single();
 
       return UserModel.fromJson(response);
@@ -71,8 +78,6 @@ class ProfileService {
   Future<UserModel> createProfile({
     required String userId,
     String? name,
-    String? email,
-    String? phone,
     String? avatarUrl,
     String? bio,
     String? city,
@@ -84,8 +89,6 @@ class ProfileService {
       final profileData = {
         'user_id': userId,
         if (name != null) 'name': name,
-        if (email != null) 'email': email,
-        if (phone != null) 'phone': phone,
         if (avatarUrl != null) 'avatar_url': avatarUrl,
         if (bio != null) 'bio': bio,
         if (city != null) 'city': city,
@@ -94,7 +97,8 @@ class ProfileService {
       final response = await _supabase!
           .from('profiles')
           .insert(profileData)
-          .select()
+          .select(
+              'user_id, name, avatar_url, bio, city, is_verified, created_at, updated_at')
           .single();
 
       return UserModel.fromJson(response);
@@ -103,4 +107,3 @@ class ProfileService {
     }
   }
 }
-

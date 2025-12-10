@@ -32,11 +32,13 @@ class CommunityDetailScreen extends ConsumerWidget {
             }
 
             // TODO: Obtener eventos de la comunidad
-            final eventsAsync = ref.watch(publicEventsProvider({
-              'city': community.city,
-              'limit': 10,
-              'offset': 0,
-            }));
+            final eventsAsync = ref.watch(publicEventsProvider(
+              EventsQueryParams(
+                city: community.city,
+                limit: 10,
+                offset: 0,
+              ),
+            ));
 
             return CustomScrollView(
               slivers: [

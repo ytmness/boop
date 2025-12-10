@@ -46,9 +46,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final user = ref.read(currentUserProvider);
 
     if (mounted) {
+      final route = user != null ? RouteNames.explore : RouteNames.onboarding;
       Navigator.pushReplacementNamed(
         context,
-        user != null ? RouteNames.explore : RouteNames.onboarding,
+        route,
       );
     }
   }
@@ -84,7 +85,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               ),
             ),
           ),
-          
+
           // Logo centrado con animación fade-in y cambio de color
           Center(
             child: FadeTransition(

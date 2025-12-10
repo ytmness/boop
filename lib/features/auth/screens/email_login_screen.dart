@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
-import '../services/auth_service.dart';
 import '../widgets/auth_text_field.dart';
 import '../../../shared/components/buttons/glass_button.dart';
 import '../../../core/branding/branding.dart';
@@ -10,7 +9,6 @@ import '../../../routes/route_names.dart';
 import '../../../shared/widgets/error_dialog.dart';
 import '../../../shared/widgets/blurred_video_background.dart';
 import '../../../shared/components/buttons/glass_back_button.dart';
-import '../../../core/branding/branding.dart';
 
 class EmailLoginScreen extends ConsumerStatefulWidget {
   const EmailLoginScreen({super.key});
@@ -125,7 +123,7 @@ class _EmailLoginScreenState extends ConsumerState<EmailLoginScreen> {
                   const SizedBox(height: 8),
                   Text(
                     _codeSent
-                        ? 'Te hemos enviado un código de verificación a ${_emailController.text}'
+                        ? 'Te hemos enviado un código de verificación a ${_emailController.text}\n\nBusca el código numérico de 6 dígitos en tu correo (puede estar en el cuerpo del mensaje o en el enlace).'
                         : 'Te enviaremos un código de verificación',
                     style: const TextStyle(
                       fontSize: 16,

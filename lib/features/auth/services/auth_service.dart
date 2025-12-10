@@ -132,9 +132,14 @@ class AuthService {
       return;
     }
     try {
+      // Enviar código OTP numérico
+      // Si Supabase está configurado para magic links, también funcionará
+      // pero el usuario puede usar el código numérico que viene en el email
       await _supabase!.auth.signInWithOtp(
         email: email,
-        emailRedirectTo: null,
+        shouldCreateUser: true,
+        // No especificar emailRedirectTo para que envíe código numérico
+        // Si quieres magic links, especifica: emailRedirectTo: 'boop://auth/callback'
       );
     } on AuthException catch (e) {
       throw _handleAuthError(e);
@@ -186,9 +191,12 @@ class AuthService {
       );
     }
     try {
+      // Limpiar el token (quitar espacios y caracteres no numéricos)
+      final cleanToken = token.trim().replaceAll(RegExp(r'[^0-9]'), '');
+
       final response = await _supabase!.auth.verifyOTP(
         email: email,
-        token: token,
+        token: cleanToken,
         type: OtpType.email,
       );
 
@@ -201,6 +209,8 @@ class AuthService {
       return response;
     } on AuthException catch (e) {
       throw _handleAuthError(e);
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -264,10 +274,12 @@ class AuthService {
     try {
       final response = await _supabase!
           .from('profiles')
-          .select()
+          .select(
+              'user_id, name, avatar_url, bio, city, is_verified, created_at, updated_at')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
+      if (response == null) return null;
       return UserModel.fromJson(response);
     } catch (e) {
       return null;
@@ -290,8 +302,6 @@ class AuthService {
         await _supabase!.from('profiles').insert({
           'user_id': user.id,
           'name': user.userMetadata?['name'] ?? user.email?.split('@')[0],
-          'email': user.email,
-          'phone': user.phone,
         });
       }
     } catch (e) {
@@ -301,13 +311,21 @@ class AuthService {
 
   // Manejo de errores de autenticación
   String _handleAuthError(AuthException e) {
+    // Manejar errores HTTP también
+    if (e.statusCode == '403' ||
+        e.message.contains('403') ||
+        e.message.contains('Forbidden')) {
+      return 'Código inválido o expirado. Por favor, solicita un nuevo código';
+    }
+
     switch (e.statusCode) {
       case 'invalid_phone_number':
         return 'Número de teléfono inválido';
       case 'invalid_email':
         return 'Correo electrónico inválido';
       case 'invalid_otp':
-        return 'Código OTP incorrecto';
+      case 'invalid_token':
+        return 'Código OTP incorrecto. Verifica que hayas ingresado todos los dígitos correctamente';
       case 'expired_token':
         return 'El código ha expirado. Por favor, solicita uno nuevo';
       case 'token_not_found':
@@ -317,7 +335,11 @@ class AuthService {
       case 'email_not_confirmed':
         return 'Correo electrónico no verificado';
       default:
-        return e.message;
+        // Si el mensaje contiene información útil, usarlo; si no, mensaje genérico
+        if (e.message.isNotEmpty && !e.message.contains('403')) {
+          return e.message;
+        }
+        return 'Error al verificar el código. Por favor, intenta de nuevo o solicita un nuevo código';
     }
   }
 }

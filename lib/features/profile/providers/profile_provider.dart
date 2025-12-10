@@ -7,12 +7,16 @@ final profileServiceProvider = Provider<ProfileService>((ref) {
 });
 
 final currentProfileProvider = FutureProvider<UserModel?>((ref) async {
-  final service = ref.watch(profileServiceProvider);
-  return await service.getCurrentProfile();
+  try {
+    final service = ref.watch(profileServiceProvider);
+    return await service.getCurrentProfile();
+  } catch (e) {
+    return null;
+  }
 });
 
-final profileProvider = FutureProvider.family<UserModel?, String>((ref, userId) async {
+final profileProvider =
+    FutureProvider.family<UserModel?, String>((ref, userId) async {
   final service = ref.watch(profileServiceProvider);
   return await service.getProfile(userId);
 });
-

@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
-import '../services/auth_service.dart';
 import '../../../shared/components/buttons/glass_button.dart';
 import '../../../shared/components/glass/glass_container.dart';
 import '../../../core/branding/branding.dart';
@@ -10,8 +9,6 @@ import '../../../routes/route_names.dart';
 import '../../../shared/widgets/error_dialog.dart';
 import '../../../shared/widgets/blurred_video_background.dart';
 import '../../../shared/components/buttons/glass_back_button.dart';
-import '../../../shared/components/glass/glass_container.dart';
-import '../../../core/branding/branding.dart';
 
 class VerifyOTPScreen extends ConsumerStatefulWidget {
   final String phoneOrEmail;
@@ -28,9 +25,11 @@ class VerifyOTPScreen extends ConsumerStatefulWidget {
 }
 
 class _VerifyOTPScreenState extends ConsumerState<VerifyOTPScreen> {
+  // Aceptar códigos de 6 u 8 dígitos
+  final int _codeLength = 8;
   final List<TextEditingController> _controllers =
-      List.generate(6, (_) => TextEditingController());
-  final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
+      List.generate(8, (_) => TextEditingController());
+  final List<FocusNode> _focusNodes = List.generate(8, (_) => FocusNode());
   bool _isLoading = false;
 
   @override
@@ -45,21 +44,33 @@ class _VerifyOTPScreenState extends ConsumerState<VerifyOTPScreen> {
   }
 
   void _onCodeChanged(int index, String value) {
-    if (value.length == 1 && index < 5) {
+    if (value.length == 1 && index < _codeLength - 1) {
       _focusNodes[index + 1].requestFocus();
     } else if (value.isEmpty && index > 0) {
       _focusNodes[index - 1].requestFocus();
     }
 
-    // Verificar si todos los campos están llenos
-    if (index == 5 && value.isNotEmpty) {
+    // Solo verificar automáticamente cuando se completan los 8 dígitos
+    final currentCode = _controllers.map((c) => c.text).join();
+    if (currentCode.length == 8 && index == 7 && value.isNotEmpty) {
       _verifyCode();
     }
   }
 
   Future<void> _verifyCode() async {
-    final code = _controllers.map((c) => c.text).join();
-    if (code.length != 6) return;
+    final code = _controllers.map((c) => c.text).join().trim();
+    // Aceptar códigos de 6 u 8 dígitos
+    if (code.length != 6 && code.length != 8) {
+      if (mounted) {
+        ErrorDialog.show(
+          context,
+          title: 'Código incompleto',
+          message:
+              'Por favor, ingresa los ${code.length < 6 ? 6 : 8} dígitos del código',
+        );
+      }
+      return;
+    }
 
     setState(() => _isLoading = true);
 
@@ -87,10 +98,16 @@ class _VerifyOTPScreenState extends ConsumerState<VerifyOTPScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // Extraer mensaje de error más amigable
+        String errorMessage = e.toString();
+        if (errorMessage.contains('Exception: ')) {
+          errorMessage = errorMessage.replaceFirst('Exception: ', '');
+        }
+
         ErrorDialog.show(
           context,
-          title: 'Código inválido',
-          message: e.toString(),
+          title: 'Error al verificar',
+          message: errorMessage,
         );
         // Limpiar campos
         for (var controller in _controllers) {
@@ -208,7 +225,7 @@ class _VerifyOTPScreenState extends ConsumerState<VerifyOTPScreen> {
                 const SizedBox(height: 48),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(6, (index) {
+                  children: List.generate(_codeLength, (index) {
                     return SizedBox(
                       width: 45,
                       height: 55,

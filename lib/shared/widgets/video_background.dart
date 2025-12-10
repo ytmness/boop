@@ -34,38 +34,33 @@ class _VideoBackgroundState extends State<VideoBackground> {
 
   Future<void> _initializeVideo() async {
     try {
-      debugPrint('🎬 Inicializando video: ${widget.videoPath}');
       final controller = VideoPlayerController.asset(widget.videoPath);
       _controller = controller;
-      
+
       // Agregar listener para detectar cuando está listo
       controller.addListener(_videoListener);
-      
+
       // Inicializar el video
       await controller.initialize();
-      
-      debugPrint('✅ Video inicializado. Tamaño: ${controller.value.size}');
-      
-      if (mounted && _controller == controller && controller.value.isInitialized) {
+
+      if (mounted &&
+          _controller == controller &&
+          controller.value.isInitialized) {
         // Configurar loop
         await controller.setLooping(true);
-        
+
         setState(() {
           _isInitialized = true;
           _hasError = false;
         });
-        
+
         // No intentar reproducir automáticamente en web (requiere interacción del usuario)
         // El video se reproducirá cuando el usuario interactúe con la página
-        debugPrint('⏸️ Video inicializado, esperando interacción del usuario...');
       } else {
-        debugPrint('❌ Video no inicializado correctamente');
         controller.dispose();
         _controller = null;
       }
-    } catch (e, stackTrace) {
-      debugPrint('❌ Error inicializando video: $e');
-      debugPrint('Stack trace: $stackTrace');
+    } catch (e) {
       _controller?.removeListener(_videoListener);
       _controller?.dispose();
       _controller = null;
@@ -86,10 +81,9 @@ class _VideoBackgroundState extends State<VideoBackground> {
         _controller!.seekTo(Duration.zero);
         _controller!.play();
       }
-      
+
       // Si hay un error, marcarlo
       if (_controller!.value.hasError) {
-        debugPrint('❌ Error en el video: ${_controller!.value.errorDescription}');
         if (mounted) {
           setState(() {
             _hasError = true;
@@ -110,11 +104,7 @@ class _VideoBackgroundState extends State<VideoBackground> {
   void _handleUserInteraction() {
     if (!_userInteracted && _controller != null && _isInitialized) {
       _userInteracted = true;
-      _controller!.play().then((_) {
-        debugPrint('▶️ Video iniciado después de interacción del usuario');
-      }).catchError((e) {
-        debugPrint('❌ Error al reproducir video: $e');
-      });
+      _controller!.play().then((_) {}).catchError((e) {});
     }
   }
 
@@ -145,8 +135,8 @@ class _VideoBackgroundState extends State<VideoBackground> {
             ),
           ),
           // Video si está inicializado y funcionando
-          if (_isInitialized && 
-              _controller != null && 
+          if (_isInitialized &&
+              _controller != null &&
               _controller!.value.isInitialized &&
               !_hasError)
             Opacity(
@@ -155,11 +145,11 @@ class _VideoBackgroundState extends State<VideoBackground> {
                 child: FittedBox(
                   fit: widget.fit,
                   child: SizedBox(
-                    width: _controller!.value.size.width > 0 
-                        ? _controller!.value.size.width 
+                    width: _controller!.value.size.width > 0
+                        ? _controller!.value.size.width
                         : 1920,
-                    height: _controller!.value.size.height > 0 
-                        ? _controller!.value.size.height 
+                    height: _controller!.value.size.height > 0
+                        ? _controller!.value.size.height
                         : 1080,
                     child: VideoPlayer(_controller!),
                   ),
@@ -171,4 +161,3 @@ class _VideoBackgroundState extends State<VideoBackground> {
     );
   }
 }
-
