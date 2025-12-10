@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'route_names.dart';
 import '../core/splash/splash_screen.dart';
 import '../features/auth/screens/onboarding_screen.dart';
@@ -27,23 +28,33 @@ import '../features/events/screens/manage/orders_list_screen.dart';
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
-    
+
     switch (settings.name) {
       case RouteNames.splash:
         return CupertinoPageRoute(
           builder: (_) => const SplashScreen(),
         );
-      
+
       case RouteNames.onboarding:
         return CupertinoPageRoute(
           builder: (_) => const OnboardingScreen(),
         );
-      
+
       case RouteNames.phoneLogin:
-        return CupertinoPageRoute(
-          builder: (_) => const PhoneLoginScreen(),
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const PhoneLoginScreen(),
+          transitionDuration:
+              const Duration(milliseconds: 200), // Transición más rápida
+          reverseTransitionDuration: const Duration(milliseconds: 200),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
         );
-      
+
       case RouteNames.verifyOTP:
         if (args is Map) {
           final phoneOrEmail = args['phoneOrEmail'] as String? ?? '';
@@ -60,42 +71,52 @@ class AppRouter {
             builder: (_) => VerifyOTPScreen(phoneOrEmail: phoneOrEmail),
           );
         }
-      
+
       case RouteNames.emailLogin:
-        return CupertinoPageRoute(
-          builder: (_) => const EmailLoginScreen(),
+        return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const EmailLoginScreen(),
+          transitionDuration:
+              const Duration(milliseconds: 200), // Transición más rápida
+          reverseTransitionDuration: const Duration(milliseconds: 200),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
         );
-      
+
       case RouteNames.support:
         return CupertinoPageRoute(
           builder: (_) => const SupportScreen(),
         );
-      
+
       case RouteNames.explore:
         return CupertinoPageRoute(
           builder: (_) => const ExploreScreen(),
         );
-      
+
       case RouteNames.profile:
         return CupertinoPageRoute(
           builder: (_) => const ProfileScreen(),
         );
-      
+
       case RouteNames.settings:
         return CupertinoPageRoute(
           builder: (_) => const SettingsScreen(),
         );
-      
+
       case RouteNames.search:
         return CupertinoPageRoute(
           builder: (_) => const SearchScreen(),
         );
-      
+
       case RouteNames.activity:
         return CupertinoPageRoute(
           builder: (_) => const ActivityFeedScreen(),
         );
-      
+
       default:
         // Manejar rutas dinámicas como /event/:id
         if (settings.name != null && settings.name!.startsWith('/event/')) {
@@ -104,88 +125,92 @@ class AppRouter {
             builder: (_) => EventDetailScreen(eventId: eventId),
           );
         }
-        
+
         if (settings.name != null && settings.name!.startsWith('/community/')) {
-          final communityId = settings.name!.split('/community/')[1].split('/')[0];
+          final communityId =
+              settings.name!.split('/community/')[1].split('/')[0];
           return CupertinoPageRoute(
             builder: (_) => CommunityDetailScreen(communityId: communityId),
           );
         }
-        
+
         // Rutas estáticas adicionales
         if (settings.name == RouteNames.communities) {
           return CupertinoPageRoute(
             builder: (_) => const CommunitiesScreen(),
           );
         }
-        
+
         if (settings.name == RouteNames.friends) {
           return CupertinoPageRoute(
             builder: (_) => const FriendsScreen(),
           );
         }
-        
+
         if (settings.name == RouteNames.createEvent) {
           return CupertinoPageRoute(
             builder: (_) => const CreateEventScreen(),
           );
         }
-        
+
         if (settings.name == RouteNames.myEvents) {
           return CupertinoPageRoute(
             builder: (_) => const MyEventsScreen(),
           );
         }
-        
+
         // Rutas de administración de eventos
         if (settings.name != null && settings.name!.contains('/manage')) {
           final parts = settings.name!.split('/');
           final eventId = parts[2]; // /event/:id/manage/...
-          
+
           if (settings.name!.endsWith('/overview')) {
             return CupertinoPageRoute(
               builder: (_) => EventOverviewScreen(eventId: eventId),
             );
           }
-          
+
           if (settings.name!.endsWith('/edit')) {
             return CupertinoPageRoute(
               builder: (_) => EditEventScreen(eventId: eventId),
             );
           }
-          
+
           if (settings.name!.endsWith('/team')) {
             return CupertinoPageRoute(
               builder: (_) => EventTeamScreen(eventId: eventId),
             );
           }
-          
+
           if (settings.name!.endsWith('/tickets')) {
             return CupertinoPageRoute(
               builder: (_) => TicketsManagementScreen(eventId: eventId),
             );
           }
-          
+
           if (settings.name!.endsWith('/orders')) {
             return CupertinoPageRoute(
               builder: (_) => OrdersListScreen(eventId: eventId),
             );
           }
-          
+
           // Ruta por defecto de manage
           return CupertinoPageRoute(
             builder: (_) => ManageEventScreen(eventId: eventId),
           );
         }
-        
-        if (settings.name != null && settings.name!.startsWith('/event/') && settings.name!.contains('/tickets')) {
-          final eventId = settings.name!.split('/event/')[1].split('/tickets')[0];
+
+        if (settings.name != null &&
+            settings.name!.startsWith('/event/') &&
+            settings.name!.contains('/tickets')) {
+          final eventId =
+              settings.name!.split('/event/')[1].split('/tickets')[0];
           // TODO: Navegar a pantalla de compra de tickets
           return CupertinoPageRoute(
             builder: (_) => EventDetailScreen(eventId: eventId),
           );
         }
-        
+
         return CupertinoPageRoute(
           builder: (_) => CupertinoPageScaffold(
             navigationBar: const CupertinoNavigationBar(
@@ -199,4 +224,3 @@ class AppRouter {
     }
   }
 }
-

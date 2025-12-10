@@ -55,3 +55,14 @@ firebase_options.dart
 google-services.json
 GoogleService-Info.plist
 
+# Cursor IDE
+.cursor/
+
+# Video files (too large for git)
+*.mp4
+*.mov
+*.avi
+
+# Temporary files
+*.tmp
+*.temp

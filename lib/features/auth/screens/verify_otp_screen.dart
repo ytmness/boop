@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 import '../services/auth_service.dart';
@@ -7,6 +8,7 @@ import '../../../shared/components/glass/glass_container.dart';
 import '../../../core/branding/branding.dart';
 import '../../../routes/route_names.dart';
 import '../../../shared/widgets/error_dialog.dart';
+import '../../../shared/widgets/blurred_video_background.dart';
 
 class VerifyOTPScreen extends ConsumerStatefulWidget {
   final String phoneOrEmail;
@@ -137,79 +139,105 @@ class _VerifyOTPScreenState extends ConsumerState<VerifyOTPScreen> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
+      backgroundColor: Colors.transparent,
       navigationBar: const CupertinoNavigationBar(
         middle: Text('Verificar código'),
+        backgroundColor: Colors.transparent,
       ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 32),
-              const Text(
-                'Ingresa el código de verificación',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Enviamos un código a ${widget.phoneOrEmail}',
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: CupertinoColors.secondaryLabel,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 48),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(6, (index) {
-                  return SizedBox(
-                    width: 45,
-                    height: 55,
-                    child: GlassContainer(
-                      borderRadius: Branding.radiusLarge,
-                      padding: EdgeInsets.zero,
-                      child: CupertinoTextField(
-                        controller: _controllers[index],
-                        focusNode: _focusNodes[index],
-                        textAlign: TextAlign.center,
-                        keyboardType: TextInputType.number,
-                        maxLength: 1,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        decoration: const BoxDecoration(),
-                        onChanged: (value) => _onCodeChanged(index, value),
-                      ),
-                    ),
-                  );
-                }),
-              ),
-              const Spacer(),
-              PrimaryGlassButton(
-                text: 'Verificar',
-                onPressed: _verifyCode,
-                isLoading: _isLoading,
-              ),
-              const SizedBox(height: 16),
-              CupertinoButton(
-                padding: EdgeInsets.zero,
-                onPressed: _resendCode,
-                child: const Text(
-                  'Reenviar código',
+      child: BlurredVideoBackground(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 32),
+                const Text(
+                  'Ingresa el código de verificación',
                   style: TextStyle(
-                    color: CupertinoColors.systemBlue,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: CupertinoColors.white,
+                    shadows: [
+                      Shadow(
+                        color: CupertinoColors.black,
+                        blurRadius: 8,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Enviamos un código a ${widget.phoneOrEmail}',
+                  style: const TextStyle(
                     fontSize: 16,
+                    color: CupertinoColors.white,
+                    shadows: [
+                      Shadow(
+                        color: CupertinoColors.black,
+                        blurRadius: 6,
+                        offset: Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 48),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(6, (index) {
+                    return SizedBox(
+                      width: 45,
+                      height: 55,
+                      child: GlassContainer(
+                        borderRadius: Branding.radiusLarge,
+                        padding: EdgeInsets.zero,
+                        child: CupertinoTextField(
+                          controller: _controllers[index],
+                          focusNode: _focusNodes[index],
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          maxLength: 1,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          decoration: const BoxDecoration(),
+                          onChanged: (value) => _onCodeChanged(index, value),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+                const Spacer(),
+                PrimaryGlassButton(
+                  text: 'Verificar',
+                  onPressed: _verifyCode,
+                  isLoading: _isLoading,
+                ),
+                const SizedBox(height: 16),
+                CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: _resendCode,
+                  child: const Text(
+                    'Reenviar código',
+                    style: TextStyle(
+                      color: CupertinoColors.white,
+                      fontSize: 16,
+                      shadows: [
+                        Shadow(
+                          color: CupertinoColors.black,
+                          blurRadius: 6,
+                          offset: Offset(0, 1),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

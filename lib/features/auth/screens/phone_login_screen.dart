@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 import '../services/auth_service.dart';
@@ -8,6 +9,7 @@ import '../../../shared/components/glass/glass_container.dart';
 import '../../../core/branding/branding.dart';
 import '../../../routes/route_names.dart';
 import '../../../shared/widgets/error_dialog.dart';
+import '../../../shared/widgets/blurred_video_background.dart';
 
 class PhoneLoginScreen extends ConsumerStatefulWidget {
   const PhoneLoginScreen({super.key});
@@ -73,86 +75,113 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
+      backgroundColor: Colors.transparent,
       navigationBar: const CupertinoNavigationBar(
         middle: Text('Iniciar sesión'),
+        backgroundColor: Colors.transparent,
       ),
-      child: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 32),
-                const Text(
-                  'Ingresa tu número de teléfono',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+      child: BlurredVideoBackground(
+        child: SafeArea(
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 32),
+                  const Text(
+                    'Ingresa tu número de teléfono',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: CupertinoColors.white,
+                      shadows: [
+                        Shadow(
+                          color: CupertinoColors.black,
+                          blurRadius: 8,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Te enviaremos un código de verificación',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: CupertinoColors.secondaryLabel,
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Te enviaremos un código de verificación',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: CupertinoColors.white,
+                      shadows: [
+                        Shadow(
+                          color: CupertinoColors.black,
+                          blurRadius: 6,
+                          offset: Offset(0, 1),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 32),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      child: GlassContainer(
-                        borderRadius: Branding.radiusLarge,
-                        padding: EdgeInsets.zero,
-                        child: CupertinoTextField(
-                          placeholder: _countryCode,
-                          controller: TextEditingController(text: _countryCode),
-                          readOnly: true,
-                          textAlign: TextAlign.center,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 12,
+                  const SizedBox(height: 32),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 80,
+                        child: GlassContainer(
+                          borderRadius: Branding.radiusLarge,
+                          padding: EdgeInsets.zero,
+                          child: CupertinoTextField(
+                            placeholder: _countryCode,
+                            controller:
+                                TextEditingController(text: _countryCode),
+                            readOnly: true,
+                            textAlign: TextAlign.center,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
+                            decoration: const BoxDecoration(),
                           ),
-                          decoration: const BoxDecoration(),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: AuthTextField(
-                        controller: _phoneController,
-                        placeholder: 'Número de teléfono',
-                        keyboardType: TextInputType.phone,
-                        validator: _validatePhone,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: AuthTextField(
+                          controller: _phoneController,
+                          placeholder: 'Número de teléfono',
+                          keyboardType: TextInputType.phone,
+                          validator: _validatePhone,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  PrimaryGlassButton(
+                    text: 'Enviar código',
+                    onPressed: _sendOTP,
+                    isLoading: _isLoading,
+                  ),
+                  const SizedBox(height: 16),
+                  CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () {
+                      Navigator.pushNamed(context, RouteNames.support);
+                    },
+                    child: const Text(
+                      '¿Problemas con el código?',
+                      style: TextStyle(
+                        color: CupertinoColors.white,
+                        fontSize: 14,
+                        shadows: [
+                          Shadow(
+                            color: CupertinoColors.black,
+                            blurRadius: 6,
+                            offset: Offset(0, 1),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-                const Spacer(),
-                PrimaryGlassButton(
-                  text: 'Enviar código',
-                  onPressed: _sendOTP,
-                  isLoading: _isLoading,
-                ),
-                const SizedBox(height: 16),
-                CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () {
-                    Navigator.pushNamed(context, RouteNames.support);
-                  },
-                  child: const Text(
-                    '¿Problemas con el código?',
-                    style: TextStyle(
-                      color: CupertinoColors.secondaryLabel,
-                      fontSize: 14,
-                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

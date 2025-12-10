@@ -32,10 +32,19 @@
   <title>boop</title>
   <link rel="manifest" href="manifest.json">
   <style>
+    /* Resetear márgenes y padding del body y html */
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      overflow: hidden !important;
+    }
     /* Asegurar que el contenido de Flutter esté encima del video de YouTube */
     flt-scene-host {
       position: relative !important;
       z-index: 10 !important;
+      background: transparent !important;
     }
     flt-glass-pane {
       z-index: 11 !important;
@@ -44,8 +53,9 @@
       z-index: 12 !important;
     }
     /* El video de YouTube debe estar detrás pero visible */
-    [id^="youtube-bg-"] {
-      z-index: 1 !important;
+    [id^="youtube-bg-"],
+    [data-youtube-bg="true"] {
+      z-index: 0 !important;
       position: fixed !important;
       top: 0 !important;
       left: 0 !important;
@@ -58,18 +68,45 @@
       opacity: 1 !important;
       margin: 0 !important;
       padding: 0 !important;
+      pointer-events: none !important;
+      filter: blur(15px) !important;
+      -webkit-filter: blur(15px) !important;
+      background: transparent !important;
     }
-    [id^="youtube-bg-"] iframe {
+    [id^="youtube-bg-"] iframe,
+    [data-youtube-bg="true"] iframe {
       width: 100vw !important;
       height: 100vh !important;
       min-width: 100vw !important;
       min-height: 100vh !important;
+      max-width: none !important;
+      max-height: none !important;
       display: block !important;
       visibility: visible !important;
       opacity: 1 !important;
       border: none !important;
       margin: 0 !important;
       padding: 0 !important;
+      pointer-events: none !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      box-sizing: border-box !important;
+      object-fit: cover !important;
+      transform: scale(4.0) !important;
+      transform-origin: center center !important;
+      filter: blur(15px) !important;
+      -webkit-filter: blur(15px) !important;
+    }
+    /* Asegurar que el contenido interno del iframe también llene el espacio */
+    [id^="youtube-bg-"] iframe body,
+    [data-youtube-bg="true"] iframe body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
     }
   </style>
 </head>

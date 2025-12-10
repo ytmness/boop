@@ -21,8 +21,7 @@ class BoopLogo extends StatefulWidget {
 
 enum LogoSize { small, medium, large, icon }
 
-class _BoopLogoState extends State<BoopLogo>
-    with TickerProviderStateMixin {
+class _BoopLogoState extends State<BoopLogo> with TickerProviderStateMixin {
   late AnimationController _controller1;
   late AnimationController _controller2;
   late AnimationController _glowController;
@@ -36,19 +35,19 @@ class _BoopLogoState extends State<BoopLogo>
       duration: const Duration(seconds: 4),
       vsync: this,
     )..repeat();
-    
+
     // Segunda partícula: 5 segundos en dirección reversa
     _controller2 = AnimationController(
       duration: const Duration(seconds: 5),
       vsync: this,
     )..repeat();
-    
+
     // Animación de parpadeo suave para el glow (2.5 segundos ciclo)
     _glowController = AnimationController(
       duration: const Duration(milliseconds: 2500),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _glowAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(
       CurvedAnimation(
         parent: _glowController,
@@ -129,56 +128,69 @@ class _BoopLogoState extends State<BoopLogo>
         final iconWidth = widget.size == LogoSize.large ? 128.0 : 96.0;
         final spacing = widget.size == LogoSize.large ? 32.0 : 24.0;
         final availableWidth = constraints.maxWidth - iconWidth - spacing;
-        
+
+        // Si no hay suficiente espacio, mostrar solo el icono
+        if (constraints.maxWidth < iconWidth + spacing + 50) {
+          return Center(child: icon);
+        }
+
         return Row(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            icon,
+            Flexible(child: icon),
             SizedBox(width: spacing),
             // Texto con efecto neon glow eléctrico animado
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: availableWidth > 0 ? availableWidth : double.infinity,
-              ),
-              child: AnimatedBuilder(
-                animation: _glowAnimation,
-                builder: (context, child) {
-                  final glowValue = _glowAnimation.value;
-                  return Text(
-                    'boop',
-                    style: TextStyle(
-                      fontSize: _textSize,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.02,
-                      color: CupertinoColors.white,
-                      fontFamily: '-apple-system',
-                      shadows: [
-                        // Glow blanco brillante interno (animado)
-                        Shadow(
-                          color: CupertinoColors.white.withOpacity(1.0 * glowValue),
-                          blurRadius: 15 * glowValue,
-                        ),
-                        // Glow blanco medio (animado)
-                        Shadow(
-                          color: CupertinoColors.white.withOpacity(0.8 * glowValue),
-                          blurRadius: 30 * glowValue,
-                        ),
-                        // Glow blanco suave exterior (animado)
-                        Shadow(
-                          color: CupertinoColors.white.withOpacity(0.5 * glowValue),
-                          blurRadius: 50 * glowValue,
-                        ),
-                        // Glow blanco muy suave (animado)
-                        Shadow(
-                          color: CupertinoColors.white.withOpacity(0.3 * glowValue),
-                          blurRadius: 70 * glowValue,
-                        ),
-                      ],
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    softWrap: false,
-                  );
-                },
+            Flexible(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth:
+                      availableWidth > 0 ? availableWidth : double.infinity,
+                ),
+                child: AnimatedBuilder(
+                  animation: _glowAnimation,
+                  builder: (context, child) {
+                    final glowValue = _glowAnimation.value;
+                    return Text(
+                      'boop',
+                      style: TextStyle(
+                        fontSize: _textSize,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.02,
+                        color: CupertinoColors.white,
+                        fontFamily: '-apple-system',
+                        shadows: [
+                          // Glow blanco brillante interno (animado)
+                          Shadow(
+                            color: CupertinoColors.white
+                                .withOpacity(1.0 * glowValue),
+                            blurRadius: 15 * glowValue,
+                          ),
+                          // Glow blanco medio (animado)
+                          Shadow(
+                            color: CupertinoColors.white
+                                .withOpacity(0.8 * glowValue),
+                            blurRadius: 30 * glowValue,
+                          ),
+                          // Glow blanco suave exterior (animado)
+                          Shadow(
+                            color: CupertinoColors.white
+                                .withOpacity(0.5 * glowValue),
+                            blurRadius: 50 * glowValue,
+                          ),
+                          // Glow blanco muy suave (animado)
+                          Shadow(
+                            color: CupertinoColors.white
+                                .withOpacity(0.3 * glowValue),
+                            blurRadius: 70 * glowValue,
+                          ),
+                        ],
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                    );
+                  },
+                ),
               ),
             ),
           ],
@@ -190,7 +202,7 @@ class _BoopLogoState extends State<BoopLogo>
   Widget _buildIcon() {
     final iconSize = _iconSize;
     final particleSize = _particleSize;
-    
+
     return SizedBox(
       width: iconSize,
       height: iconSize,
@@ -240,21 +252,21 @@ class _BoopLogoState extends State<BoopLogo>
                 width: 2,
               ),
             ),
-              child: ClipOval(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        CupertinoColors.white.withOpacity(0.1),
-                        Colors.transparent,
-                        CupertinoColors.white.withOpacity(0.05),
-                      ],
-                    ),
+            child: ClipOval(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      CupertinoColors.white.withOpacity(0.1),
+                      Colors.transparent,
+                      CupertinoColors.white.withOpacity(0.05),
+                    ],
                   ),
                 ),
               ),
+            ),
           ),
 
           // Primera partícula (cyan) - rotación normal 4s, posición 3 o'clock
@@ -264,8 +276,10 @@ class _BoopLogoState extends State<BoopLogo>
               final angle = _controller1.value * 2 * math.pi;
               final baseOffset = Offset(iconSize / 2, 0); // 3 o'clock position
               final rotatedOffset = Offset(
-                baseOffset.dx * math.cos(angle) - baseOffset.dy * math.sin(angle),
-                baseOffset.dx * math.sin(angle) + baseOffset.dy * math.cos(angle),
+                baseOffset.dx * math.cos(angle) -
+                    baseOffset.dy * math.sin(angle),
+                baseOffset.dx * math.sin(angle) +
+                    baseOffset.dy * math.cos(angle),
               );
               return _buildParticle(
                 iconSize: iconSize,
@@ -281,10 +295,13 @@ class _BoopLogoState extends State<BoopLogo>
             animation: _controller2,
             builder: (context, child) {
               final angle = -_controller2.value * 2 * math.pi;
-              final baseOffset = Offset(-iconSize / 2 * 0.7, iconSize / 2 * 0.7); // 7 o'clock position
+              final baseOffset = Offset(-iconSize / 2 * 0.7,
+                  iconSize / 2 * 0.7); // 7 o'clock position
               final rotatedOffset = Offset(
-                baseOffset.dx * math.cos(angle) - baseOffset.dy * math.sin(angle),
-                baseOffset.dx * math.sin(angle) + baseOffset.dy * math.cos(angle),
+                baseOffset.dx * math.cos(angle) -
+                    baseOffset.dy * math.sin(angle),
+                baseOffset.dx * math.sin(angle) +
+                    baseOffset.dy * math.cos(angle),
               );
               return _buildParticle(
                 iconSize: iconSize,
