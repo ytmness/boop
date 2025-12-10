@@ -81,13 +81,23 @@ workflows:
       flutter: stable
       xcode: latest
       cocoapods: default
-      # ios_signing se puede agregar aquí cuando tengas credenciales configuradas
+      # Configuración de firma iOS (descomentar cuando tengas credenciales)
+      # Opción 1: Con certificados .p12 y provisioning profiles
+      # ios_signing:
+      #   distribution_type: app_store  # o 'ad_hoc' para distribución interna
+      #   bundle_identifier: com.boop.app
+      # Opción 2: Con App Store Connect API Key (más moderno)
       # ios_signing:
       #   distribution_type: app_store
       #   bundle_identifier: com.boop.app
+      #   app_store_connect_api_key:
+      #     key_id: YOUR_KEY_ID
+      #     issuer_id: YOUR_ISSUER_ID
+      #     key_file: path/to/AuthKey.p8
+      # Ver docs/IOS_SIGNING_SETUP.md para más detalles
       groups:
         - app_config
-        # - ios_credentials  # Descomentar cuando configures credenciales de iOS
+        # - ios_credentials  # Descomentar cuando configures credenciales de iOS en Codemagic
       vars:
         APP_ID: "com.boop.app"
         APP_NAME: "BOOP"
@@ -105,8 +115,14 @@ workflows:
       - name: Build iOS (sin firma)
         script: |
           flutter build ios --release --no-codesign
+      # Alternativa: Build con firma (descomentar cuando configures ios_signing arriba)
+      # - name: Build iOS IPA (con firma)
+      #   script: |
+      #     flutter build ipa --release
     artifacts:
       - build/ios/**/*.app
+      # Descomentar cuando uses firma para obtener el .ipa
+      # - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
       - flutter_drive.log
     publishing:
