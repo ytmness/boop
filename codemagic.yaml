@@ -112,17 +112,18 @@ workflows:
       - name: Install CocoaPods dependencies
         script: |
           cd ios && pod install
-      - name: Build iOS (sin firma)
+      - name: Build iOS IPA (sin firma para AltStore)
         script: |
-          flutter build ios --release --no-codesign
+          flutter build ipa --release --no-codesign
+          # El .ipa sin firmar se genera en build/ios/ipa/Runner.ipa
+          # Listo para usar con AltStore
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - build/ios/**/*.app
       # Alternativa: Build con firma (descomentar cuando configures ios_signing arriba)
       # - name: Build iOS IPA (con firma)
       #   script: |
       #     flutter build ipa --release
-    artifacts:
-      - build/ios/**/*.app
-      # Descomentar cuando uses firma para obtener el .ipa
-      # - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
       - flutter_drive.log
     publishing:

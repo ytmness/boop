@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Método de exportación: development para builds sin firma -->
+	<key>method</key>
+	<string>development</string>
+	
+	<!-- Estilo de firma: manual para evitar firma automática -->
+	<key>signingStyle</key>
+	<string>manual</string>
+	
+	<!-- Deshabilitar Bitcode (requerido para Flutter) -->
+	<key>compileBitcode</key>
+	<false/>
+	
+	<!-- No incluir símbolos (opcional, reduce tamaño) -->
+	<key>stripSwiftSymbols</key>
+	<true/>
+	
+	<!-- No incluir On Demand Resources -->
+	<key>onDemandResourcesAssetPacksBaseURL</key>
+	<string></string>
+	
+	<!-- No incluir símbolos de depuración -->
+	<key>uploadSymbols</key>
+	<false/>
+	
+	<!-- No incluir Bitcode -->
+	<key>uploadBitcode</key>
+	<false/>
+	
+	<!-- No incluir manifest para App Store -->
+	<key>manifest</key>
+	<dict/>
+</dict>
+</plist>
+
