@@ -115,8 +115,8 @@ workflows:
       - name: Build iOS IPA (sin firma para AltStore)
         script: |
           # Configurar Xcode para builds sin firma
-          # El project.pbxproj ya tiene CODE_SIGN_STYLE = Manual y DEVELOPMENT_TEAM = ""
-          # Esto evita el error de "Development Team required"
+          # El project.pbxproj tiene CODE_SIGN_STYLE = Manual y DEVELOPMENT_TEAM = "0000000000"
+          # El valor dummy "0000000000" satisface a Xcode en modo archive sin requerir firma real
           flutter build ipa --release --no-codesign
           # El .ipa sin firmar se genera en build/ios/ipa/Runner.ipa
           # Listo para usar con AltStore
