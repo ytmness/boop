@@ -67,7 +67,7 @@ class _BoopGlowIconState extends State<BoopGlowIcon>
       animation: _colorAnim,
       builder: (context, child) {
         final currentOpacity = _colorAnim.value?.opacity ?? 1.0;
-        
+
         return Container(
           width: widget.size,
           height: widget.size,
@@ -113,7 +113,7 @@ class _BoopGlowIconState extends State<BoopGlowIcon>
               filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
               child: Center(
                 child: Text(
-                  'boop',
+                  'BOOP',
                   style: TextStyle(
                     fontSize: widget.size * 0.28,
                     fontWeight: FontWeight.w700,
@@ -123,17 +123,20 @@ class _BoopGlowIconState extends State<BoopGlowIcon>
                     shadows: [
                       // Glow blanco brillante
                       Shadow(
-                        color: CupertinoColors.white.withOpacity(0.9 * currentOpacity),
+                        color: CupertinoColors.white
+                            .withOpacity(0.9 * currentOpacity),
                         blurRadius: 15,
                       ),
                       // Glow blanco medio
                       Shadow(
-                        color: CupertinoColors.white.withOpacity(0.7 * currentOpacity),
+                        color: CupertinoColors.white
+                            .withOpacity(0.7 * currentOpacity),
                         blurRadius: 25,
                       ),
                       // Glow exterior más suave
                       Shadow(
-                        color: CupertinoColors.white.withOpacity(0.5 * currentOpacity),
+                        color: CupertinoColors.white
+                            .withOpacity(0.5 * currentOpacity),
                         blurRadius: 40,
                       ),
                     ],
@@ -147,4 +150,3 @@ class _BoopGlowIconState extends State<BoopGlowIcon>
     );
   }
 }
-

@@ -5,7 +5,9 @@ import '../providers/auth_provider.dart';
 import '../services/auth_service.dart';
 import '../widgets/auth_text_field.dart';
 import '../../../shared/components/buttons/glass_button.dart';
+import '../../../shared/components/buttons/glass_back_button.dart';
 import '../../../shared/components/glass/glass_container.dart';
+import 'dart:ui';
 import '../../../core/branding/branding.dart';
 import '../../../routes/route_names.dart';
 import '../../../shared/widgets/error_dialog.dart';
@@ -76,9 +78,28 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       backgroundColor: Colors.transparent,
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Iniciar sesión'),
+      navigationBar: CupertinoNavigationBar(
+        middle: const Text(
+          'Iniciar sesión',
+          style: TextStyle(
+            color: CupertinoColors.white,
+            shadows: [
+              Shadow(
+                color: CupertinoColors.black,
+                blurRadius: 6,
+                offset: Offset(0, 1),
+              ),
+            ],
+          ),
+        ),
         backgroundColor: Colors.transparent,
+        border: null, // Sin borde para no limitar espacio
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8.0, top: 12.0),
+          child: GlassBackButton(
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
       ),
       child: BlurredVideoBackground(
         child: SafeArea(
@@ -89,7 +110,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 80),
                   const Text(
                     'Ingresa tu número de teléfono',
                     style: TextStyle(

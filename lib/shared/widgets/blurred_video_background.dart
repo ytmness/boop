@@ -12,7 +12,7 @@ class BlurredVideoBackground extends StatelessWidget {
   const BlurredVideoBackground({
     super.key,
     required this.child,
-    this.blurIntensity = 15.0,
+    this.blurIntensity = 8.0, // Reducido para ver más detalles del video
   });
 
   @override

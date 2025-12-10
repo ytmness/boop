@@ -77,8 +77,8 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
     _container!.style.minWidth = '${width}px';
     _container!.style.minHeight = '${height}px';
     // Asegurar que el blur se mantenga
-    _container!.style.setProperty('filter', 'blur(15px)', 'important');
-    _container!.style.setProperty('-webkit-filter', 'blur(15px)', 'important');
+    _container!.style.setProperty('filter', 'blur(8px)', 'important');
+    _container!.style.setProperty('-webkit-filter', 'blur(8px)', 'important');
 
     // Forzar tamaño del iframe usando píxeles y viewport units
     _iframe!.style.setProperty('width', '100vw', 'important');
@@ -99,8 +99,8 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
     _iframe!.style.maxWidth = '${width}px';
     _iframe!.style.maxHeight = '${height}px';
     // Asegurar que el blur se mantenga en el iframe
-    _iframe!.style.setProperty('filter', 'blur(15px)', 'important');
-    _iframe!.style.setProperty('-webkit-filter', 'blur(15px)', 'important');
+    _iframe!.style.setProperty('filter', 'blur(8px)', 'important');
+    _iframe!.style.setProperty('-webkit-filter', 'blur(8px)', 'important');
 
     // También establecer atributos directamente
     _iframe!.setAttribute('width', '$width');
@@ -169,8 +169,8 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
       ..style.margin = '0'
       ..style.padding = '0'
       ..style.filter =
-          'blur(15px)' // Blur muy suave para ver claramente las luces y colores
-      ..style.setProperty('-webkit-filter', 'blur(15px)')
+          'blur(8px)' // Blur muy suave para ver claramente las luces y colores
+      ..style.setProperty('-webkit-filter', 'blur(8px)')
       ..setAttribute('data-youtube-bg', 'true');
 
     // Obtener dimensiones reales para establecer atributos del iframe
@@ -208,8 +208,8 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
       ..style.boxSizing = 'border-box'
       ..style.overflow = 'hidden'
       ..style.filter =
-          'blur(15px)' // Blur muy suave aplicado directamente al iframe
-      ..style.setProperty('-webkit-filter', 'blur(15px)')
+          'blur(8px)' // Blur muy suave aplicado directamente al iframe
+      ..style.setProperty('-webkit-filter', 'blur(8px)')
       ..allowFullscreen = false
       ..allow = 'autoplay; encrypted-media'
       ..setAttribute('loading', 'eager'); // Cargar inmediatamente
@@ -261,9 +261,9 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
           container.style.setProperty('right', '0', 'important');
           container.style.setProperty('bottom', '0', 'important');
           // Aplicar blur muy suave directamente al contenedor del video
-          container.style.setProperty('filter', 'blur(15px)', 'important');
+          container.style.setProperty('filter', 'blur(8px)', 'important');
           container.style
-              .setProperty('-webkit-filter', 'blur(15px)', 'important');
+              .setProperty('-webkit-filter', 'blur(8px)', 'important');
 
           final iframeInContainer =
               container.querySelector('iframe') as html.IFrameElement?;
@@ -287,9 +287,9 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
             iframeInContainer.style.setProperty('bottom', '0', 'important');
             // Aplicar blur también al iframe directamente
             iframeInContainer.style
-                .setProperty('filter', 'blur(15px)', 'important');
+                .setProperty('filter', 'blur(8px)', 'important');
             iframeInContainer.style
-                .setProperty('-webkit-filter', 'blur(15px)', 'important');
+                .setProperty('-webkit-filter', 'blur(8px)', 'important');
             debugPrint('✅ Iframe encontrado y estilos aplicados');
           } else {
             debugPrint('❌ Iframe NO encontrado en contenedor');
@@ -315,9 +315,9 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
             container.style.width = '${width}px';
             container.style.height = '${height}px';
             // Asegurar que el blur se aplique
-            container.style.setProperty('filter', 'blur(15px)', 'important');
+            container.style.setProperty('filter', 'blur(8px)', 'important');
             container.style
-                .setProperty('-webkit-filter', 'blur(15px)', 'important');
+                .setProperty('-webkit-filter', 'blur(8px)', 'important');
 
             iframe.style.setProperty('width', '100vw', 'important');
             iframe.style.setProperty('height', '100vh', 'important');
@@ -329,9 +329,9 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
             iframe.setAttribute('width', '$width');
             iframe.setAttribute('height', '$height');
             // Asegurar que el blur se aplique al iframe también
-            iframe.style.setProperty('filter', 'blur(15px)', 'important');
+            iframe.style.setProperty('filter', 'blur(8px)', 'important');
             iframe.style
-                .setProperty('-webkit-filter', 'blur(15px)', 'important');
+                .setProperty('-webkit-filter', 'blur(8px)', 'important');
 
             debugPrint('🔧 Tamaño forzado: ${width}x${height}');
           }

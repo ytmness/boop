@@ -95,15 +95,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
             // Contenido principal de login
             SafeArea(
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: Branding.spacingXL),
+                padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width > 400
+                      ? Branding.spacingXL
+                      : Branding.spacingM,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Spacer(flex: 2),
 
                     // Logo BOOP con efecto Orbit (sin animación de entrada)
-                    Center(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: BoopLogo(
                         darkMode: true, // Mejor contraste sobre el video
                         size: LogoSize.large,

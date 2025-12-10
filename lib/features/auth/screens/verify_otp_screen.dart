@@ -9,6 +9,9 @@ import '../../../core/branding/branding.dart';
 import '../../../routes/route_names.dart';
 import '../../../shared/widgets/error_dialog.dart';
 import '../../../shared/widgets/blurred_video_background.dart';
+import '../../../shared/components/buttons/glass_back_button.dart';
+import '../../../shared/components/glass/glass_container.dart';
+import '../../../core/branding/branding.dart';
 
 class VerifyOTPScreen extends ConsumerStatefulWidget {
   final String phoneOrEmail;
@@ -140,9 +143,27 @@ class _VerifyOTPScreenState extends ConsumerState<VerifyOTPScreen> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       backgroundColor: Colors.transparent,
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Verificar código'),
+      navigationBar: CupertinoNavigationBar(
+        middle: const Text(
+          'Verificar código',
+          style: TextStyle(
+            color: CupertinoColors.white,
+            shadows: [
+              Shadow(
+                color: CupertinoColors.black,
+                blurRadius: 6,
+                offset: Offset(0, 1),
+              ),
+            ],
+          ),
+        ),
         backgroundColor: Colors.transparent,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+          child: GlassBackButton(
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
       ),
       child: BlurredVideoBackground(
         child: SafeArea(
@@ -151,7 +172,7 @@ class _VerifyOTPScreenState extends ConsumerState<VerifyOTPScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 32),
+                const SizedBox(height: 64),
                 const Text(
                   'Ingresa el código de verificación',
                   style: TextStyle(

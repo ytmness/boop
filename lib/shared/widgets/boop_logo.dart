@@ -127,69 +127,81 @@ class _BoopLogoState extends State<BoopLogo> with TickerProviderStateMixin {
         // Calcular el tamaño disponible para el texto
         final iconWidth = widget.size == LogoSize.large ? 128.0 : 96.0;
         final spacing = widget.size == LogoSize.large ? 32.0 : 24.0;
-        final availableWidth = constraints.maxWidth - iconWidth - spacing;
+        final textWidth =
+            _textSize * 2.5; // Aproximación del ancho del texto "BOOP"
+        final totalWidth = iconWidth + spacing + textWidth;
 
-        // Si no hay suficiente espacio, mostrar solo el icono
+        // Si no hay suficiente espacio, ajustar el tamaño o mostrar solo el icono
         if (constraints.maxWidth < iconWidth + spacing + 50) {
           return Center(child: icon);
         }
+
+        // Si el espacio es limitado, reducir el spacing
+        final adjustedSpacing =
+            constraints.maxWidth < totalWidth ? spacing * 0.5 : spacing;
 
         return Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Flexible(child: icon),
-            SizedBox(width: spacing),
+            Flexible(
+              flex: 0,
+              child: icon,
+            ),
+            SizedBox(width: adjustedSpacing),
             // Texto con efecto neon glow eléctrico animado
             Flexible(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth:
-                      availableWidth > 0 ? availableWidth : double.infinity,
-                ),
-                child: AnimatedBuilder(
-                  animation: _glowAnimation,
-                  builder: (context, child) {
-                    final glowValue = _glowAnimation.value;
-                    return Text(
-                      'boop',
-                      style: TextStyle(
-                        fontSize: _textSize,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.02,
-                        color: CupertinoColors.white,
-                        fontFamily: '-apple-system',
-                        shadows: [
-                          // Glow blanco brillante interno (animado)
-                          Shadow(
-                            color: CupertinoColors.white
-                                .withOpacity(1.0 * glowValue),
-                            blurRadius: 15 * glowValue,
-                          ),
-                          // Glow blanco medio (animado)
-                          Shadow(
-                            color: CupertinoColors.white
-                                .withOpacity(0.8 * glowValue),
-                            blurRadius: 30 * glowValue,
-                          ),
-                          // Glow blanco suave exterior (animado)
-                          Shadow(
-                            color: CupertinoColors.white
-                                .withOpacity(0.5 * glowValue),
-                            blurRadius: 50 * glowValue,
-                          ),
-                          // Glow blanco muy suave (animado)
-                          Shadow(
-                            color: CupertinoColors.white
-                                .withOpacity(0.3 * glowValue),
-                            blurRadius: 70 * glowValue,
-                          ),
-                        ],
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    );
-                  },
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth:
+                        constraints.maxWidth - iconWidth - adjustedSpacing,
+                  ),
+                  child: AnimatedBuilder(
+                    animation: _glowAnimation,
+                    builder: (context, child) {
+                      final glowValue = _glowAnimation.value;
+                      return Text(
+                        'BOOP',
+                        style: TextStyle(
+                          fontSize: _textSize,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.02,
+                          color: CupertinoColors.white,
+                          fontFamily: '-apple-system',
+                          shadows: [
+                            // Glow blanco brillante interno (animado)
+                            Shadow(
+                              color: CupertinoColors.white
+                                  .withOpacity(1.0 * glowValue),
+                              blurRadius: 15 * glowValue,
+                            ),
+                            // Glow blanco medio (animado)
+                            Shadow(
+                              color: CupertinoColors.white
+                                  .withOpacity(0.8 * glowValue),
+                              blurRadius: 30 * glowValue,
+                            ),
+                            // Glow blanco suave exterior (animado)
+                            Shadow(
+                              color: CupertinoColors.white
+                                  .withOpacity(0.5 * glowValue),
+                              blurRadius: 50 * glowValue,
+                            ),
+                            // Glow blanco muy suave (animado)
+                            Shadow(
+                              color: CupertinoColors.white
+                                  .withOpacity(0.3 * glowValue),
+                              blurRadius: 70 * glowValue,
+                            ),
+                          ],
+                        ),
+                        overflow: TextOverflow.visible,
+                        softWrap: false,
+                      );
+                    },
+                  ),
                 ),
               ),
             ),

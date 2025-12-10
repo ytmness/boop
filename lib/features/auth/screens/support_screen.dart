@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../shared/widgets/blurred_video_background.dart';
+import '../../../shared/components/buttons/glass_back_button.dart';
+import '../../../core/branding/branding.dart';
 
 class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
@@ -28,9 +30,27 @@ class SupportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       backgroundColor: Colors.transparent,
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Soporte'),
+      navigationBar: CupertinoNavigationBar(
+        middle: const Text(
+          'Soporte',
+          style: TextStyle(
+            color: CupertinoColors.white,
+            shadows: [
+              Shadow(
+                color: CupertinoColors.black,
+                blurRadius: 6,
+                offset: Offset(0, 1),
+              ),
+            ],
+          ),
+        ),
         backgroundColor: Colors.transparent,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+          child: GlassBackButton(
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
       ),
       child: BlurredVideoBackground(
         child: SafeArea(
@@ -39,7 +59,7 @@ class SupportScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 32),
+                const SizedBox(height: 64),
                 const Text(
                   '¿Necesitas ayuda?',
                   style: TextStyle(

@@ -9,6 +9,8 @@ import '../../../core/branding/branding.dart';
 import '../../../routes/route_names.dart';
 import '../../../shared/widgets/error_dialog.dart';
 import '../../../shared/widgets/blurred_video_background.dart';
+import '../../../shared/components/buttons/glass_back_button.dart';
+import '../../../core/branding/branding.dart';
 
 class EmailLoginScreen extends ConsumerStatefulWidget {
   const EmailLoginScreen({super.key});
@@ -71,9 +73,27 @@ class _EmailLoginScreenState extends ConsumerState<EmailLoginScreen> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       backgroundColor: Colors.transparent,
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Iniciar sesión con Email'),
+      navigationBar: CupertinoNavigationBar(
+        middle: const Text(
+          'Iniciar sesión con Email',
+          style: TextStyle(
+            color: CupertinoColors.white,
+            shadows: [
+              Shadow(
+                color: CupertinoColors.black,
+                blurRadius: 6,
+                offset: Offset(0, 1),
+              ),
+            ],
+          ),
+        ),
         backgroundColor: Colors.transparent,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+          child: GlassBackButton(
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
       ),
       child: BlurredVideoBackground(
         child: SafeArea(
@@ -84,7 +104,7 @@ class _EmailLoginScreenState extends ConsumerState<EmailLoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 64),
                   Text(
                     _codeSent
                         ? 'Revisa tu correo'
