@@ -1,29 +1,30 @@
 class RouteNames {
   // Splash
   static const String splash = '/splash';
-  
+
   // Auth Routes
   static const String onboarding = '/auth/start';
   static const String phoneLogin = '/auth/phone';
   static const String verifyOTP = '/auth/verify';
   static const String emailLogin = '/auth/email';
   static const String support = '/support';
-  
+
   // App Routes
   static const String explore = '/app/explore';
+  static const String eventsHub = '/app/events';
   static const String search = '/app/search';
   static const String activity = '/app/activity';
   static const String profile = '/app/profile';
   static const String settings = '/app/settings';
   static const String friends = '/app/friends';
   static const String communities = '/app/communities';
-  
+
   // Event Routes
   static const String createEvent = '/app/events/new';
   static const String myEvents = '/app/events/my';
   static const String eventDetail = '/event/:id';
   static const String ticketPurchase = '/event/:id/tickets';
-  
+
   // Event Management Routes
   static const String manageEvent = '/event/:id/manage';
   static const String eventOverview = '/event/:id/manage/overview';
@@ -34,18 +35,18 @@ class RouteNames {
   static const String promoCodes = '/event/:id/manage/promo-codes';
   static const String ticketScanner = '/event/:id/manage/scan';
   static const String advancedStats = '/event/:id/manage/stats';
-  
+
   // Community Routes
   static const String communityDetail = '/community/:id';
   static const String manageCommunity = '/community/:id/admin';
-  
+
   // User Routes
   static const String userProfile = '/user/:id';
-  
+
   // Ticket Routes
   static const String myTickets = '/app/tickets/my';
   static const String ticketDetail = '/ticket/:id';
-  
+
   // Helper methods
   static String eventDetailPath(String id) => '/event/$id';
   static String ticketPurchasePath(String id) => '/event/$id/tickets';
@@ -63,4 +64,3 @@ class RouteNames {
   static String userProfilePath(String id) => '/user/$id';
   static String ticketDetailPath(String id) => '/ticket/$id';
 }
-

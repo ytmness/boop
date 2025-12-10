@@ -92,7 +92,7 @@ class _VerifyOTPScreenState extends ConsumerState<VerifyOTPScreen> {
         // Navegar a la pantalla principal
         Navigator.pushNamedAndRemoveUntil(
           context,
-          RouteNames.explore,
+          RouteNames.eventsHub,
           (route) => false,
         );
       }

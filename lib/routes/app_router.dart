@@ -13,6 +13,7 @@ import '../features/profile/screens/settings_screen.dart';
 import '../features/explore/screens/search_screen.dart';
 import '../features/explore/screens/activity_feed_screen.dart';
 import '../features/events/screens/event_detail_screen.dart';
+import '../features/events/screens/events_hub_screen.dart';
 import '../features/communities/screens/communities_screen.dart';
 import '../features/communities/screens/community_detail_screen.dart';
 import '../features/friends/screens/friends_screen.dart';
@@ -95,6 +96,11 @@ class AppRouter {
       case RouteNames.explore:
         return CupertinoPageRoute(
           builder: (_) => const ExploreScreen(),
+        );
+
+      case RouteNames.eventsHub:
+        return CupertinoPageRoute(
+          builder: (_) => const EventsHubScreen(),
         );
 
       case RouteNames.profile:

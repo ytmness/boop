@@ -46,7 +46,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final user = ref.read(currentUserProvider);
 
     if (mounted) {
-      final route = user != null ? RouteNames.explore : RouteNames.onboarding;
+      final route = user != null ? RouteNames.eventsHub : RouteNames.onboarding;
       Navigator.pushReplacementNamed(
         context,
         route,

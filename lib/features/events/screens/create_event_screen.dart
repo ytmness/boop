@@ -1,12 +1,19 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:ui';
 import '../providers/event_management_provider.dart';
 import '../../profile/services/storage_service.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/error_dialog.dart';
+import '../../../shared/components/inputs/glass_text_field.dart';
+import '../../../shared/components/glass/glass_container.dart';
+import '../../../shared/widgets/blurred_video_background.dart';
+import '../../../core/branding/branding.dart';
 import '../../../routes/route_names.dart';
+import 'package:intl/intl.dart';
 
 class CreateEventScreen extends ConsumerStatefulWidget {
   const CreateEventScreen({super.key});
@@ -54,7 +61,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   Future<void> _selectStartTime() async {
-    final picked = await showCupertinoModalPopup<DateTime>(
+    await showCupertinoModalPopup<DateTime>(
       context: context,
       builder: (context) => Container(
         height: 216,
@@ -70,7 +77,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             mode: CupertinoDatePickerMode.dateAndTime,
             minimumDate: DateTime.now(),
             onDateTimeChanged: (DateTime newDate) {
-              _startTime = newDate;
+              setState(() {
+                _startTime = newDate;
+              });
             },
           ),
         ),
@@ -130,7 +139,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         Navigator.pushNamedAndRemoveUntil(
           context,
           RouteNames.manageEventPath(event.id),
-          (route) => route.settings.name == RouteNames.explore,
+          (route) => route.settings.name == RouteNames.eventsHub,
         );
       }
     } catch (e) {
@@ -150,186 +159,275 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = CupertinoTheme.brightnessOf(context) == Brightness.dark;
+    final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
+
     return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: const Text('Crear evento'),
-        trailing: _isLoading
-            ? const CupertinoActivityIndicator()
-            : CupertinoButton(
-                padding: EdgeInsets.zero,
-                onPressed: _saveEvent,
-                child: const Text(
-                  'Guardar',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ),
-      ),
-      child: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: Colors.transparent,
+      child: BlurredVideoBackground(
+        child: SafeArea(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                // Header glass
+                GlassContainer(
+                  borderRadius: 0,
+                  margin: EdgeInsets.zero,
+                  padding: const EdgeInsets.fromLTRB(
+                    Branding.spacingM,
+                    Branding.spacingM,
+                    Branding.spacingM,
+                    Branding.spacingM,
+                  ),
+                  child: Row(
                     children: [
                       GestureDetector(
-                        onTap: _pickImage,
+                        onTap: () => Navigator.pop(context),
                         child: Container(
-                          height: 200,
-                          width: double.infinity,
+                          width: 40,
+                          height: 40,
                           decoration: BoxDecoration(
-                            color: CupertinoColors.secondarySystemBackground,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: _selectedImage != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.file(
-                                    _selectedImage!,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : const Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      CupertinoIcons.camera,
-                                      size: 50,
-                                      color: CupertinoColors.secondaryLabel,
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text('Toca para agregar imagen'),
-                                  ],
-                                ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      CupertinoTextField(
-                        controller: _titleController,
-                        placeholder: 'Título del evento *',
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: CupertinoColors.secondarySystemBackground,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: CupertinoColors.separator,
-                            width: 0.5,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      CupertinoTextField(
-                        controller: _descriptionController,
-                        placeholder: 'Descripción',
-                        maxLines: 5,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: CupertinoColors.secondarySystemBackground,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: CupertinoColors.separator,
-                            width: 0.5,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: _selectStartTime,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: CupertinoColors.secondarySystemBackground,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: CupertinoColors.separator,
-                              width: 0.5,
+                            borderRadius: BorderRadius.circular(
+                              Branding.radiusSmall,
                             ),
+                            color: isDark
+                                ? CupertinoColors.white.withOpacity(0.1)
+                                : CupertinoColors.black.withOpacity(0.05),
                           ),
-                          child: Row(
-                            children: [
-                              const Icon(CupertinoIcons.calendar),
-                              const SizedBox(width: 12),
-                              Expanded(
+                          child: Icon(
+                            CupertinoIcons.chevron_left,
+                            color: isDark
+                                ? CupertinoColors.white
+                                : CupertinoColors.black,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: Branding.spacingM),
+                      Expanded(
+                        child: Text(
+                          'Crear evento',
+                          style: TextStyle(
+                            fontSize: Branding.fontSizeTitle2,
+                            fontWeight: Branding.weightBold,
+                            color: isDark
+                                ? CupertinoColors.white
+                                : CupertinoColors.black,
+                          ),
+                        ),
+                      ),
+                      _isLoading
+                          ? const CupertinoActivityIndicator()
+                          : GestureDetector(
+                              onTap: _saveEvent,
+                              child: GlassContainer(
+                                borderRadius: Branding.radiusMedium,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: Branding.spacingM,
+                                  vertical: Branding.spacingS,
+                                ),
+                                backgroundColor: Branding.primaryPurple
+                                    .withOpacity(isDark ? 0.3 : 0.2),
                                 child: Text(
-                                  _startTime != null
-                                      ? '${_startTime!.day}/${_startTime!.month}/${_startTime!.year} ${_startTime!.hour}:${_startTime!.minute.toString().padLeft(2, '0')}'
-                                      : 'Fecha y hora de inicio *',
+                                  'Guardar',
                                   style: TextStyle(
-                                    color: _startTime != null
-                                        ? CupertinoColors.label
-                                        : CupertinoColors.placeholderText,
+                                    fontSize: Branding.fontSizeHeadline,
+                                    fontWeight: Branding.weightSemibold,
+                                    color: Branding.primaryPurple,
                                   ),
                                 ),
                               ),
+                            ),
+                    ],
+                  ),
+                ),
+                // Contenido del formulario
+                Expanded(
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverPadding(
+                        padding: const EdgeInsets.all(Branding.spacingM),
+                        sliver: SliverToBoxAdapter(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Selector de imagen glass
+                              GestureDetector(
+                                onTap: _pickImage,
+                                child: GlassContainer(
+                                  height: 220,
+                                  borderRadius: Branding.radiusLarge,
+                                  padding: EdgeInsets.zero,
+                                  child: _selectedImage != null
+                                      ? ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            Branding.radiusLarge,
+                                          ),
+                                          child: Image.file(
+                                            _selectedImage!,
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            height: 220,
+                                          ),
+                                        )
+                                      : Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              CupertinoIcons.camera_fill,
+                                              size: 60,
+                                              color: isDark
+                                                  ? CupertinoColors.white
+                                                      .withOpacity(0.5)
+                                                  : CupertinoColors.black
+                                                      .withOpacity(0.4),
+                                            ),
+                                            const SizedBox(
+                                              height: Branding.spacingS,
+                                            ),
+                                            Text(
+                                              'Toca para agregar imagen',
+                                              style: TextStyle(
+                                                fontSize:
+                                                    Branding.fontSizeSubhead,
+                                                color: isDark
+                                                    ? CupertinoColors.white
+                                                        .withOpacity(0.6)
+                                                    : CupertinoColors.black
+                                                        .withOpacity(0.5),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                ),
+                              ),
+                              const SizedBox(height: Branding.spacingL),
+                              // Título
+                              GlassTextField(
+                                controller: _titleController,
+                                placeholder: 'Título del evento *',
+                                prefix: Icon(
+                                  CupertinoIcons.textformat,
+                                  color: isDark
+                                      ? CupertinoColors.white.withOpacity(0.6)
+                                      : CupertinoColors.black.withOpacity(0.5),
+                                ),
+                              ),
+                              const SizedBox(height: Branding.spacingM),
+                              // Descripción
+                              GlassTextField(
+                                controller: _descriptionController,
+                                placeholder: 'Descripción',
+                                maxLines: 5,
+                                minLines: 3,
+                                prefix: Icon(
+                                  CupertinoIcons.text_alignleft,
+                                  color: isDark
+                                      ? CupertinoColors.white.withOpacity(0.6)
+                                      : CupertinoColors.black.withOpacity(0.5),
+                                ),
+                              ),
+                              const SizedBox(height: Branding.spacingM),
+                              // Fecha y hora
+                              GestureDetector(
+                                onTap: _selectStartTime,
+                                child: GlassTextField(
+                                  controller: null,
+                                  placeholder: 'Fecha y hora de inicio *',
+                                  enabled: false,
+                                  prefix: Icon(
+                                    CupertinoIcons.calendar,
+                                    color: isDark
+                                        ? CupertinoColors.white.withOpacity(0.6)
+                                        : CupertinoColors.black
+                                            .withOpacity(0.5),
+                                  ),
+                                  suffix: _startTime != null
+                                      ? Text(
+                                          dateFormat.format(_startTime!),
+                                          style: TextStyle(
+                                            fontSize: Branding.fontSizeSubhead,
+                                            color: Branding.primaryPurple,
+                                            fontWeight: Branding.weightMedium,
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                              ),
+                              const SizedBox(height: Branding.spacingM),
+                              // Ciudad
+                              GlassTextField(
+                                controller: _cityController,
+                                placeholder: 'Ciudad',
+                                prefix: Icon(
+                                  CupertinoIcons.location,
+                                  color: isDark
+                                      ? CupertinoColors.white.withOpacity(0.6)
+                                      : CupertinoColors.black.withOpacity(0.5),
+                                ),
+                              ),
+                              const SizedBox(height: Branding.spacingM),
+                              // Dirección
+                              GlassTextField(
+                                controller: _addressController,
+                                placeholder: 'Dirección',
+                                prefix: Icon(
+                                  CupertinoIcons.map_pin,
+                                  color: isDark
+                                      ? CupertinoColors.white.withOpacity(0.6)
+                                      : CupertinoColors.black.withOpacity(0.5),
+                                ),
+                              ),
+                              const SizedBox(height: Branding.spacingL),
+                              // Switch público
+                              GlassContainer(
+                                borderRadius: Branding.radiusMedium,
+                                padding:
+                                    const EdgeInsets.all(Branding.spacingM),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      CupertinoIcons.globe,
+                                      color: isDark
+                                          ? CupertinoColors.white
+                                              .withOpacity(0.8)
+                                          : CupertinoColors.black
+                                              .withOpacity(0.7),
+                                    ),
+                                    const SizedBox(width: Branding.spacingM),
+                                    Expanded(
+                                      child: Text(
+                                        'Evento público',
+                                        style: TextStyle(
+                                          fontSize: Branding.fontSizeBody,
+                                          fontWeight: Branding.weightMedium,
+                                          color: isDark
+                                              ? CupertinoColors.white
+                                              : CupertinoColors.black,
+                                        ),
+                                      ),
+                                    ),
+                                    CupertinoSwitch(
+                                      value: _isPublic,
+                                      onChanged: (value) {
+                                        setState(() => _isPublic = value);
+                                      },
+                                      activeColor: Branding.primaryPurple,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: Branding.spacingXL),
                             ],
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      CupertinoTextField(
-                        controller: _cityController,
-                        placeholder: 'Ciudad',
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: CupertinoColors.secondarySystemBackground,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: CupertinoColors.separator,
-                            width: 0.5,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      CupertinoTextField(
-                        controller: _addressController,
-                        placeholder: 'Dirección',
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: CupertinoColors.secondarySystemBackground,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: CupertinoColors.separator,
-                            width: 0.5,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        children: [
-                          const Text('Evento público'),
-                          const Spacer(),
-                          CupertinoSwitch(
-                            value: _isPublic,
-                            onChanged: (value) {
-                              setState(() => _isPublic = value);
-                            },
-                          ),
-                        ],
-                      ),
                     ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
