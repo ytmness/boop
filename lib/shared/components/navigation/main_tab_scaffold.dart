@@ -16,7 +16,6 @@ import '../../../features/events/providers/event_management_provider.dart';
 import '../../../features/profile/services/storage_service.dart';
 import '../../../shared/components/inputs/glass_text_field.dart';
 import '../../../shared/components/glass/glass_container.dart';
-import '../../../shared/widgets/error_dialog.dart';
 import '../../../core/branding/branding.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -503,48 +502,107 @@ class _CreateEventContentState extends ConsumerState<CreateEventContent> {
   }
 
   Future<void> _saveEvent() async {
-    if (!_formKey.currentState!.validate()) return;
-    if (_startTime == null) {
-      ErrorDialog.show(
-        context,
-        title: 'Error',
-        message: 'Por favor selecciona una fecha y hora de inicio',
-      );
+    // Prevenir doble envío
+    if (_isLoading) return;
+
+    // Validar formulario
+    if (!_formKey.currentState!.validate()) {
+      _showValidationError('Por favor completa todos los campos requeridos.');
       return;
     }
 
+    // Validar título
+    final title = _titleController.text.trim();
+    if (title.isEmpty) {
+      _showValidationError('Por favor ingresa un título para el evento.');
+      return;
+    }
+
+    // Validar fecha de inicio
+    if (_startTime == null) {
+      _showValidationError('Por favor selecciona una fecha y hora de inicio.');
+      return;
+    }
+
+    // Validar que la fecha de inicio sea futura
+    if (_startTime!.isBefore(DateTime.now())) {
+      _showValidationError('La fecha y hora de inicio debe ser en el futuro.');
+      return;
+    }
+
+    // Validar fecha de fin si está definida
+    if (_endTime != null && _endTime!.isBefore(_startTime!)) {
+      _showValidationError(
+          'La fecha de fin debe ser posterior a la fecha de inicio.');
+      return;
+    }
+
+    // Todo validado, proceder con el guardado
     setState(() => _isLoading = true);
 
     try {
       final user = ref.read(currentUserProvider);
       if (user == null) {
-        throw Exception('Usuario no autenticado');
+        _showValidationError(
+            'Usuario no autenticado. Por favor inicia sesión.');
+        return;
+      }
+
+      // Verificar que el usuario tenga un perfil (requerido por la foreign key)
+      final profileService = ref.read(profileServiceProvider);
+      final profile = await profileService.getProfile(user.id);
+      if (profile == null) {
+        // Intentar crear el perfil si no existe
+        try {
+          final authService = ref.read(authServiceProvider);
+          await authService
+              .getCurrentUserProfile(); // Esto crea el perfil si no existe
+        } catch (e) {
+          _showValidationError(
+            'Error al crear tu perfil. Por favor contacta al soporte.',
+          );
+          return;
+        }
       }
 
       final storageService = StorageService();
       String? imageUrl;
 
+      // Subir imagen solo si existe (protegido con null check)
       if (_selectedImage != null) {
-        final tempEventId = DateTime.now().millisecondsSinceEpoch.toString();
-        imageUrl =
-            await storageService.uploadEventImage(tempEventId, _selectedImage!);
+        try {
+          final tempEventId = DateTime.now().millisecondsSinceEpoch.toString();
+          imageUrl = await storageService.uploadEventImage(
+            tempEventId,
+            _selectedImage!,
+          );
+        } catch (e) {
+          // Si falla la subida de imagen, continuar sin imagen
+          if (mounted) {
+            _showValidationError(
+              'No se pudo subir la imagen. El evento se creará sin imagen.',
+            );
+          }
+        }
       }
 
       final eventService = ref.read(eventManagementServiceProvider);
+
+      // Usar valores validados (todos protegidos con null checks)
       final event = await eventService.createEvent(
-        title: _titleController.text.trim(),
+        title: title, // Ya validado arriba
         description: _descriptionController.text.trim().isEmpty
             ? null
             : _descriptionController.text.trim(),
-        startTime: _startTime!,
-        endTime: _endTime,
+        startTime: _startTime!, // Ya validado arriba
+        endTime: _endTime, // Puede ser null
         city: _cityController.text.trim().isEmpty
             ? null
             : _cityController.text.trim(),
         address: _addressController.text.trim().isEmpty
             ? null
             : _addressController.text.trim(),
-        imageUrl: imageUrl,
+        imageUrl: imageUrl, // Puede ser null
         createdBy: user.id,
         isPublic: _isPublic,
       );
@@ -568,17 +626,50 @@ class _CreateEventContentState extends ConsumerState<CreateEventContent> {
       }
     } catch (e) {
       if (mounted) {
-        ErrorDialog.show(
-          context,
-          title: 'Error',
-          message: e.toString(),
-        );
+        // Mostrar mensaje de error más descriptivo
+        String errorMessage = 'Error al crear el evento.';
+
+        final errorString = e.toString().toLowerCase();
+        if (errorString.contains('permission') ||
+            errorString.contains('policy')) {
+          errorMessage =
+              'No tienes permisos para crear eventos. Verifica que tengas un perfil creado.';
+        } else if (errorString.contains('foreign key') ||
+            errorString.contains('profiles')) {
+          errorMessage =
+              'Tu perfil no está completo. Por favor completa tu perfil primero.';
+        } else if (errorString.contains('null') ||
+            errorString.contains('required')) {
+          errorMessage =
+              'Faltan campos requeridos. Por favor completa todos los campos marcados con *.';
+        } else {
+          errorMessage = 'Error al crear el evento: ${e.toString()}';
+        }
+
+        _showValidationError(errorMessage);
       }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  void _showValidationError(String message) {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('Campos incompletos'),
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Entendido'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -620,21 +711,26 @@ class _CreateEventContentState extends ConsumerState<CreateEventContent> {
                   _isLoading
                       ? const CupertinoActivityIndicator()
                       : GestureDetector(
-                          onTap: _saveEvent,
-                          child: GlassContainer(
-                            borderRadius: Branding.radiusMedium,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: Branding.spacingM,
-                              vertical: Branding.spacingS,
-                            ),
-                            backgroundColor: Branding.primaryPurple
-                                .withOpacity(isDark ? 0.3 : 0.2),
-                            child: Text(
-                              'Guardar',
-                              style: TextStyle(
-                                fontSize: Branding.fontSizeHeadline,
-                                fontWeight: Branding.weightSemibold,
-                                color: Branding.primaryPurple,
+                          onTap: _isLoading
+                              ? null
+                              : _saveEvent, // Prevenir doble envío
+                          child: Opacity(
+                            opacity: _isLoading ? 0.5 : 1.0, // Feedback visual
+                            child: GlassContainer(
+                              borderRadius: Branding.radiusMedium,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: Branding.spacingM,
+                                vertical: Branding.spacingS,
+                              ),
+                              backgroundColor: Branding.primaryPurple
+                                  .withOpacity(isDark ? 0.3 : 0.2),
+                              child: Text(
+                                'Guardar',
+                                style: TextStyle(
+                                  fontSize: Branding.fontSizeHeadline,
+                                  fontWeight: Branding.weightSemibold,
+                                  color: Branding.primaryPurple,
+                                ),
                               ),
                             ),
                           ),
@@ -707,6 +803,12 @@ class _CreateEventContentState extends ConsumerState<CreateEventContent> {
                   GlassTextField(
                     controller: _titleController,
                     placeholder: 'Título del evento *',
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'El título es requerido';
+                      }
+                      return null;
+                    },
                     prefix: Icon(
                       CupertinoIcons.textformat,
                       color: isDark

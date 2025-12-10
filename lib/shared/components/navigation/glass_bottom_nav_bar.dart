@@ -316,9 +316,12 @@ class _GlassBottomNavBarState extends State<GlassBottomNavBar>
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                darkBackground.withOpacity(0.5 + glassOpacity),
-                                Colors.black.withOpacity(0.4 + glassOpacity),
-                                darkBackground.withOpacity(0.3 + glassOpacity),
+                                darkBackground.withOpacity(
+                                    (0.5 + glassOpacity).clamp(0.0, 1.0)),
+                                Colors.black.withOpacity(
+                                    (0.4 + glassOpacity).clamp(0.0, 1.0)),
+                                darkBackground.withOpacity(
+                                    (0.3 + glassOpacity).clamp(0.0, 1.0)),
                               ],
                               stops: const [0.0, 0.5, 1.0],
                             )
@@ -326,38 +329,41 @@ class _GlassBottomNavBarState extends State<GlassBottomNavBar>
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                darkBackground.withOpacity(0.2 + glassOpacity),
-                                Colors.black.withOpacity(0.15 + glassOpacity),
+                                darkBackground.withOpacity(
+                                    (0.2 + glassOpacity).clamp(0.0, 1.0)),
+                                Colors.black.withOpacity(
+                                    (0.15 + glassOpacity).clamp(0.0, 1.0)),
                               ],
                             ),
                       border: Border.all(
-                        color: CupertinoColors.white.withOpacity(isSelected
-                            ? 0.25 + glassOpacity
-                            : 0.1 + glassOpacity),
+                        color: CupertinoColors.white.withOpacity((isSelected
+                                ? 0.25 + glassOpacity
+                                : 0.1 + glassOpacity)
+                            .clamp(0.0, 1.0)),
                         width: isSelected ? 1.5 : 0.5,
                       ),
                       boxShadow: isSelected
                           ? [
                               // Glow principal cuando está seleccionado
                               BoxShadow(
-                                color: darkBackground
-                                    .withOpacity(0.5 + glassOpacity),
+                                color: darkBackground.withOpacity(
+                                    (0.5 + glassOpacity).clamp(0.0, 1.0)),
                                 blurRadius: 16,
                                 spreadRadius: -2,
                                 offset: const Offset(0, 4),
                               ),
                               // Glow blanco suave adicional
                               BoxShadow(
-                                color: CupertinoColors.white
-                                    .withOpacity(0.15 + glassOpacity),
+                                color: CupertinoColors.white.withOpacity(
+                                    (0.15 + glassOpacity).clamp(0.0, 1.0)),
                                 blurRadius: 12,
                                 spreadRadius: -1,
                                 offset: const Offset(0, -2),
                               ),
                               // Glow exterior para profundidad
                               BoxShadow(
-                                color: darkBackground
-                                    .withOpacity(0.3 + glassOpacity),
+                                color: darkBackground.withOpacity(
+                                    (0.3 + glassOpacity).clamp(0.0, 1.0)),
                                 blurRadius: 24,
                                 spreadRadius: -4,
                                 offset: const Offset(0, 8),
@@ -482,22 +488,26 @@ class _GlassBottomNavBarState extends State<GlassBottomNavBar>
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      darkBackground.withOpacity(0.7 + glassOpacity),
-                      Colors.black.withOpacity(0.6 + glassOpacity),
-                      darkBackground.withOpacity(0.5 + glassOpacity),
+                      darkBackground
+                          .withOpacity((0.7 + glassOpacity).clamp(0.0, 1.0)),
+                      Colors.black
+                          .withOpacity((0.6 + glassOpacity).clamp(0.0, 1.0)),
+                      darkBackground
+                          .withOpacity((0.5 + glassOpacity).clamp(0.0, 1.0)),
                     ],
                     stops: const [0.0, 0.5, 1.0],
                   ),
                   border: Border.all(
                     color: CupertinoColors.white.withOpacity(
-                        0.2 + glassOpacity + (glowIntensity * 0.1)),
+                        (0.2 + glassOpacity + (glowIntensity * 0.1))
+                            .clamp(0.0, 1.0)),
                     width: 1.5,
                   ),
                   boxShadow: [
                     // Glow pulsante principal con azul oscuro
                     BoxShadow(
-                      color: darkBackground
-                          .withOpacity(baseGlowOpacity + glassOpacity),
+                      color: darkBackground.withOpacity(
+                          (baseGlowOpacity + glassOpacity).clamp(0.0, 1.0)),
                       blurRadius: 25 + (glowIntensity * 10),
                       spreadRadius: -5 + (glowIntensity * 2),
                       offset: const Offset(0, 10),
@@ -505,7 +515,8 @@ class _GlassBottomNavBarState extends State<GlassBottomNavBar>
                     // Glow blanco suave pulsante alrededor
                     BoxShadow(
                       color: CupertinoColors.white.withOpacity(
-                          0.15 + glassOpacity + (glowIntensity * 0.1)),
+                          (0.15 + glassOpacity + (glowIntensity * 0.1))
+                              .clamp(0.0, 1.0)),
                       blurRadius: 20 + (glowIntensity * 8),
                       spreadRadius: -3 + (glowIntensity * 1),
                       offset: const Offset(0, -3),
@@ -513,7 +524,8 @@ class _GlassBottomNavBarState extends State<GlassBottomNavBar>
                     // Glow adicional para profundidad
                     BoxShadow(
                       color: darkBackground.withOpacity(
-                          0.4 + glassOpacity + (glowIntensity * 0.15)),
+                          (0.4 + glassOpacity + (glowIntensity * 0.15))
+                              .clamp(0.0, 1.0)),
                       blurRadius: 35 + (glowIntensity * 15),
                       spreadRadius: -8 + (glowIntensity * 3),
                       offset: const Offset(0, 15),
@@ -533,8 +545,8 @@ class _GlassBottomNavBarState extends State<GlassBottomNavBar>
                           center: Alignment.center,
                           radius: 1.0,
                           colors: [
-                            CupertinoColors.white
-                                .withOpacity(0.1 + glassOpacity),
+                            CupertinoColors.white.withOpacity(
+                                (0.1 + glassOpacity).clamp(0.0, 1.0)),
                             Colors.transparent,
                           ],
                         ),
@@ -547,8 +559,9 @@ class _GlassBottomNavBarState extends State<GlassBottomNavBar>
                             size: isSelected
                                 ? 28
                                 : 24, // Mismo tamaño que los otros
-                            color: CupertinoColors.white
-                                .withOpacity(0.95 + (glowIntensity * 0.05)),
+                            color: CupertinoColors.white.withOpacity(
+                                (0.95 + (glowIntensity * 0.05))
+                                    .clamp(0.0, 1.0)),
                           ),
                         ),
                       ),
