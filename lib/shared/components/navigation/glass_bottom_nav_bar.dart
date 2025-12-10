@@ -117,43 +117,52 @@ class _GlassBottomNavBarState extends State<GlassBottomNavBar>
     final isDark = CupertinoTheme.brightnessOf(context) == Brightness.dark;
 
     return Container(
-      height: 80 + MediaQuery.of(context).padding.bottom,
+      height: 85 + MediaQuery.of(context).padding.bottom,
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: CupertinoColors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
+            color: CupertinoColors.black.withOpacity(0.15),
+            blurRadius: 30,
+            spreadRadius: -5,
+            offset: const Offset(0, -8),
+          ),
+          BoxShadow(
+            color: CupertinoColors.white.withOpacity(0.05),
+            blurRadius: 15,
+            spreadRadius: -3,
+            offset: const Offset(0, -2),
           ),
         ],
       ),
       child: ClipRRect(
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
           child: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
                 colors: isDark
                     ? [
                         CupertinoColors.white.withOpacity(0.15),
                         CupertinoColors.white.withOpacity(0.10),
                         CupertinoColors.white.withOpacity(0.08),
+                        CupertinoColors.white.withOpacity(0.05),
                       ]
                     : [
                         CupertinoColors.white.withOpacity(0.85),
-                        CupertinoColors.white.withOpacity(0.75),
                         CupertinoColors.white.withOpacity(0.70),
+                        CupertinoColors.white.withOpacity(0.60),
+                        CupertinoColors.white.withOpacity(0.50),
                       ],
-                stops: const [0.0, 0.5, 1.0],
+                stops: const [0.0, 0.3, 0.6, 1.0],
               ),
               border: Border(
                 top: BorderSide(
                   color: isDark
-                      ? CupertinoColors.white.withOpacity(0.1)
-                      : CupertinoColors.black.withOpacity(0.08),
-                  width: 0.5,
+                      ? CupertinoColors.white.withOpacity(0.18)
+                      : CupertinoColors.black.withOpacity(0.1),
+                  width: 1.0,
                 ),
               ),
             ),
@@ -226,94 +235,137 @@ class _GlassBottomNavBarState extends State<GlassBottomNavBar>
                 ? (0.3 + (glassOpacityAnimation.value * 0.2))
                 : glassOpacityAnimation.value * 0.15;
 
+            // El botón de crear (índice 2) es más grande
+            final isCreateButton = index == 2;
+            final baseSize = isCreateButton ? 1.3 : 1.0;
+            final iconBaseSize = isCreateButton ? 32.0 : 24.0;
+            final iconSelectedSize = isCreateButton ? 36.0 : 28.0;
+            final paddingBase = isCreateButton ? 12.0 : 8.0;
+            final paddingSelected = isCreateButton ? 14.0 : 10.0;
+
             return Transform.scale(
-              scale: buttonScale,
+              scale: buttonScale * baseSize,
               alignment: Alignment.center,
               child: Container(
-                height: 60,
+                height: isCreateButton ? 70 : 60,
                 alignment: Alignment.center,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Contenedor glass para el icono (similar a los botones de eventos)
                     Container(
-                      padding: EdgeInsets.all(isSelected ? 10 : 8),
+                      padding: EdgeInsets.all(
+                          isSelected ? paddingSelected : paddingBase),
                       decoration: BoxDecoration(
                         borderRadius:
                             BorderRadius.circular(Branding.radiusMedium),
-                        gradient: isSelected
+                        gradient: isCreateButton && isSelected
                             ? LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                                 colors: [
                                   Branding.primaryPurple
-                                      .withOpacity(0.4 + glassOpacity),
+                                      .withOpacity(0.5 + glassOpacity),
                                   Branding.accentViolet
-                                      .withOpacity(0.3 + glassOpacity),
+                                      .withOpacity(0.4 + glassOpacity),
                                   Branding.primaryPurple
-                                      .withOpacity(0.25 + glassOpacity),
+                                      .withOpacity(0.35 + glassOpacity),
                                 ],
                                 stops: const [0.0, 0.5, 1.0],
                               )
-                            : LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: isDark
-                                    ? [
-                                        CupertinoColors.white
-                                            .withOpacity(0.08 + glassOpacity),
-                                        CupertinoColors.white
-                                            .withOpacity(0.05 + glassOpacity),
-                                      ]
-                                    : [
-                                        CupertinoColors.white
-                                            .withOpacity(0.6 + glassOpacity),
-                                        CupertinoColors.white
-                                            .withOpacity(0.4 + glassOpacity),
-                                      ],
-                              ),
+                            : isSelected
+                                ? LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Branding.primaryPurple
+                                          .withOpacity(0.4 + glassOpacity),
+                                      Branding.accentViolet
+                                          .withOpacity(0.3 + glassOpacity),
+                                      Branding.primaryPurple
+                                          .withOpacity(0.25 + glassOpacity),
+                                    ],
+                                    stops: const [0.0, 0.5, 1.0],
+                                  )
+                                : LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: isDark
+                                        ? [
+                                            CupertinoColors.white.withOpacity(
+                                                0.08 + glassOpacity),
+                                            CupertinoColors.white.withOpacity(
+                                                0.05 + glassOpacity),
+                                          ]
+                                        : [
+                                            CupertinoColors.white.withOpacity(
+                                                0.6 + glassOpacity),
+                                            CupertinoColors.white.withOpacity(
+                                                0.4 + glassOpacity),
+                                          ],
+                                  ),
                         border: Border.all(
-                          color: isSelected
+                          color: isCreateButton && isSelected
                               ? Branding.primaryPurple
-                                  .withOpacity(0.3 + glassOpacity)
-                              : (isDark
-                                  ? CupertinoColors.white
-                                      .withOpacity(0.1 + glassOpacity)
-                                  : CupertinoColors.black
-                                      .withOpacity(0.08 + glassOpacity)),
-                          width: isSelected ? 1.0 : 0.5,
+                                  .withOpacity(0.4 + glassOpacity)
+                              : isSelected
+                                  ? Branding.primaryPurple
+                                      .withOpacity(0.3 + glassOpacity)
+                                  : (isDark
+                                      ? CupertinoColors.white
+                                          .withOpacity(0.1 + glassOpacity)
+                                      : CupertinoColors.black
+                                          .withOpacity(0.08 + glassOpacity)),
+                          width: isCreateButton && isSelected
+                              ? 1.5
+                              : (isSelected ? 1.0 : 0.5),
                         ),
-                        boxShadow: isSelected
+                        boxShadow: isCreateButton && isSelected
                             ? [
                                 BoxShadow(
                                   color: Branding.primaryPurple
-                                      .withOpacity(0.3 + glassOpacity),
-                                  blurRadius: 12,
-                                  spreadRadius: -2,
-                                  offset: const Offset(0, 4),
+                                      .withOpacity(0.4 + glassOpacity),
+                                  blurRadius: 16,
+                                  spreadRadius: -3,
+                                  offset: const Offset(0, 6),
                                 ),
                               ]
-                            : null,
+                            : isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: Branding.primaryPurple
+                                          .withOpacity(0.3 + glassOpacity),
+                                      blurRadius: 12,
+                                      spreadRadius: -2,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ]
+                                : null,
                       ),
                       child: ClipRRect(
                         borderRadius:
                             BorderRadius.circular(Branding.radiusMedium),
                         child: BackdropFilter(
                           filter: ImageFilter.blur(
-                            sigmaX: blurValue,
-                            sigmaY: blurValue,
+                            sigmaX: isCreateButton ? blurValue + 5 : blurValue,
+                            sigmaY: isCreateButton ? blurValue + 5 : blurValue,
                           ),
                           child: Transform.scale(
                             scale: iconScale,
                             alignment: Alignment.center,
                             child: Icon(
                               isSelected ? item.activeIcon : item.icon,
-                              size: isSelected ? 28 : 24,
-                              color: isSelected
+                              size:
+                                  isSelected ? iconSelectedSize : iconBaseSize,
+                              color: isCreateButton && isSelected
                                   ? Branding.primaryPurple
-                                  : (isDark
-                                      ? CupertinoColors.white.withOpacity(0.7)
-                                      : CupertinoColors.black.withOpacity(0.6)),
+                                  : isSelected
+                                      ? Branding.primaryPurple
+                                      : (isDark
+                                          ? CupertinoColors.white
+                                              .withOpacity(0.7)
+                                          : CupertinoColors.black
+                                              .withOpacity(0.6)),
                             ),
                           ),
                         ),
