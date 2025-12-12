@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Colors;
 import 'dart:ui';
 import '../../../core/branding/branding.dart';
+import 'glass_base.dart';
 
 /// Widget que crea un efecto "Liquid Glass" tipo Apple
 /// Usa BackdropFilter para crear el efecto de vidrio esmerilado
@@ -66,20 +67,21 @@ class GlassContainer extends StatelessWidget {
                   : CupertinoColors.black.withOpacity(0.08),
               width: 0.5,
             ),
-        boxShadow: boxShadow ?? [
-          BoxShadow(
-            color: CupertinoColors.white.withOpacity(0.1),
-            blurRadius: 20,
-            spreadRadius: -5,
-            offset: const Offset(0, 10),
-          ),
-          BoxShadow(
-            color: CupertinoColors.black.withOpacity(0.1),
-            blurRadius: 30,
-            spreadRadius: -10,
-            offset: const Offset(0, 15),
-          ),
-        ],
+        boxShadow: boxShadow ??
+            [
+              BoxShadow(
+                color: CupertinoColors.white.withOpacity(0.1),
+                blurRadius: 20,
+                spreadRadius: -5,
+                offset: const Offset(0, 10),
+              ),
+              BoxShadow(
+                color: CupertinoColors.black.withOpacity(0.1),
+                blurRadius: 30,
+                spreadRadius: -10,
+                offset: const Offset(0, 15),
+              ),
+            ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(borderRadius),
@@ -112,11 +114,14 @@ class GlassContainer extends StatelessWidget {
 }
 
 /// Variante de GlassContainer con bordes sutiles tipo Apple
+/// Diseño exacto basado en CSS .glass-card
 class GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final VoidCallback? onTap;
+  final double? width;
+  final double? height;
   final double borderRadius;
 
   const GlassCard({
@@ -125,28 +130,23 @@ class GlassCard extends StatelessWidget {
     this.padding,
     this.margin,
     this.onTap,
-    this.borderRadius = Branding.radiusMedium,
+    this.width,
+    this.height,
+    this.borderRadius = 20.0,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isDark = CupertinoTheme.brightnessOf(context) == Brightness.dark;
-    
     return GestureDetector(
       onTap: onTap,
-      child: GlassContainer(
-        padding: padding ?? const EdgeInsets.all(Branding.spacingM),
+      child: GlassBase(
+        width: width,
+        height: height,
+        padding: padding,
         margin: margin,
         borderRadius: borderRadius,
-        border: Border.all(
-          color: isDark
-              ? CupertinoColors.white.withOpacity(0.1)
-              : CupertinoColors.black.withOpacity(0.1),
-          width: 0.5,
-        ),
         child: child,
       ),
     );
   }
 }
-

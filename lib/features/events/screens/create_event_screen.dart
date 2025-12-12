@@ -10,6 +10,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/error_dialog.dart';
 import '../../../shared/components/inputs/glass_text_field.dart';
 import '../../../shared/components/glass/glass_container.dart';
+import '../../../shared/components/glass/glass_base.dart';
 import '../../../shared/widgets/blurred_video_background.dart';
 import '../../../core/branding/branding.dart';
 import '../../../routes/route_names.dart';
@@ -226,14 +227,14 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                   horizontal: Branding.spacingM,
                                   vertical: Branding.spacingS,
                                 ),
-                                backgroundColor: Branding.primaryPurple
-                                    .withOpacity(isDark ? 0.3 : 0.2),
+                                backgroundColor:
+                                    Branding.primaryPurple.withOpacity(0.3),
                                 child: Text(
                                   'Guardar',
                                   style: TextStyle(
                                     fontSize: Branding.fontSizeHeadline,
                                     fontWeight: Branding.weightSemibold,
-                                    color: Branding.primaryPurple,
+                                    color: CupertinoColors.white,
                                   ),
                                 ),
                               ),
@@ -251,56 +252,54 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Selector de imagen glass
-                              GestureDetector(
-                                onTap: _pickImage,
-                                child: GlassContainer(
-                                  height: 220,
-                                  borderRadius: Branding.radiusLarge,
-                                  padding: EdgeInsets.zero,
-                                  child: _selectedImage != null
-                                      ? ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            Branding.radiusLarge,
-                                          ),
-                                          child: Image.file(
-                                            _selectedImage!,
-                                            fit: BoxFit.cover,
-                                            width: double.infinity,
-                                            height: 220,
-                                          ),
-                                        )
-                                      : Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              CupertinoIcons.camera_fill,
-                                              size: 60,
-                                              color: isDark
-                                                  ? CupertinoColors.white
-                                                      .withOpacity(0.5)
-                                                  : CupertinoColors.black
-                                                      .withOpacity(0.4),
-                                            ),
-                                            const SizedBox(
-                                              height: Branding.spacingS,
-                                            ),
-                                            Text(
-                                              'Toca para agregar imagen',
-                                              style: TextStyle(
-                                                fontSize:
-                                                    Branding.fontSizeSubhead,
-                                                color: isDark
-                                                    ? CupertinoColors.white
-                                                        .withOpacity(0.6)
-                                                    : CupertinoColors.black
-                                                        .withOpacity(0.5),
+                              // Selector de imagen glass - centrado (usa GlassBase para garantizar estilo idéntico)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  GestureDetector(
+                                    onTap: _pickImage,
+                                    child: GlassBase(
+                                      width: 240,
+                                      height: 360,
+                                      padding: EdgeInsets.zero,
+                                      margin: EdgeInsets.zero,
+                                      child: _selectedImage != null
+                                          ? ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
+                                              child: Image.file(
+                                                _selectedImage!,
+                                                fit: BoxFit.cover,
+                                                width: double.infinity,
+                                                height: double.infinity,
                                               ),
+                                            )
+                                          : Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  CupertinoIcons.camera_fill,
+                                                  size: 60,
+                                                  color: CupertinoColors.white,
+                                                ),
+                                                const SizedBox(
+                                                  height: Branding.spacingS,
+                                                ),
+                                                Text(
+                                                  'Toca para agregar imagen',
+                                                  style: TextStyle(
+                                                    fontSize: Branding
+                                                        .fontSizeSubhead,
+                                                    color:
+                                                        CupertinoColors.white,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                ),
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: Branding.spacingL),
                               // Título
@@ -309,9 +308,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                 placeholder: 'Título del evento *',
                                 prefix: Icon(
                                   CupertinoIcons.textformat,
-                                  color: isDark
-                                      ? CupertinoColors.white.withOpacity(0.6)
-                                      : CupertinoColors.black.withOpacity(0.5),
+                                  color: CupertinoColors.white,
                                 ),
                               ),
                               const SizedBox(height: Branding.spacingM),
@@ -323,9 +320,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                 minLines: 3,
                                 prefix: Icon(
                                   CupertinoIcons.text_alignleft,
-                                  color: isDark
-                                      ? CupertinoColors.white.withOpacity(0.6)
-                                      : CupertinoColors.black.withOpacity(0.5),
+                                  color: CupertinoColors.white,
                                 ),
                               ),
                               const SizedBox(height: Branding.spacingM),
@@ -338,17 +333,14 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                   enabled: false,
                                   prefix: Icon(
                                     CupertinoIcons.calendar,
-                                    color: isDark
-                                        ? CupertinoColors.white.withOpacity(0.6)
-                                        : CupertinoColors.black
-                                            .withOpacity(0.5),
+                                    color: CupertinoColors.white,
                                   ),
                                   suffix: _startTime != null
                                       ? Text(
                                           dateFormat.format(_startTime!),
                                           style: TextStyle(
                                             fontSize: Branding.fontSizeSubhead,
-                                            color: Branding.primaryPurple,
+                                            color: CupertinoColors.white,
                                             fontWeight: Branding.weightMedium,
                                           ),
                                         )
@@ -361,10 +353,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                 controller: _cityController,
                                 placeholder: 'Ciudad',
                                 prefix: Icon(
-                                  CupertinoIcons.location,
-                                  color: isDark
-                                      ? CupertinoColors.white.withOpacity(0.6)
-                                      : CupertinoColors.black.withOpacity(0.5),
+                                  CupertinoIcons.paperplane_fill,
+                                  color: CupertinoColors.white,
                                 ),
                               ),
                               const SizedBox(height: Branding.spacingM),
@@ -374,14 +364,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                 placeholder: 'Dirección',
                                 prefix: Icon(
                                   CupertinoIcons.map_pin,
-                                  color: isDark
-                                      ? CupertinoColors.white.withOpacity(0.6)
-                                      : CupertinoColors.black.withOpacity(0.5),
+                                  color: CupertinoColors.white,
                                 ),
                               ),
                               const SizedBox(height: Branding.spacingL),
                               // Switch público
-                              GlassContainer(
+                              GlassCard(
                                 borderRadius: Branding.radiusMedium,
                                 padding:
                                     const EdgeInsets.all(Branding.spacingM),
@@ -389,11 +377,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                   children: [
                                     Icon(
                                       CupertinoIcons.globe,
-                                      color: isDark
-                                          ? CupertinoColors.white
-                                              .withOpacity(0.8)
-                                          : CupertinoColors.black
-                                              .withOpacity(0.7),
+                                      color: CupertinoColors.white,
                                     ),
                                     const SizedBox(width: Branding.spacingM),
                                     Expanded(
@@ -402,9 +386,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                         style: TextStyle(
                                           fontSize: Branding.fontSizeBody,
                                           fontWeight: Branding.weightMedium,
-                                          color: isDark
-                                              ? CupertinoColors.white
-                                              : CupertinoColors.black,
+                                          color: CupertinoColors.white,
                                         ),
                                       ),
                                     ),
