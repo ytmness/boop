@@ -10,7 +10,6 @@ import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/error_dialog.dart';
 import '../../../shared/components/inputs/glass_text_field.dart';
 import '../../../shared/components/glass/glass_container.dart';
-import '../../../shared/components/glass/glass_base.dart';
 import '../../../shared/widgets/blurred_video_background.dart';
 import '../../../core/branding/branding.dart';
 import '../../../routes/route_names.dart';
@@ -28,6 +27,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _descriptionController = TextEditingController();
   final _cityController = TextEditingController();
   final _addressController = TextEditingController();
+  final _dateController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   DateTime? _startTime;
@@ -42,6 +42,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _descriptionController.dispose();
     _cityController.dispose();
     _addressController.dispose();
+    _dateController.dispose();
     super.dispose();
   }
 
@@ -62,6 +63,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   Future<void> _selectStartTime() async {
+    final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
     await showCupertinoModalPopup<DateTime>(
       context: context,
       builder: (context) => Container(
@@ -80,6 +82,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             onDateTimeChanged: (DateTime newDate) {
               setState(() {
                 _startTime = newDate;
+                _dateController.text = dateFormat.format(newDate);
               });
             },
           ),
@@ -161,7 +164,6 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = CupertinoTheme.brightnessOf(context) == Brightness.dark;
-    final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
 
     return CupertinoPageScaffold(
       backgroundColor: Colors.transparent,
@@ -221,20 +223,67 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                           ? const CupertinoActivityIndicator()
                           : GestureDetector(
                               onTap: _saveEvent,
-                              child: GlassContainer(
-                                borderRadius: Branding.radiusMedium,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: Branding.spacingM,
-                                  vertical: Branding.spacingS,
+                              behavior: HitTestBehavior.opaque,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  border: Border.all(
+                                    color:
+                                        CupertinoColors.white.withOpacity(0.3),
+                                    width: 1.0,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: CupertinoColors.black
+                                          .withOpacity(0.1),
+                                      blurRadius: 32,
+                                      offset: const Offset(0, 8),
+                                    ),
+                                  ],
                                 ),
-                                backgroundColor:
-                                    Branding.primaryPurple.withOpacity(0.3),
-                                child: Text(
-                                  'Guardar',
-                                  style: TextStyle(
-                                    fontSize: Branding.fontSizeHeadline,
-                                    fontWeight: Branding.weightSemibold,
-                                    color: CupertinoColors.white,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  child: Stack(
+                                    children: [
+                                      // Capa base para neutralizar tinte morado
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: CupertinoColors.white
+                                              .withOpacity(0.2),
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                        ),
+                                      ),
+                                      // BackdropFilter con capa adicional de blanco
+                                      BackdropFilter(
+                                        filter: ImageFilter.blur(
+                                            sigmaX: 5, sigmaY: 5),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: CupertinoColors.white
+                                                .withOpacity(0.35),
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: Branding.spacingM,
+                                            vertical: Branding.spacingS,
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              'Guardar',
+                                              style: TextStyle(
+                                                fontSize:
+                                                    Branding.fontSizeHeadline,
+                                                fontWeight:
+                                                    Branding.weightSemibold,
+                                                color: CupertinoColors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -252,54 +301,75 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Selector de imagen glass - centrado (usa GlassBase para garantizar estilo idéntico)
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  GestureDetector(
-                                    onTap: _pickImage,
-                                    child: GlassBase(
-                                      width: 240,
-                                      height: 360,
-                                      padding: EdgeInsets.zero,
-                                      margin: EdgeInsets.zero,
-                                      child: _selectedImage != null
-                                          ? ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                              child: Image.file(
-                                                _selectedImage!,
-                                                fit: BoxFit.cover,
-                                                width: double.infinity,
-                                                height: double.infinity,
-                                              ),
-                                            )
-                                          : Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(
-                                                  CupertinoIcons.camera_fill,
-                                                  size: 60,
-                                                  color: CupertinoColors.white,
-                                                ),
-                                                const SizedBox(
-                                                  height: Branding.spacingS,
-                                                ),
-                                                Text(
-                                                  'Toca para agregar imagen',
-                                                  style: TextStyle(
-                                                    fontSize: Branding
-                                                        .fontSizeSubhead,
-                                                    color:
-                                                        CupertinoColors.white,
+                              // Selector de imagen glass - centrado
+                              Builder(
+                                builder: (context) {
+                                  final screenWidth =
+                                      MediaQuery.of(context).size.width;
+                                  final padding = Branding.spacingM * 2;
+                                  final containerWidth = screenWidth - padding;
+                                  final containerHeight = containerWidth * 1.2;
+                                  return Center(
+                                    child: SizedBox(
+                                      width: containerWidth,
+                                      height: containerHeight,
+                                      child: GestureDetector(
+                                        onTap: _pickImage,
+                                        child: GlassContainer(
+                                          width: containerWidth,
+                                          height: containerHeight,
+                                          padding: EdgeInsets.zero,
+                                          borderRadius: 20.0,
+                                          child: _selectedImage != null
+                                              ? ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20.0),
+                                                  child: Image.file(
+                                                    _selectedImage!,
+                                                    fit: BoxFit.cover,
+                                                    width: double.infinity,
+                                                    height: double.infinity,
+                                                  ),
+                                                )
+                                              : Center(
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(
+                                                        CupertinoIcons
+                                                            .camera_fill,
+                                                        size: 60,
+                                                        color: CupertinoColors
+                                                            .white,
+                                                      ),
+                                                      const SizedBox(
+                                                          height: Branding
+                                                              .spacingS),
+                                                      Text(
+                                                        'Toca para agregar imagen',
+                                                        style: TextStyle(
+                                                          fontSize: Branding
+                                                              .fontSizeSubhead,
+                                                          color: CupertinoColors
+                                                              .white,
+                                                        ),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
-                                              ],
-                                            ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  );
+                                },
                               ),
                               const SizedBox(height: Branding.spacingL),
                               // Título
@@ -325,26 +395,14 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                               ),
                               const SizedBox(height: Branding.spacingM),
                               // Fecha y hora
-                              GestureDetector(
+                              GlassTextField(
+                                controller: _dateController,
+                                placeholder: 'Fecha y hora de inicio *',
+                                enabled: false,
                                 onTap: _selectStartTime,
-                                child: GlassTextField(
-                                  controller: null,
-                                  placeholder: 'Fecha y hora de inicio *',
-                                  enabled: false,
-                                  prefix: Icon(
-                                    CupertinoIcons.calendar,
-                                    color: CupertinoColors.white,
-                                  ),
-                                  suffix: _startTime != null
-                                      ? Text(
-                                          dateFormat.format(_startTime!),
-                                          style: TextStyle(
-                                            fontSize: Branding.fontSizeSubhead,
-                                            color: CupertinoColors.white,
-                                            fontWeight: Branding.weightMedium,
-                                          ),
-                                        )
-                                      : null,
+                                prefix: Icon(
+                                  CupertinoIcons.calendar,
+                                  color: CupertinoColors.white,
                                 ),
                               ),
                               const SizedBox(height: Branding.spacingM),
