@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'youtube_video_background.dart';
 
 /// Widget wrapper que proporciona el fondo de video difuminado
@@ -25,17 +24,7 @@ class BlurredVideoBackground extends StatelessWidget {
           opacity: 0.9,
         ),
 
-        // Capa de blur suave - se ven claramente las luces y colores del video
-        // Mantiene la luz del video para destacar los botones transparentes
-        BackdropFilter(
-          filter:
-              ImageFilter.blur(sigmaX: blurIntensity, sigmaY: blurIntensity),
-          child: Container(
-            color: Colors.transparent, // Sin overlay para que se vean las luces
-          ),
-        ),
-
-        // Contenido de la pantalla
+        // Contenido de la pantalla (sin BackdropFilter global para evitar tintes)
         child,
       ],
     );
