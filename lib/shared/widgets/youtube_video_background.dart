@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:html' as html;
 import 'package:flutter/foundation.dart' show kIsWeb;
+
+// Import condicional: usar dart:html en web, stub en otras plataformas
+import 'dart:html' if (dart.library.io) 'html_stub.dart' as html;
 
 /// Widget optimizado que reproduce un video de YouTube como fondo
 /// Usa iframe embebido para streaming eficiente - solo carga lo necesario
@@ -42,8 +44,8 @@ class YoutubeVideoBackground extends StatefulWidget {
 }
 
 class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
-  html.DivElement? _container;
-  html.IFrameElement? _iframe;
+  dynamic _container; // html.DivElement? en web
+  dynamic _iframe; // html.IFrameElement? en web
   String? _containerId;
   bool _isReady = false;
 
@@ -61,9 +63,12 @@ class _YoutubeVideoBackgroundState extends State<YoutubeVideoBackground> {
 
   void _updateSize() {
     if (!kIsWeb || _container == null || _iframe == null) return;
-
-    final width = html.window.innerWidth ?? 1920;
-    final height = html.window.innerHeight ?? 1080;
+    
+    // Solo ejecutar en web
+    if (!kIsWeb) return;
+    
+    final width = (html.window.innerWidth ?? 1920) as int;
+    final height = (html.window.innerHeight ?? 1080) as int;
 
     // Forzar tamaño del contenedor usando píxeles y viewport units
     _container!.style.setProperty('width', '100vw', 'important');

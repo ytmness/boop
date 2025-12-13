@@ -21,7 +21,7 @@ dependencies:
   supabase_flutter: ^2.0.0
   
   # Scanner QR
-  mobile_scanner: ^5.2.3
+  mobile_scanner: ^4.0.1
   
   # Payments
   # stripe_flutter: ^10.1.1  # Comentado temporalmente - se usará Stripe Payment Sheet vía web

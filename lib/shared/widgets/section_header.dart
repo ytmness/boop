@@ -40,7 +40,6 @@ class SectionHeader extends StatelessWidget {
                   color: CupertinoColors.systemBlue,
                 ),
               ),
-              minimumSize: Size(0, 0),
             ),
         ],
       ),

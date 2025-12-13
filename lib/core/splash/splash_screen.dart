@@ -84,7 +84,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
               child: Container(
-                color: CupertinoColors.transparent,
+                color: Colors.transparent,
               ),
             ),
           ),
