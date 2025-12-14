@@ -29,10 +29,9 @@ struct SearchView: View {
                         text: $searchText,
                         isFocused: $isSearchFocused
                     )
-                    .frame(maxWidth: 380)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .padding(.trailing, 16)
-                    .padding(.leading, 16)
+                    .frame(maxWidth: 400)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.horizontal, 16)
                     .padding(.top, 8)
                     
                     // Category selector
@@ -52,7 +51,8 @@ struct SearchView: View {
                         .padding(.vertical, 10)
                         .frame(maxWidth: 340, alignment: .trailing)
                         .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.trailing, 24)
+                        .padding(.trailing, 20)
+                        .padding(.leading, 16)
                     }
                     
                     // Results
