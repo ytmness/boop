@@ -9,54 +9,54 @@ import SwiftUI
 
 struct VerifyOTPView: View {
     @EnvironmentObject var viewModel: AuthViewModel
-    @State private var codeDigits: [String] = Array(repeating: "", count: 6)
+    private let otpLength = 8
+    @State private var codeDigits: [String] = Array(repeating: "", count: 8)
     @FocusState private var focusedIndex: Int?
     
     let email: String
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        ZStack {
-            GlassAnimatedBackground()
-            
-            VStack(spacing: 0) {
-                // Header
-                HStack {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .frame(width: 44, height: 44)
-                            .background {
-                                Circle()
-                                    .fill(.ultraThinMaterial)
-                            }
-                    }
-                    Spacer()
-                }
-                .padding()
+            ZStack {
+                GlassAnimatedBackground()
                 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 32) {
-                        // Título
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Verificar código")
-                                .font(.system(size: 28, weight: .bold))
+                VStack(spacing: 0) {
+                    // Header
+                    HStack {
+                        Button(action: { dismiss() }) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 18, weight: .semibold))
                                 .foregroundStyle(.white)
-                            
-                            Text("Ingresa el código de 6 dígitos enviado a")
-                                .font(.system(size: 16))
-                                .foregroundStyle(.white.opacity(0.8))
-                            
-                            Text(email)
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundStyle(.white)
+                                .frame(width: 44, height: 44)
+                                .background {
+                                    Circle()
+                                        .fill(.ultraThinMaterial)
+                                }
                         }
-                        .padding(.horizontal)
-                        
-                        // Campos de código (6 dígitos)
-                        HStack(spacing: 12) {
-                            ForEach(0..<6, id: \.self) { index in
+                        Spacer()
+                    }
+                    .padding()
+                    
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 16) {
+                            // Título
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Verificar código")
+                                    .font(.system(size: 28, weight: .bold))
+                                    .foregroundStyle(.white)
+                                
+                                Text("Ingresa el código de 8 dígitos enviado a")
+                                    .font(.system(size: 16))
+                                    .foregroundStyle(.white.opacity(0.8))
+                                
+                                Text(email)
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundStyle(.white)
+                            }
+                            
+                            // Campos de código (8 dígitos)
+                            HStack(spacing: 12) {
+                                ForEach(0..<otpLength, id: \.self) { index in
                                 TextField("", text: $codeDigits[index])
                                     .keyboardType(.numberPad)
                                     .textContentType(.oneTimeCode)
@@ -128,22 +128,18 @@ struct VerifyOTPView: View {
     }
     
     private func handleCodeChange(at index: Int, newValue: String) {
-        // Solo permitir un dígito
-        if newValue.count > 1 {
-            codeDigits[index] = String(newValue.prefix(1))
-        }
-        
-        // Solo permitir números
-        codeDigits[index] = codeDigits[index].filter { $0.isNumber }
+        // Solo permitir números y limitar a 1 dígito
+        let filtered = newValue.filter(\.isNumber)
+        codeDigits[index] = String(filtered.prefix(1))
         
         // Mover al siguiente campo
-        if !codeDigits[index].isEmpty && index < 5 {
+        if !codeDigits[index].isEmpty && index < (otpLength - 1) {
             focusedIndex = index + 1
         }
         
         // Verificar automáticamente cuando se completa
         let fullCode = codeDigits.joined()
-        if fullCode.count == 6 {
+        if fullCode.count == otpLength {
             verifyCode()
         }
     }
@@ -151,8 +147,8 @@ struct VerifyOTPView: View {
     private func verifyCode() {
         let code = codeDigits.joined()
         
-        guard code.count == 6 else {
-            viewModel.errorMessage = "Por favor, ingresa el código completo de 6 dígitos"
+        guard code.count == otpLength else {
+            viewModel.errorMessage = "Por favor, ingresa el código completo de 8 dígitos"
             return
         }
         
@@ -163,7 +159,7 @@ struct VerifyOTPView: View {
             } catch {
                 // Error manejado por viewModel.errorMessage
                 // Limpiar campos
-                codeDigits = Array(repeating: "", count: 6)
+                codeDigits = Array(repeating: "", count: otpLength)
                 focusedIndex = 0
             }
         }
@@ -174,7 +170,7 @@ struct VerifyOTPView: View {
             do {
                 try await viewModel.sendOTP(email: email)
                 // Limpiar campos
-                codeDigits = Array(repeating: "", count: 6)
+                codeDigits = Array(repeating: "", count: otpLength)
                 focusedIndex = 0
             } catch {
                 // Error manejado por viewModel.errorMessage

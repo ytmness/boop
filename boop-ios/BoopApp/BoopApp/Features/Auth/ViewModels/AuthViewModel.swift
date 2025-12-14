@@ -97,11 +97,11 @@ class AuthViewModel: ObservableObject {
             throw AuthError.supabaseNotConfigured
         }
         
-        // Validar que el token tenga 6 dígitos
+        // Validar que el token tenga 8 dígitos
         let cleanToken = token.trimmingCharacters(in: .whitespaces)
             .replacingOccurrences(of: "[^0-9]", with: "", options: .regularExpression)
         
-        guard cleanToken.count == 6 else {
+        guard cleanToken.count == 8 else {
             let error = AuthError.invalidOTP
             await MainActor.run {
                 self.errorMessage = error.localizedDescription
@@ -252,7 +252,7 @@ class AuthViewModel: ObservableObject {
         let errorDescription = error.localizedDescription.lowercased()
         
         if errorDescription.contains("invalid") && errorDescription.contains("token") {
-            return "Código de verificación inválido. Por favor, verifica el código de 6 dígitos."
+            return "Código de verificación inválido. Por favor, verifica el código de 8 dígitos."
         }
         
         if errorDescription.contains("expired") {
@@ -306,7 +306,7 @@ enum AuthError: LocalizedError {
         case .invalidEmail:
             return "Email inválido. Por favor, verifica tu dirección de correo."
         case .invalidOTP:
-            return "El código debe tener 6 dígitos. Por favor, verifica el código."
+            return "El código debe tener 8 dígitos. Por favor, verifica el código."
         case .authenticationFailed:
             return "Error al autenticarse. Por favor, intenta de nuevo."
         case .networkError:
