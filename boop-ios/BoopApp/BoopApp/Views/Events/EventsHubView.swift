@@ -80,7 +80,6 @@ struct EventFeedCard: View {
     @State private var isSaved = false
     @Environment(\.accessibilityReduceTransparency) var reduceTransparency
     @Environment(\.horizontalSizeClass) private var hSize
-    @Environment(\.safeAreaInsets) private var safeAreaInsets
     
     private var isCompact: Bool {
         hSize == .compact
