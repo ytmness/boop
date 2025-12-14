@@ -25,6 +25,11 @@ struct EventsHubView: View {
         case history = "Historial"
     }
     
+    private var headerHeight: CGFloat {
+        // Grande al inicio, compacto al scrollear
+        scrollOffset > 30 ? 72 : 120
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -32,38 +37,31 @@ struct EventsHubView: View {
                 GlassAnimatedBackground()
                 
                 ScrollView {
-                    LazyVStack(spacing: 24, pinnedViews: [.sectionHeaders]) {
-                        Section {
-                            // Spacer invisible para medir scroll
-                            Color.clear
-                                .frame(height: 1)
-                                .background(
-                                    GeometryReader { geometry in
-                                        Color.clear.preference(
-                                            key: ScrollOffsetPreferenceKey.self,
-                                            value: geometry.frame(in: .named("scroll")).minY
-                                        )
-                                    }
-                                )
-                            
-                            // Events feed según tab seleccionado
-                            ForEach(0..<10, id: \.self) { index in
-                                EventFeedCard(
-                                    eventNumber: index + 1,
-                                    tabType: selectedTab
-                                )
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.bottom, 16)
-                            .padding(.top, 8)
-                        } header: {
-                            HomePinnedHeader(
-                                selectedTab: $selectedTab,
-                                selectedFilter: $selectedFilter,
-                                scrollOffset: scrollOffset
+                    VStack(spacing: 24) {
+                        // Lector de offset
+                        Color.clear
+                            .frame(height: 1)
+                            .background(
+                                GeometryReader { geometry in
+                                    Color.clear.preference(
+                                        key: ScrollOffsetPreferenceKey.self,
+                                        value: geometry.frame(in: .named("scroll")).minY
+                                    )
+                                }
+                            )
+                        
+                        // FEED
+                        ForEach(0..<10, id: \.self) { index in
+                            EventFeedCard(
+                                eventNumber: index + 1,
+                                tabType: selectedTab
                             )
                         }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 16)
                     }
+                    // Deja espacio arriba para que el header overlay no tape el primer evento
+                    .padding(.top, headerHeight + 8)
                 }
                 .coordinateSpace(name: "scroll")
                 .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
@@ -72,6 +70,18 @@ struct EventsHubView: View {
                     }
                 }
                 .ignoresSafeArea(.container, edges: .bottom)
+                
+                // Header overlay fijo (fuera del ScrollView)
+                VStack(spacing: 0) {
+                    HomeOverlayHeader(
+                        selectedTab: $selectedTab,
+                        selectedFilter: $selectedFilter,
+                        scrollOffset: scrollOffset,
+                        height: headerHeight
+                    )
+                    Spacer()
+                }
+                .ignoresSafeArea(edges: .top)
             }
             .navigationBarHidden(true)
             .toolbarColorScheme(.dark, for: .navigationBar)
@@ -87,69 +97,48 @@ private struct ScrollOffsetPreferenceKey: PreferenceKey {
     }
 }
 
-// MARK: - Home Pinned Header
-private struct HomePinnedHeader: View {
+// MARK: - Home Overlay Header
+private struct HomeOverlayHeader: View {
     @Binding var selectedTab: EventsHubView.EventsTab
     @Binding var selectedFilter: EventsHubView.EventFilter
     let scrollOffset: CGFloat
+    let height: CGFloat
     
-    // Animación basada en scroll: BOOP grande centrado al inicio, pequeño a la izquierda al scrollear
-    private var logoSize: CGFloat {
-        if scrollOffset > 30 {
-            // Se reduce de 40 a 28 cuando scrolleas
-            let progress = min(1.0, (scrollOffset - 30) / 100)
-            return 40 - (12 * progress)
-        }
-        return 40 // Tamaño grande al inicio
-    }
-    
-    private var logoLeadingPadding: CGFloat {
-        if scrollOffset > 30 {
-            let progress = min(1.0, (scrollOffset - 30) / 100)
-            return 16 * progress // Se mueve hacia la izquierda progresivamente
-        }
-        return 0 // Sin padding al inicio (centrado)
-    }
+    private var isCollapsed: Bool { scrollOffset > 30 }
     
     var body: some View {
-        VStack(spacing: 10) {
-            // Logo BOOP con animación basada en scroll
-            HStack {
-                Spacer()
-                Text("BOOP")
-                    .font(.system(size: logoSize, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
-                    .padding(.top, 6)
-                    .padding(.leading, logoLeadingPadding)
-                Spacer()
-            }
-            .frame(maxWidth: .infinity)
+        VStack(spacing: isCollapsed ? 8 : 10) {
+            Text("BOOP")
+                .font(.system(size: isCollapsed ? 22 : 30, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
             
-            // Tab selector (burbujas fijas)
-            GeometryReader { proxy in
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
-                        ForEach(EventsHubView.EventsTab.allCases, id: \.self) { tab in
-                            GlassTabChip(
-                                title: tab.rawValue,
-                                isSelected: selectedTab == tab
-                            ) {
-                                withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
-                                    selectedTab = tab
+            if !isCollapsed {
+                // Burbujas visibles solo al inicio (tipo Instagram)
+                GeometryReader { proxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 10) {
+                            ForEach(EventsHubView.EventsTab.allCases, id: \.self) { tab in
+                                GlassTabChip(
+                                    title: tab.rawValue,
+                                    isSelected: selectedTab == tab
+                                ) {
+                                    withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
+                                        selectedTab = tab
+                                    }
                                 }
                             }
                         }
+                        .frame(minWidth: proxy.size.width, alignment: .center)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 8)
                     }
-                    // Centrado con padding simétrico
-                    .frame(minWidth: proxy.size.width, alignment: .center)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 10)
                 }
+                .frame(height: 44)
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
-            .frame(height: 52)
             
             // Filter bar (solo para My Events)
-            if selectedTab == .myEvents {
+            if selectedTab == .myEvents && !isCollapsed {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(EventsHubView.EventFilter.allCases, id: \.self) { filter in
@@ -169,10 +158,15 @@ private struct HomePinnedHeader: View {
                 }
             }
         }
-        .padding(.top, 10)
-        .padding(.bottom, 10)
+        .frame(height: height)
         .frame(maxWidth: .infinity)
-        // Sin background - completamente transparente
+        .padding(.top, 10)
+        .background {
+            // Velo muy sutil solo para legibilidad
+            Rectangle()
+                .fill(.ultraThinMaterial)
+                .opacity(0.18)
+        }
     }
 }
 
