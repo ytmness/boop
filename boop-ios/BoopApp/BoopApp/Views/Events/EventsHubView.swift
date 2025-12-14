@@ -114,37 +114,34 @@ private struct HomeOverlayHeader: View {
         GeometryReader { geo in
             VStack(spacing: isCollapsed ? 8 : 10) {
                 Text("BOOP")
-                    .font(.system(size: isCollapsed ? 22 : 30, weight: .bold, design: .rounded))
+                    .font(.system(size: isCollapsed ? 26 : 34, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
                     .shadow(color: .black.opacity(0.35), radius: 10, x: 0, y: 6)
                 
-                if !isCollapsed {
-                    // Burbujas visibles solo al inicio (tipo Instagram)
-                    GeometryReader { proxy in
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 10) {
-                                ForEach(EventsHubView.EventsTab.allCases, id: \.self) { tab in
-                                    GlassTabChip(
-                                        title: tab.rawValue,
-                                        isSelected: selectedTab == tab
-                                    ) {
-                                        withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
-                                            selectedTab = tab
-                                        }
+                // Burbujas siempre visibles (filtros de pestañas)
+                GeometryReader { proxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 10) {
+                            ForEach(EventsHubView.EventsTab.allCases, id: \.self) { tab in
+                                GlassTabChip(
+                                    title: tab.rawValue,
+                                    isSelected: selectedTab == tab
+                                ) {
+                                    withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
+                                        selectedTab = tab
                                     }
                                 }
                             }
-                            .frame(minWidth: proxy.size.width, alignment: .center)
-                            .padding(.horizontal, 24)
-                            .padding(.vertical, 8)
                         }
+                        .frame(minWidth: proxy.size.width, alignment: .center)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 8)
                     }
-                    .frame(height: 44)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
                 }
+                .frame(height: 44)
                 
                 // Filter bar (solo para My Events)
-                if selectedTab == .myEvents && !isCollapsed {
+                if selectedTab == .myEvents {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
                             ForEach(EventsHubView.EventFilter.allCases, id: \.self) { filter in

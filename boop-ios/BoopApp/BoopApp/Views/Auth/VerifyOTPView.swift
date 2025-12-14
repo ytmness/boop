@@ -59,7 +59,7 @@ struct VerifyOTPView: View {
                                 .foregroundStyle(.white)
                         }
                         
-                        // Campos de código (8 dígitos)
+                        // Campos de código (8 dígitos) - Centrados
                         HStack(spacing: 12) {
                             ForEach(0..<otpLength, id: \.self) { index in
                                 ZStack {
@@ -83,6 +83,7 @@ struct VerifyOTPView: View {
                                 }
                             }
                         }
+                        .frame(maxWidth: .infinity, alignment: .center)
                         
                         // Campo oculto para capturar input
                         TextField("", text: $otpCode)
@@ -99,17 +100,16 @@ struct VerifyOTPView: View {
                                 .foregroundStyle(.red)
                         }
                         
-                        // Botón verificar
+                        // Botón verificar (tamaño reducido)
                         VStack(spacing: 16) {
                             Button(action: verifyCode) {
                                 Text("Verificar")
-                                    .font(.subheadline.weight(.semibold))
+                                    .font(.system(size: 20, weight: .bold))
                                     .foregroundStyle(.white)
-                                    .padding(.vertical, 10)
+                                    .padding(.vertical, 8)
                                     .padding(.horizontal, 22)
                             }
                             .buttonStyle(.borderedProminent)
-                            .controlSize(.small)
                             .cornerRadius(14)
                             .frame(maxWidth: .infinity, alignment: .center)
                             .disabled(viewModel.isLoading || otpCode.count != otpLength)
