@@ -172,8 +172,6 @@ struct EventFeedCard: View {
                         }
                         .fixedSize(horizontal: true, vertical: false)  // ✅ evita que se compriman/corten
                         
-                        Spacer(minLength: 0)
-                        
                         Button { } label: {
                             Label("Tickets", systemImage: "ticket")
                                 .lineLimit(1)
@@ -181,6 +179,8 @@ struct EventFeedCard: View {
                         .buttonStyle(.glassProminent)
                         .tint(.purple)
                         .frame(height: 44)
+                        
+                        Spacer(minLength: 0)
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 12)
@@ -188,8 +188,8 @@ struct EventFeedCard: View {
                     HStack(spacing: 12) {
                         ActionButtonsGroupFallback(isLiked: $isLiked, isSaved: $isSaved)
                             .fixedSize(horizontal: true, vertical: false)
-                        Spacer(minLength: 0)
                         ticketsButton
+                        Spacer(minLength: 0)
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 12)
@@ -207,7 +207,8 @@ struct EventFeedCard: View {
                         .foregroundStyle(.white.opacity(0.9))
                         .lineLimit(3)
                 }
-                .padding(.horizontal, 16)
+                .padding(.leading, 24)  // ✅ Padding izquierdo aumentado para mover a la derecha
+                .padding(.trailing, 16)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
                 // Fecha y ubicación
@@ -217,7 +218,8 @@ struct EventFeedCard: View {
                 }
                 .font(.system(size: 12))  // ✅ Tamaño normal para feed
                 .foregroundStyle(.white.opacity(0.7))
-                .padding(.horizontal, 16)
+                .padding(.leading, 24)  // ✅ Padding izquierdo aumentado para mover a la derecha
+                .padding(.trailing, 16)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.bottom, 24)  // ✅ Padding aumentado de 16 a 24
