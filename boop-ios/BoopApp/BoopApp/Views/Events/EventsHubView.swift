@@ -31,48 +31,70 @@ struct EventsHubView: View {
                 GlassAnimatedBackground()
                 
                 VStack(spacing: 0) {
-                    // Tab selector
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 10) {
-                            ForEach(EventsTab.allCases, id: \.self) { tab in
-                                TabChip(
-                                    title: tab.rawValue,
-                                    isSelected: selectedTab == tab
-                                ) {
-                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                        selectedTab = tab
-                                    }
-                                }
-                            }
-                        }
-                        .padding(.vertical, 10)
-                        .frame(maxWidth: 320, alignment: .trailing)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.trailing, 24)
-                    }
-                    
-                    // Filter bar (solo para My Events)
-                    if selectedTab == .myEvents {
+                    // Fixed Header (como historias de Instagram)
+                    VStack(spacing: 0) {
+                        // Logo BOOP centrado
+                        Text("BOOP")
+                            .font(.system(size: 28, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 8)
+                            .padding(.bottom, 12)
+                        
+                        // Tab selector (burbujas fijas)
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                ForEach(EventFilter.allCases, id: \.self) { filter in
-                                    FilterChip(
-                                        title: filter.rawValue,
-                                        isSelected: selectedFilter == filter
+                            HStack(spacing: 10) {
+                                ForEach(EventsTab.allCases, id: \.self) { tab in
+                                    TabChip(
+                                        title: tab.rawValue,
+                                        isSelected: selectedTab == tab
                                     ) {
                                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                            selectedFilter = filter
+                                            selectedTab = tab
                                         }
                                     }
                                 }
                             }
-                            .padding(.leading, 24)
-                            .padding(.trailing, 16)
-                            .padding(.vertical, 8)
+                            .padding(.vertical, 10)
+                            .frame(maxWidth: 320, alignment: .trailing)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.trailing, 24)
+                        }
+                        
+                        // Filter bar (solo para My Events)
+                        if selectedTab == .myEvents {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 12) {
+                                    ForEach(EventFilter.allCases, id: \.self) { filter in
+                                        FilterChip(
+                                            title: filter.rawValue,
+                                            isSelected: selectedFilter == filter
+                                        ) {
+                                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                                selectedFilter = filter
+                                            }
+                                        }
+                                    }
+                                }
+                                .padding(.leading, 24)
+                                .padding(.trailing, 16)
+                                .padding(.vertical, 8)
+                            }
+                        }
+                    }
+                    .background {
+                        // Fondo glass para el header fijo
+                        if #available(iOS 26.0, *) {
+                            Rectangle()
+                                .fill(.ultraThinMaterial)
+                                .glassEffect(.regular)
+                        } else {
+                            Rectangle()
+                                .fill(.ultraThinMaterial)
                         }
                     }
                     
-                    // Content sin GeometryReader (evita expansión forzada)
+                    // Content scrollable (solo esto se desplaza)
                     ScrollView {
                         LazyVStack(spacing: 24) {  // ✅ Más espacio entre posts tipo Instagram
                             // Events feed según tab seleccionado
@@ -91,10 +113,8 @@ struct EventsHubView: View {
                     .ignoresSafeArea(.container, edges: .bottom)
                 }
             }
-            .navigationTitle("BOOP")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbarColorScheme(.dark, for: .navigationBar)  // ✅ Texto blanco en el título
-            .safeAreaInset(edge: .top) { Color.clear.frame(height: 0) }  // ✅ Asegurar safe area consistente
+            .navigationBarHidden(true)  // Ocultar navigation bar nativo
+            .toolbarColorScheme(.dark, for: .navigationBar)
         }
     }
 }
