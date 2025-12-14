@@ -17,24 +17,18 @@ struct ExploreView: View {
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        // Título
-                        Text("Explora nuevos eventos!")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 16)
-                            .padding(.top, 8)
-                        
                         // Search bar
                         SearchBar(
                             text: $searchText,
                             isFocused: $isSearchFocused
                         )
                         .padding(.horizontal, 16)
+                        .padding(.top, 8)
                     }
                     .padding(.bottom, 16)
                 }
             }
-            .navigationTitle("Explorar")
+            .navigationTitle("Explora nuevos eventos!")
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         }
