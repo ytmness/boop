@@ -37,26 +37,21 @@ struct SearchView: View {
                     // Category selector
                     GeometryReader { proxy in
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 0) {
-                                Spacer(minLength: 0)
-                                
-                                HStack(spacing: 10) {
-                                    ForEach(SearchCategory.allCases, id: \.self) { category in
-                                        GlassCategoryChip(
-                                            title: category.rawValue,
-                                            isSelected: selectedCategory == category
-                                        ) {
-                                            withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
-                                                selectedCategory = category
-                                            }
+                            HStack(spacing: 10) {
+                                ForEach(SearchCategory.allCases, id: \.self) { category in
+                                    GlassCategoryChip(
+                                        title: category.rawValue,
+                                        isSelected: selectedCategory == category
+                                    ) {
+                                        withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
+                                            selectedCategory = category
                                         }
                                     }
                                 }
                             }
-                            // CLAVE: el contenedor mide al menos el ancho visible, y alinea trailing
-                            .frame(minWidth: proxy.size.width, alignment: .trailing)
-                            .padding(.trailing, 24)   // más centrado
-                            .padding(.leading, 24)    // margen simétrico para centrado
+                            // Centrado con padding simétrico
+                            .frame(minWidth: proxy.size.width, alignment: .center)
+                            .padding(.horizontal, 24)
                             .padding(.vertical, 10)
                         }
                     }
