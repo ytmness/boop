@@ -206,12 +206,19 @@ struct CreateEventView: View {
 
         do {
             let payload = CreateEventPayload(
+                communityId: nil,
                 title: title.trimmingCharacters(in: .whitespacesAndNewlines),
                 description: description.isEmpty ? nil : description,
+                startTime: startsAt,
+                endTime: nil,
+                timezone: TimeZone.current.identifier,
                 city: city.isEmpty ? nil : city,
-                venue: venue.isEmpty ? nil : venue,
-                startsAt: startsAt,
-                coverUrl: nil,
+                address: venue.isEmpty ? nil : venue,
+                lat: nil,
+                lng: nil,
+                imageUrl: nil,
+                status: "draft",
+                isPublic: false,
                 createdBy: currentUserId
             )
 

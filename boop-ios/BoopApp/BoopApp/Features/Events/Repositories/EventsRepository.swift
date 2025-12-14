@@ -21,7 +21,7 @@ final class EventsRepository {
         let events: [EventRow] = try await client
             .from("events")
             .select()
-            .order("starts_at", ascending: false)
+            .order("start_time", ascending: false)
             .limit(limit)
             .execute()
             .value

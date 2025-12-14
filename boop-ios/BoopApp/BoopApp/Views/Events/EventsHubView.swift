@@ -452,9 +452,9 @@ struct EventFeedCard: View {
                 
                 // Fecha y ubicación
                 HStack(spacing: 12) {
-                    Label(formatDate(event.startsAt), systemImage: "calendar")
-                    if let venue = event.venue, !venue.isEmpty {
-                        Label(venue, systemImage: "mappin.circle.fill")
+                    Label(formatDate(event.startTime), systemImage: "calendar")
+                    if let address = event.address, !address.isEmpty {
+                        Label(address, systemImage: "mappin.circle.fill")
                     } else if let city = event.city, !city.isEmpty {
                         Label(city, systemImage: "mappin.circle.fill")
                     }
@@ -505,14 +505,14 @@ struct EventFeedCard: View {
                 
                 HStack(spacing: 4) {
                     Image(systemName: "calendar").font(.system(size: 11))
-                    Text(formatDate(event.startsAt)).font(.system(size: 12))
+                    Text(formatDate(event.startTime)).font(.system(size: 12))
                 }
                 .foregroundStyle(.white.opacity(0.8))
                 
-                if let venue = event.venue, !venue.isEmpty {
+                if let address = event.address, !address.isEmpty {
                     HStack(spacing: 4) {
                         Image(systemName: "mappin.circle.fill").font(.system(size: 11))
-                        Text(venue).font(.system(size: 12))
+                        Text(address).font(.system(size: 12))
                     }
                     .foregroundStyle(.white.opacity(0.8))
                 } else if let city = event.city, !city.isEmpty {
