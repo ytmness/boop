@@ -34,6 +34,19 @@ class GlassContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Si no hay backgroundColor personalizado, usa GlassBase para consistencia
+    if (backgroundColor == null && boxShadow == null && border == null) {
+      return GlassBase(
+        width: width,
+        height: height,
+        padding: padding,
+        margin: margin,
+        borderRadius: borderRadius,
+        child: child,
+      );
+    }
+
+    // Si hay estilos personalizados, usa la implementación original
     final isDark = CupertinoTheme.brightnessOf(context) == Brightness.dark;
 
     return Container(

@@ -32,6 +32,7 @@ class SectionHeader extends StatelessWidget {
           if (actionText != null && onActionTap != null)
             CupertinoButton(
               padding: EdgeInsets.zero,
+              minSize: 0,
               onPressed: onActionTap,
               child: Text(
                 actionText!,

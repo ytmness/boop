@@ -1,164 +1,149 @@
-# BOOP iOS - SwiftUI con Liquid Glass
+# BOOP iOS - Aplicación Nativa SwiftUI
 
-Aplicación iOS nativa desarrollada en SwiftUI con el efecto **Liquid Glass** de iOS 26.
+Aplicación iOS nativa con Liquid Glass usando SwiftUI y Supabase.
 
-## 🎨 Características
-
-- **Liquid Glass Effect**: Implementación completa del efecto de vidrio líquido translúcido
-- **SwiftUI Moderno**: Construido con SwiftUI y las últimas APIs de iOS 26
-- **Componentes Reutilizables**: GlassCard, GlassButton, GlassBackground
-- **Navegación Fluida**: Tab bar y navigation bars con efecto glass automático
-- **Animaciones Suaves**: Transiciones y morphing entre elementos
-
-## 📋 Requisitos
-
-- **Xcode 26.1+** (o superior)
-- **iOS 26.0+** (para Liquid Glass completo)
-- **Swift 6.0+**
-
-## 🏗️ Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
-BoopApp/
-├── BoopApp/
-│   ├── BoopAppApp.swift          # Entry point
-│   ├── ContentView.swift          # Main view router
-│   ├── Views/
+boop-ios/
+├── Boop/
+│   ├── App/
+│   │   └── BoopApp.swift
+│   ├── Core/
+│   │   ├── Design/
+│   │   │   ├── GlassComponents.swift
+│   │   │   └── GlassExtensions.swift
+│   │   ├── Config/
+│   │   │   └── SupabaseConfig.swift
+│   │   └── Models/
+│   │       ├── Event.swift
+│   │       └── User.swift
+│   ├── Features/
 │   │   ├── Auth/
-│   │   │   └── LoginView.swift    # Pantalla de login con glass
+│   │   │   ├── ViewModels/
+│   │   │   │   └── AuthViewModel.swift
+│   │   │   └── Views/
+│   │   │       ├── PhoneLoginView.swift
+│   │   │       ├── EmailLoginView.swift
+│   │   │       └── VerifyOTPView.swift
 │   │   ├── Events/
-│   │   │   └── EventsHubView.swift # Hub de eventos
-│   │   ├── Profile/
-│   │   │   └── ProfileView.swift   # Perfil de usuario
-│   │   ├── ExploreView.swift
-│   │   └── MainTabView.swift       # Navegación principal
-│   ├── Components/
-│   │   └── Glass/
-│   │       ├── GlassCard.swift     # Tarjeta con efecto glass
-│   │       ├── GlassButton.swift   # Botón interactivo glass
-│   │       └── GlassBackground.swift
-│   └── Utils/
-│       └── GlassEffectExtensions.swift # Extensiones y helpers
+│   │   │   ├── Services/
+│   │   │   │   └── EventService.swift
+│   │   │   └── Views/
+│   │   │       ├── EventsHubView.swift
+│   │   │       └── CreateEventView.swift
+│   │   └── Profile/
+│   │       └── Views/
+│   │           └── ProfileView.swift
+│   └── Shared/
+│       └── Components/
+│           └── GlassButton.swift
+└── Package.swift (SPM dependencies)
 ```
 
-## 🚀 Uso
+## Configuración
+
+1. **Crear proyecto Xcode:**
+   - Abre Xcode
+   - File > New > Project
+   - iOS > App
+   - Nombre: `Boop`
+   - Interface: SwiftUI
+   - Language: Swift
+
+2. **Agregar dependencias (SPM):**
+   - File > Add Package Dependencies
+   - URL: `https://github.com/supabase/supabase-swift`
+   - Versión: Latest
+
+3. **Copiar archivos:**
+   - Copia todos los archivos de esta carpeta a tu proyecto Xcode
+   - Asegúrate de que los archivos estén en los targets correctos
+
+4. **Configurar Supabase:**
+   - Edita `SupabaseConfig.swift` con tus credenciales (ya están configuradas desde Flutter)
+
+## Características
+
+- ✅ Liquid Glass nativo (iOS 26+) con fallback a `.ultraThinMaterial`
+- ✅ Flujo OTP idéntico a Flutter (8 dígitos, email/phone)
+- ✅ Misma base Supabase que Flutter
+- ✅ Pantallas: Login, VerifyOTP, Home, Profile, CreateEvent
+
+## 🎨 Liquid Glass
 
 ### Componentes Básicos
 
-#### GlassCard
+#### GlassButton
 ```swift
-GlassCard {
+GlassButton(title: "Iniciar Sesión", action: {})
+```
+
+#### GlassTextField
+```swift
+GlassTextField(placeholder: "Email", text: $email)
+```
+
+#### GlassContainer
+```swift
+GlassContainer {
     Text("Contenido")
         .foregroundStyle(.white)
 }
 ```
 
-#### GlassButton
-```swift
-GlassButton("Iniciar Sesión", isProminent: true) {
-    // Acción
-}
-```
+### Extensiones
 
-#### Glass Effect Directo
 ```swift
+// Aplicar efecto glass directamente
 Text("Hola")
-    .padding()
-    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 16))
-```
+    .boopGlassEffect(interactive: true)
 
-### GlassEffectContainer
-
-Para agrupar múltiples elementos de vidrio:
-
-```swift
-GlassEffectContainer {
-    VStack {
-        Button1().glassEffect()
-        Button2().glassEffect()
-    }
-}
-```
-
-### Morphing Animations
-
-Para transiciones suaves entre vistas:
-
-```swift
-@Namespace private var glassNamespace
-
-GlassEffectContainer {
-    if expanded {
-        Panel().glassEffectID("panel", in: glassNamespace)
-    } else {
-        Button().glassEffectID("panel", in: glassNamespace)
-    }
-}
+// Botón circular glass
+Image(systemName: "plus")
+    .boopGlassCircleButton(diameter: 64)
 ```
 
 ## 📱 Pantallas
 
 ### Login
-- Fondo con gradiente oscuro
+- Fondo oscuro
 - Formulario en tarjeta glass translúcida
 - Botones interactivos con efecto glass
-- Logo con efecto circular glass
+- Soporte para teléfono y email
+
+### VerifyOTP
+- 8 campos de código
+- Verificación automática al completar
+- Reenvío de código
 
 ### Events Hub
-- Barra de búsqueda glass
-- Grid de eventos con tarjetas glass
+- Grid de eventos con cards glass
 - Navegación con barra glass automática
 
 ### Profile
-- Header de perfil con imagen glass
-- Menú de opciones con items glass
-- Botón de logout con tinte rojo
-
-## 🎯 Buenas Prácticas
-
-1. **No sobreusar**: Reserva Liquid Glass para navegación y controles, no para todo el contenido
-2. **Contenedores**: Agrupa elementos cercanos en `GlassEffectContainer`
-3. **Rendimiento**: Evita múltiples capas de glass apiladas
-4. **Accesibilidad**: Respeta las preferencias del usuario (Reduce Transparency, etc.)
+- Header de perfil
+- Información del usuario
+- Botón de logout
 
 ## ⚠️ Notas Importantes
 
 - **iOS 26+**: El efecto Liquid Glass completo requiere iOS 26.0+
 - **Fallback**: En versiones anteriores, se usa `.ultraThinMaterial` como fallback
-- **Xcode 26**: Necesitas Xcode 26.1+ para compilar con las APIs de Liquid Glass
+- **Xcode**: Necesitas Xcode 15.0+ para compilar
 
 ## 🔄 Migración desde Flutter
 
 Este proyecto es una versión nativa SwiftUI del proyecto Flutter original. Las funcionalidades principales se mantienen:
 
-- ✅ Autenticación
-- ✅ Eventos
+- ✅ Autenticación OTP (8 dígitos)
+- ✅ Eventos (CRUD completo)
 - ✅ Perfil
 - ✅ Navegación por tabs
+- ✅ Misma base Supabase
 
 ## 📚 Referencias
 
 - [Apple WWDC25 - Meet Liquid Glass](https://developer.apple.com)
 - [SwiftUI Documentation](https://developer.apple.com/documentation/swiftui)
-- [iOS 26 Release Notes](https://developer.apple.com)
-
-## 🛠️ Desarrollo
-
-Para abrir el proyecto:
-
-```bash
-cd boop-ios
-open BoopApp.xcodeproj
-```
-
-O crear el proyecto Xcode completo si aún no existe.
-
-## 📝 TODO
-
-- [ ] Integrar con Supabase
-- [ ] Implementar autenticación real
-- [ ] Agregar más pantallas (Create Event, Event Details)
-- [ ] Integrar mapas con Google Maps
-- [ ] Agregar notificaciones push
-- [ ] Implementar pagos con Stripe
-
+- [Supabase Swift](https://github.com/supabase/supabase-swift)
