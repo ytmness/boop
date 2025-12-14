@@ -37,7 +37,7 @@ struct EventsHubView: View {
                 GlassAnimatedBackground()
                 
                 ScrollView {
-                    VStack(spacing: 24) {
+                    LazyVStack(spacing: 24) {
                         // Lector de offset
                         Color.clear
                             .frame(height: 1)
@@ -60,8 +60,7 @@ struct EventsHubView: View {
                         .padding(.horizontal, 16)
                         .padding(.bottom, 16)
                     }
-                    // Deja espacio arriba para que el header overlay no tape el primer evento
-                    .padding(.top, headerHeight + 8)
+                    .padding(.top, headerHeight + 20)
                 }
                 .coordinateSpace(name: "scroll")
                 .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
@@ -81,7 +80,7 @@ struct EventsHubView: View {
                     )
                     Spacer()
                 }
-                .ignoresSafeArea(edges: .top)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
             .navigationBarHidden(true)
             .toolbarColorScheme(.dark, for: .navigationBar)
@@ -159,7 +158,7 @@ private struct HomeOverlayHeader: View {
             }
         }
         .frame(height: height)
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .top)
         .padding(.top, 10)
         .background {
             // Velo muy sutil solo para legibilidad
@@ -167,6 +166,7 @@ private struct HomeOverlayHeader: View {
                 .fill(.ultraThinMaterial)
                 .opacity(0.18)
         }
+        .allowsHitTesting(true)
     }
 }
 
