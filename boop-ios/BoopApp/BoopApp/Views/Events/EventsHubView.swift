@@ -46,7 +46,6 @@ struct EventsHubView: View {
                     )
                     .background(Color.clear)
                     .overlay(Color.clear)
-                    .padding(.top, 10)
                     
                     // Events feed (hace scroll, header se mantiene fijo arriba)
                     ScrollView {
@@ -85,7 +84,6 @@ struct EventsHubView: View {
                 }
                 .background(Color.clear)
                 .overlay(Color.clear)
-                .ignoresSafeArea(edges: .top)
             }
             .navigationBarHidden(true)
             .toolbarColorScheme(.dark, for: .navigationBar)
@@ -113,11 +111,12 @@ private struct HomeOverlayHeader: View {
     private var isCollapsed: Bool { scrollOffset > 30 }
     
     var body: some View {
-        VStack(spacing: isCollapsed ? 8 : 10) {
-            Text("BOOP")
-                .font(.system(size: isCollapsed ? 22 : 30, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
-                .shadow(color: .black.opacity(0.35), radius: 10, x: 0, y: 6)
+        GeometryReader { geo in
+            VStack(spacing: isCollapsed ? 8 : 10) {
+                Text("BOOP")
+                    .font(.system(size: isCollapsed ? 22 : 30, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+                    .shadow(color: .black.opacity(0.35), radius: 10, x: 0, y: 6)
             
             if !isCollapsed {
                 // Burbujas visibles solo al inicio (tipo Instagram)
@@ -164,9 +163,10 @@ private struct HomeOverlayHeader: View {
                     .padding(.vertical, 8)
                 }
             }
+            .padding(.top, geo.safeAreaInsets.top + 8)
+            .frame(maxWidth: .infinity, alignment: .top)
         }
         .frame(height: height)
-        .frame(maxWidth: .infinity, alignment: .top)
         .background(Color.clear)
         .overlay(Color.clear)
         .compositingGroup()
