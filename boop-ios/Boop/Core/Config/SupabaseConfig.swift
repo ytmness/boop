@@ -16,8 +16,13 @@ class SupabaseConfig {
     }
     
     func initialize() {
+        guard let url = URL(string: supabaseURL) else {
+            print("⚠️ Error: URL de Supabase inválida")
+            return
+        }
+        
         client = SupabaseClient(
-            supabaseURL: URL(string: supabaseURL)!,
+            supabaseURL: url,
             supabaseKey: supabaseAnonKey
         )
     }

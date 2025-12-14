@@ -9,6 +9,8 @@ import SwiftUI
 
 struct LoginView: View {
     @EnvironmentObject var viewModel: AuthViewModel
+    @State private var showOTPView = false
+    @State private var emailInput = ""
     
     // Tamaños escalables que responden al Dynamic Type y Zoom
     @ScaledMetric(relativeTo: .largeTitle) private var logoSize: CGFloat = 140
@@ -49,21 +51,12 @@ struct LoginView: View {
                         // Email field
                         SimpleTextField(
                             "Email",
-                            text: $viewModel.email,
+                            text: $emailInput,
                             icon: "envelope"
                         )
                         .textContentType(.emailAddress)
                         .keyboardType(.emailAddress)
                         .autocapitalization(.none)
-                        
-                        // Password field
-                        SimpleTextField(
-                            "Contraseña",
-                            text: $viewModel.password,
-                            icon: "lock",
-                            isSecure: true
-                        )
-                        .textContentType(.password)
                         
                         // Error message
                         if let error = viewModel.errorMessage {
@@ -74,44 +67,11 @@ struct LoginView: View {
                         }
                         
                         // Login button - Glass real (botón flotante)
-                        SimpleGlassButton("Iniciar Sesión") {
-                            Task {
-                                await viewModel.login()
-                            }
+                        SimpleGlassButton("Continuar con Email") {
+                            sendOTP()
                         }
-                        .disabled(viewModel.isLoading)
-                        .opacity(viewModel.isLoading ? 0.6 : 1.0)
-                    
-                        // Divider
-                        HStack(spacing: 12) { // Spacing.md equivalente
-                            Rectangle()
-                                .fill(.white.opacity(0.2))
-                                .frame(height: 1)
-                            
-                            Text("o")
-                                .foregroundStyle(.white.opacity(0.5))
-                                .padding(.horizontal, 12) // Spacing.md equivalente
-                            
-                            Rectangle()
-                                .fill(.white.opacity(0.2))
-                                .frame(height: 1)
-                        }
-                        .padding(.vertical, 8) // Spacing.sm equivalente
-                        
-                        // Alternative login options - Botones circulares con glass real
-                        HStack(spacing: 16) { // Spacing.lg equivalente
-                            SimpleGlassCircleButton(icon: "apple.logo", size: 56) {
-                                Task {
-                                    await viewModel.loginWithApple()
-                                }
-                            }
-                            
-                            SimpleGlassCircleButton(icon: "envelope.fill", size: 56) {
-                                Task {
-                                    await viewModel.loginWithEmail()
-                                }
-                            }
-                        }
+                        .disabled(viewModel.isLoading || emailInput.isEmpty)
+                        .opacity((viewModel.isLoading || emailInput.isEmpty) ? 0.6 : 1.0)
                     }
                     .padding(spacing * 0.67) // CardSize.padding equivalente (16/24)
                     .background {
@@ -120,28 +80,36 @@ struct LoginView: View {
                     }
                     .padding(.horizontal, spacing) // Spacing.xxl equivalente
                     
-                    // Sign up link
-                    Button(action: {}) {
-                        HStack(spacing: 4) {
-                            Text("¿No tienes cuenta?")
-                                .foregroundStyle(.white.opacity(0.7))
-                            Text("Regístrate")
-                                .fontWeight(.semibold)
-                                .foregroundStyle(.white)
-                        }
-                            .font(.subheadline)
-                    }
-                    .padding(.top, 8) // Spacing.sm equivalente
-                    
                     Spacer()
                         .frame(height: 40)
                 }
             }
         }
+        .sheet(isPresented: $showOTPView) {
+            VerifyOTPView(email: emailInput)
+                .environmentObject(viewModel)
+        }
         .onChange(of: viewModel.isAuthenticated) { _, isAuth in
             // Navegación automática al autenticarse
             if isAuth {
+                showOTPView = false
                 // ContentView manejará el cambio
+            }
+        }
+    }
+    
+    private func sendOTP() {
+        guard !emailInput.isEmpty, emailInput.contains("@") else {
+            viewModel.errorMessage = "Por favor, ingresa un email válido"
+            return
+        }
+        
+        Task {
+            do {
+                try await viewModel.sendOTP(email: emailInput)
+                showOTPView = true
+            } catch {
+                // Error manejado por viewModel.errorMessage
             }
         }
     }

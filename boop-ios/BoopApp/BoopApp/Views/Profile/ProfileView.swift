@@ -62,7 +62,9 @@ struct ProfileView: View {
                         
                         // Logout button - Glass real (botón flotante)
                         SimpleGlassButton("Cerrar Sesión", tint: .red) {
-                            authViewModel.logout()
+                            Task {
+                                await authViewModel.logout()
+                            }
                         }
                         .padding(.horizontal, 16)
                     }
