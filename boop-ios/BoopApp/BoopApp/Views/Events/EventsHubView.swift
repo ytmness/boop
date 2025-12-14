@@ -277,7 +277,11 @@ struct EventFeedCard: View {
                 
                 HStack(spacing: 8) {
                     ticketsButton
-                    ActionButtonsGroup()
+                    if #available(iOS 26.0, *) {
+                        ActionButtonsGroup(isLiked: $isLiked, isSaved: $isSaved)
+                    } else {
+                        ActionButtonsGroupFallback(isLiked: $isLiked, isSaved: $isSaved)
+                    }
                 }
                 .padding(.top, 6)
             }
