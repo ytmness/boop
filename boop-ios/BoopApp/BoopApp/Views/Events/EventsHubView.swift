@@ -156,15 +156,24 @@ struct EventFeedCard: View {
                     .font(.system(size: eventTheme.iconSize, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.9))
             }
-            .frame(height: isCompact ? 210 : 190)  // ✅ Altura normal para feed
+            .frame(height: isCompact ? 280 : 240)  // ✅ Altura aumentada para eventos más largos
             .frame(maxWidth: .infinity)
             .clipped()
             
             // INFO SECTION - Debajo de la imagen (tipo Instagram)
             VStack(alignment: .leading, spacing: 12) {  // ✅ Spacing normal
-                // Botones de acción con sistema glass nativo (idéntico al ejemplo)
+                // Botones de acción con sistema glass nativo (botones a la izquierda)
                 if #available(iOS 26.0, *) {
                     HStack(spacing: 12) {
+                        HStack(spacing: 10) {
+                            GlassIconButton(onSymbol: "heart.fill", offSymbol: "heart", isOn: $isLiked)
+                            GlassIconButton(onSymbol: "bookmark.fill", offSymbol: "bookmark", isOn: $isSaved)
+                            GlassIconButton(onSymbol: "square.and.arrow.up", offSymbol: nil, isOn: .constant(true)) { }
+                        }
+                        .fixedSize(horizontal: true, vertical: false)  // ✅ evita que se compriman/corten
+                        
+                        Spacer(minLength: 0)
+                        
                         Button { } label: {
                             Label("Tickets", systemImage: "ticket")
                                 .lineLimit(1)
@@ -172,24 +181,15 @@ struct EventFeedCard: View {
                         .buttonStyle(.glassProminent)
                         .tint(.purple)
                         .frame(height: 44)
-                        
-                        Spacer(minLength: 0)
-                        
-                        HStack(spacing: 12) {
-                            GlassIconButton(onSymbol: "heart.fill", offSymbol: "heart", isOn: $isLiked)
-                            GlassIconButton(onSymbol: "bookmark.fill", offSymbol: "bookmark", isOn: $isSaved)
-                            GlassIconButton(onSymbol: "square.and.arrow.up", offSymbol: nil, isOn: .constant(true)) { }
-                        }
-                        .fixedSize(horizontal: true, vertical: false)  // ✅ evita que se compriman/corten
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 12)
                 } else {
                     HStack(spacing: 12) {
-                        ticketsButton
-                        Spacer(minLength: 0)
                         ActionButtonsGroupFallback(isLiked: $isLiked, isSaved: $isSaved)
                             .fixedSize(horizontal: true, vertical: false)
+                        Spacer(minLength: 0)
+                        ticketsButton
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 12)
@@ -277,6 +277,15 @@ struct EventFeedCard: View {
                 
                 if #available(iOS 26.0, *) {
                     HStack(spacing: 12) {
+                        HStack(spacing: 10) {
+                            GlassIconButton(onSymbol: "heart.fill", offSymbol: "heart", isOn: $isLiked)
+                            GlassIconButton(onSymbol: "bookmark.fill", offSymbol: "bookmark", isOn: $isSaved)
+                            GlassIconButton(onSymbol: "square.and.arrow.up", offSymbol: nil, isOn: .constant(true)) { }
+                        }
+                        .fixedSize(horizontal: true, vertical: false)  // ✅ evita que se compriman/corten
+                        
+                        Spacer(minLength: 0)
+                        
                         Button { } label: {
                             Label("Tickets", systemImage: "ticket")
                                 .lineLimit(1)
@@ -284,24 +293,15 @@ struct EventFeedCard: View {
                         .buttonStyle(.glassProminent)
                         .tint(.purple)
                         .frame(height: 44)
-                        
-                        Spacer(minLength: 0)
-                        
-                        HStack(spacing: 12) {
-                            GlassIconButton(onSymbol: "heart.fill", offSymbol: "heart", isOn: $isLiked)
-                            GlassIconButton(onSymbol: "bookmark.fill", offSymbol: "bookmark", isOn: $isSaved)
-                            GlassIconButton(onSymbol: "square.and.arrow.up", offSymbol: nil, isOn: .constant(true)) { }
-                        }
-                        .fixedSize(horizontal: true, vertical: false)  // ✅ evita que se compriman/corten
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 6)
                 } else {
                     HStack(spacing: 12) {
-                        ticketsButton
-                        Spacer(minLength: 0)
                         ActionButtonsGroupFallback(isLiked: $isLiked, isSaved: $isSaved)
                             .fixedSize(horizontal: true, vertical: false)
+                        Spacer(minLength: 0)
+                        ticketsButton
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 6)
@@ -373,7 +373,7 @@ struct GlassIconButton: View {
             Image(systemName: isOn ? onSymbol : (offSymbol ?? onSymbol))
                 .foregroundStyle(isOn && onSymbol == "heart.fill" ? .red : .white.opacity(0.9))
                 .contentTransition(.symbolEffect(.replace))
-                .frame(width: 44, height: 44)
+                .frame(width: 38, height: 38)  // ✅ Botones más pequeños
         }
         .buttonStyle(.glass)  // 🔥 EXACTO al ejemplo
         .buttonBorderShape(.circle)  // 🔥 EXACTO al ejemplo
