@@ -110,6 +110,7 @@ private struct HomeOverlayHeader: View {
             Text("BOOP")
                 .font(.system(size: isCollapsed ? 22 : 30, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.35), radius: 10, x: 0, y: 6)
             
             if !isCollapsed {
                 // Burbujas visibles solo al inicio (tipo Instagram)
@@ -160,12 +161,6 @@ private struct HomeOverlayHeader: View {
         .frame(height: height)
         .frame(maxWidth: .infinity, alignment: .top)
         .padding(.top, 10)
-        .background {
-            // Velo muy sutil solo para legibilidad
-            Rectangle()
-                .fill(.ultraThinMaterial)
-                .opacity(0.18)
-        }
         .allowsHitTesting(true)
     }
 }
