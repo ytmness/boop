@@ -25,65 +25,62 @@ struct EventsHubView: View {
         case history = "Historial"
     }
     
-    private var headerHeight: CGFloat {
-        // Grande al inicio, compacto al scrollear
-        scrollOffset > 30 ? 72 : 120
-    }
+    private let headerHeight: CGFloat = 110
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                // Background
+            ZStack(alignment: .top) {
+                // Fondo decorativo (nunca debe bloquear taps)
                 GlassAnimatedBackground()
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
                 
-                VStack(spacing: 0) {
-                    // Header fijo (fuera del ScrollView, como el selector en ExploreView)
-                    HomeOverlayHeader(
-                        selectedTab: $selectedTab,
-                        selectedFilter: $selectedFilter,
-                        scrollOffset: scrollOffset,
-                        height: headerHeight
-                    )
-                    .background(Color.clear)
-                    .overlay(Color.clear)
-                    
-                    // Events feed (hace scroll, header se mantiene fijo arriba)
-                    ScrollView {
-                        LazyVStack(spacing: 24) {
-                            // Lector de offset
-                            Color.clear
-                                .frame(height: 1)
-                                .background(
-                                    GeometryReader { geometry in
-                                        Color.clear.preference(
-                                            key: ScrollOffsetPreferenceKey.self,
-                                            value: geometry.frame(in: .named("scroll")).minY
-                                        )
-                                    }
-                                )
-                            
-                            // FEED
-                            ForEach(0..<10, id: \.self) { index in
-                                EventFeedCard(
-                                    eventNumber: index + 1,
-                                    tabType: selectedTab
-                                )
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.bottom, 16)
+                // Feed
+                ScrollView {
+                    LazyVStack(spacing: 24) {
+                        // Lector de offset
+                        Color.clear
+                            .frame(height: 1)
+                            .background(
+                                GeometryReader { geometry in
+                                    Color.clear.preference(
+                                        key: ScrollOffsetPreferenceKey.self,
+                                        value: geometry.frame(in: .named("scroll")).minY
+                                    )
+                                }
+                            )
+                        
+                        // FEED
+                        ForEach(0..<10, id: \.self) { index in
+                            EventFeedCard(
+                                eventNumber: index + 1,
+                                tabType: selectedTab
+                            )
                         }
-                        .padding(.top, 8)
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 16)
                     }
-                    .coordinateSpace(name: "scroll")
-                    .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
-                            scrollOffset = max(0, -value)
-                        }
-                    }
-                    .ignoresSafeArea(.container, edges: .bottom)
+                    .padding(.top, headerHeight + 10) // deja espacio para el header fijo
+                    .padding(.bottom, 24)
                 }
-                .background(Color.clear)
-                .overlay(Color.clear)
+                .coordinateSpace(name: "scroll")
+                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                        scrollOffset = max(0, -value)
+                    }
+                }
+                .zIndex(0)
+                
+                // Header fijo (BOOP + burbujas)
+                HomeOverlayHeader(
+                    selectedTab: $selectedTab,
+                    selectedFilter: $selectedFilter,
+                    scrollOffset: scrollOffset,
+                    height: headerHeight
+                )
+                .frame(maxWidth: .infinity, alignment: .top)
+                .padding(.top, 0)
+                .zIndex(10) // CLAVE: siempre arriba
             }
             .navigationBarHidden(true)
             .toolbarColorScheme(.dark, for: .navigationBar)
@@ -112,31 +109,28 @@ private struct HomeOverlayHeader: View {
     
     var body: some View {
         GeometryReader { geo in
-            VStack(spacing: isCollapsed ? 8 : 10) {
+            VStack(spacing: 10) {
                 Text("BOOP")
                     .font(.system(size: isCollapsed ? 26 : 34, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
                     .shadow(color: .black.opacity(0.35), radius: 10, x: 0, y: 6)
                 
                 // Burbujas siempre visibles (filtros de pestañas)
-                GeometryReader { proxy in
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 10) {
-                            ForEach(EventsHubView.EventsTab.allCases, id: \.self) { tab in
-                                GlassTabChip(
-                                    title: tab.rawValue,
-                                    isSelected: selectedTab == tab
-                                ) {
-                                    withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
-                                        selectedTab = tab
-                                    }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(EventsHubView.EventsTab.allCases, id: \.self) { tab in
+                            GlassTabChip(
+                                title: tab.rawValue,
+                                isSelected: selectedTab == tab
+                            ) {
+                                withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
+                                    selectedTab = tab
                                 }
                             }
                         }
-                        .frame(minWidth: proxy.size.width, alignment: .center)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 8)
                     }
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 8)
                 }
                 .frame(height: 44)
                 
@@ -162,13 +156,10 @@ private struct HomeOverlayHeader: View {
                 }
             }
             .padding(.top, geo.safeAreaInsets.top + 8)
+            .padding(.bottom, 10)
             .frame(maxWidth: .infinity, alignment: .top)
         }
-        .frame(height: height)
-        .background(Color.clear)
-        .overlay(Color.clear)
-        .compositingGroup()
-        .allowsHitTesting(true)
+        .background(Color.clear) // sin recuadro
     }
 }
 
