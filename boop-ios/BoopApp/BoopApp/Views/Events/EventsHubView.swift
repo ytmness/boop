@@ -32,7 +32,8 @@ struct EventsHubView: View {
                             EventFeedCard(eventNumber: index + 1)
                         }
                         }
-                        .padding(.bottom, 16)  // ✅ Sin padding horizontal para full-width posts
+                        .padding(.horizontal, 16)  // ✅ Padding horizontal restaurado
+                        .padding(.bottom, 16)
                 }
                 // Extender contenido debajo de la tab bar para efecto blur
                 .ignoresSafeArea(.container, edges: .bottom)
@@ -99,6 +100,8 @@ struct EventFeedCard: View {
                 wideCard
             }
         }
+        .padding(.horizontal, 12)  // ✅ evita recorte a los lados
+        .padding(.vertical, 8)
         .scaleEffect(isPressed ? 0.98 : 1.0)
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
         .onTapGesture {
@@ -130,15 +133,11 @@ struct EventFeedCard: View {
             
             // INFO SECTION - Debajo de la imagen (tipo Instagram)
             VStack(alignment: .leading, spacing: 12) {
-                // Botones de acción (arriba, como Instagram)
-                HStack(spacing: 16) {
+                // Botones de acción (restaurados - pequeños con glassCircle)
+                HStack(spacing: 10) {
                     if #available(iOS 26.0, *) {
                         likeButton
-                        Button { } label: {
-                            Image(systemName: "message")
-                                .font(.system(size: 24, weight: .regular))
-                                .foregroundStyle(.white)
-                        }
+                        saveButton
                         shareButton
                     } else {
                         ActionButtonsGroup()
@@ -146,8 +145,18 @@ struct EventFeedCard: View {
                     
                     Spacer()
                     
+                    // Botón Tickets compacto
                     if #available(iOS 26.0, *) {
-                        saveButton
+                        Button { } label: {
+                            Label("Tickets", systemImage: "ticket")
+                                .font(.system(size: 15, weight: .semibold))
+                        }
+                        .buttonStyle(.glassProminent)
+                        .tint(.purple)
+                        .frame(height: 36)
+                        .padding(.horizontal, 16)
+                    } else {
+                        ticketsButton
                     }
                 }
                 .padding(.horizontal, 12)
@@ -158,6 +167,7 @@ struct EventFeedCard: View {
                     Text("Evento \(eventNumber)")
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(.white)
+                        .lineLimit(1)
                     
                     Text("Música electrónica y buena vibra!")
                         .font(.system(size: 14))
@@ -165,6 +175,7 @@ struct EventFeedCard: View {
                         .lineLimit(3)
                 }
                 .padding(.horizontal, 12)
+                .frame(maxWidth: .infinity, alignment: .leading)  // ✅ evita recorte
                 
                 // Fecha y ubicación
                 HStack(spacing: 12) {
@@ -174,22 +185,7 @@ struct EventFeedCard: View {
                 .font(.system(size: 12))
                 .foregroundStyle(.white.opacity(0.7))
                 .padding(.horizontal, 12)
-                
-                // Botón Tickets
-                if #available(iOS 26.0, *) {
-                    Button { } label: {
-                        Label("Tickets", systemImage: "ticket")
-                            .font(.system(size: 15, weight: .semibold))
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.glassProminent)
-                    .tint(.purple)
-                    .frame(height: 44)
-                    .padding(.horizontal, 12)
-                } else {
-                    ticketsButton
-                        .padding(.horizontal, 12)
-                }
+                .frame(maxWidth: .infinity, alignment: .leading)  // ✅ evita recorte
             }
             .padding(.bottom, 12)
         }
@@ -210,7 +206,20 @@ struct EventFeedCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
     
-    // MARK: - Like Button con animación y relleno (tipo Instagram)
+    // MARK: - Glass Circle Background
+    private var glassCircle: some View {
+        Group {
+            if #available(iOS 26.0, *) {
+                Circle()
+                    .glassEffect(.regular, in: Circle())
+            } else {
+                Circle()
+                    .fill(.ultraThinMaterial)
+            }
+        }
+    }
+    
+    // MARK: - Like Button con animación y relleno (restaurado - pequeño)
     @available(iOS 26.0, *)
     private var likeButton: some View {
         Button {
@@ -219,15 +228,18 @@ struct EventFeedCard: View {
             }
         } label: {
             Image(systemName: isLiked ? "heart.fill" : "heart")
-                .font(.system(size: 24, weight: .regular))
-                .foregroundStyle(isLiked ? .red : .white)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(isLiked ? .red : .white.opacity(0.9))
                 .contentTransition(.symbolEffect(.replace))  // ✅ swap suave
                 .symbolEffect(.bounce, value: isLiked)  // ✅ pop evidente
+                .frame(width: 34, height: 34)
+                .background(glassCircle)
         }
         .buttonStyle(.plain)  // ✅ evita que SwiftUI cambie el look
+        .contentShape(Circle())
     }
     
-    // MARK: - Save Button con animación y relleno (tipo Instagram)
+    // MARK: - Save Button con animación y relleno (restaurado - pequeño)
     @available(iOS 26.0, *)
     private var saveButton: some View {
         Button {
@@ -236,25 +248,31 @@ struct EventFeedCard: View {
             }
         } label: {
             Image(systemName: isSaved ? "bookmark.fill" : "bookmark")
-                .font(.system(size: 24, weight: .regular))
-                .foregroundStyle(.white)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.9))
                 .contentTransition(.symbolEffect(.replace))  // ✅
                 .symbolEffect(.bounce, value: isSaved)  // ✅ pop evidente
+                .frame(width: 34, height: 34)
+                .background(glassCircle)
         }
         .buttonStyle(.plain)
+        .contentShape(Circle())
     }
     
-    // MARK: - Share Button (tipo Instagram)
+    // MARK: - Share Button (restaurado - pequeño)
     @available(iOS 26.0, *)
     private var shareButton: some View {
         Button {
             // share action
         } label: {
-            Image(systemName: "paperplane")
-                .font(.system(size: 24, weight: .regular))
-                .foregroundStyle(.white)
+            Image(systemName: "square.and.arrow.up")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.9))
+                .frame(width: 34, height: 34)
+                .background(glassCircle)
         }
         .buttonStyle(.plain)
+        .contentShape(Circle())
     }
     
     // MARK: - Wide Card (Horizontal - Layout actual)
