@@ -100,7 +100,6 @@ struct EventFeedCard: View {
                 wideCard
             }
         }
-        .padding(.horizontal, 12)  // ✅ evita recorte a los lados
         .padding(.vertical, 8)
         .scaleEffect(isPressed ? 0.98 : 1.0)
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
@@ -159,8 +158,8 @@ struct EventFeedCard: View {
                         ticketsButton
                     }
                 }
-                .padding(.horizontal, 12)
-                .padding(.top, 8)
+                .padding(.horizontal, 16)  // ✅ Padding aumentado
+                .padding(.top, 12)
                 
                 // Título y descripción
                 VStack(alignment: .leading, spacing: 6) {
@@ -174,8 +173,8 @@ struct EventFeedCard: View {
                         .foregroundStyle(.white.opacity(0.9))
                         .lineLimit(3)
                 }
-                .padding(.horizontal, 12)
-                .frame(maxWidth: .infinity, alignment: .leading)  // ✅ evita recorte
+                .padding(.horizontal, 16)  // ✅ Padding aumentado
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 // Fecha y ubicación
                 HStack(spacing: 12) {
@@ -184,11 +183,12 @@ struct EventFeedCard: View {
                 }
                 .font(.system(size: 12))
                 .foregroundStyle(.white.opacity(0.7))
-                .padding(.horizontal, 12)
-                .frame(maxWidth: .infinity, alignment: .leading)  // ✅ evita recorte
+                .padding(.horizontal, 16)  // ✅ Padding aumentado
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.bottom, 12)
+            .padding(.bottom, 16)
         }
+        .padding(.horizontal, 12)  // ✅ Padding externo antes del clipShape
         .background {
             if reduceTransparency {
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
