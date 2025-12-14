@@ -44,20 +44,20 @@ struct OnboardingView: View {
             ZStack {
                 Color.black.ignoresSafeArea()
                 
-                VStack(spacing: Spacing.xxl) {
+                VStack(spacing: Spacing.xl) {
                     Spacer()
                     
                     Text("BOOP")
-                        .font(.system(size: Typography.largeTitle, weight: .bold))
+                        .font(.system(size: 36, weight: .bold))  // ✅ Reducido de 48 a 36
                         .foregroundStyle(.white)
                     
                     Text("Conecta con eventos increíbles")
-                        .font(.system(size: Typography.body))
+                        .font(.system(size: 15))  // ✅ Reducido de 17 a 15
                         .foregroundStyle(.white.opacity(0.8))
                     
                     Spacer()
                     
-                    VStack(spacing: Spacing.lg) {
+                    VStack(spacing: Spacing.md) {  // ✅ Reducido spacing de lg a md
                         Button {
                             showPhoneLogin = true
                         } label: {
@@ -71,7 +71,7 @@ struct OnboardingView: View {
                         }
                     }
                     .padding(.horizontal, Spacing.lg)
-                    .padding(.bottom, Spacing.xxl)
+                    .padding(.bottom, Spacing.xl)  // ✅ Reducido de xxl a xl
                 }
             }
             .navigationDestination(isPresented: $showPhoneLogin) {

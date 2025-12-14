@@ -158,7 +158,7 @@ struct EventFeedCard: View {
                         ticketsButton
                     }
                 }
-                .padding(.horizontal, 20)  // ✅ Padding aumentado aún más
+                .padding(.horizontal, 24)  // ✅ Padding aumentado aún más
                 .padding(.top, 12)
                 
                 // Título y descripción
@@ -173,7 +173,7 @@ struct EventFeedCard: View {
                         .foregroundStyle(.white.opacity(0.9))
                         .lineLimit(3)
                 }
-                .padding(.horizontal, 20)  // ✅ Padding aumentado aún más
+                .padding(.horizontal, 24)  // ✅ Padding aumentado aún más
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
                 // Fecha y ubicación
@@ -183,12 +183,12 @@ struct EventFeedCard: View {
                 }
                 .font(.system(size: 12))
                 .foregroundStyle(.white.opacity(0.7))
-                .padding(.horizontal, 20)  // ✅ Padding aumentado aún más
+                .padding(.horizontal, 24)  // ✅ Padding aumentado aún más
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.bottom, 16)
         }
-        .padding(.horizontal, 16)  // ✅ Padding externo aumentado
+        .padding(.horizontal, 20)  // ✅ Padding externo aumentado aún más
         .background {
             if reduceTransparency {
                 RoundedRectangle(cornerRadius: 12, style: .continuous)

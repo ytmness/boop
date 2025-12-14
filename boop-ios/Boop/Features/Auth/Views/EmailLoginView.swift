@@ -24,20 +24,20 @@ struct EmailLoginView: View {
                 .padding()
                 
                 ScrollView {
-                    VStack(alignment: .leading, spacing: Spacing.xl) {
+                    VStack(alignment: .leading, spacing: Spacing.lg) {  // ✅ Reducido spacing
                         // Título
-                        VStack(alignment: .leading, spacing: Spacing.sm) {
+                        VStack(alignment: .leading, spacing: Spacing.xs) {  // ✅ Reducido spacing
                             Text(codeSent ? "Revisa tu correo" : "Ingresa tu correo electrónico")
-                                .font(.system(size: 24, weight: .bold))
+                                .font(.system(size: 20, weight: .bold))  // ✅ Reducido de 24 a 20
                                 .foregroundStyle(.white)
                             
                             if codeSent {
                                 Text("Te hemos enviado un código de verificación a \(email)\n\nBusca el código numérico de 6 dígitos en tu correo.")
-                                    .font(.system(size: 16))
+                                    .font(.system(size: 14))  // ✅ Reducido de 16 a 14
                                     .foregroundStyle(.white.opacity(0.8))
                             } else {
                                 Text("Te enviaremos un código de verificación")
-                                    .font(.system(size: 16))
+                                    .font(.system(size: 14))  // ✅ Reducido de 16 a 14
                                     .foregroundStyle(.white.opacity(0.8))
                             }
                         }

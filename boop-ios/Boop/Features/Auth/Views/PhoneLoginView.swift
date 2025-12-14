@@ -25,19 +25,19 @@ struct PhoneLoginView: View {
                 .padding()
                 
                 ScrollView {
-                    VStack(alignment: .leading, spacing: Spacing.xl) {
+                    VStack(alignment: .leading, spacing: Spacing.lg) {  // ✅ Reducido spacing
                         // Título
-                        VStack(alignment: .leading, spacing: Spacing.sm) {
+                        VStack(alignment: .leading, spacing: Spacing.xs) {  // ✅ Reducido spacing
                             Text("Iniciar sesión")
-                                .font(.system(size: 28, weight: .bold))
+                                .font(.system(size: 22, weight: .bold))  // ✅ Reducido de 28 a 22
                                 .foregroundStyle(.white)
                             
                             Text("Ingresa tu número de teléfono")
-                                .font(.system(size: 24, weight: .bold))
+                                .font(.system(size: 18, weight: .bold))  // ✅ Reducido de 24 a 18
                                 .foregroundStyle(.white)
                             
                             Text("Te enviaremos un código de verificación")
-                                .font(.system(size: 16))
+                                .font(.system(size: 14))  // ✅ Reducido de 16 a 14
                                 .foregroundStyle(.white.opacity(0.8))
                         }
                         .padding(.horizontal, Spacing.lg)
