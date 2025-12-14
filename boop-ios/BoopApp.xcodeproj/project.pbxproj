@@ -21,6 +21,9 @@
 		1A00000C /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00001D /* SplashView.swift */; };
 		1A00000D /* GlassComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00001E /* GlassComponents.swift */; };
 		1A00000E /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00001F /* AuthViewModel.swift */; };
+		1A000101 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000102 /* SearchView.swift */; };
+		1A000103 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000104 /* ActivityView.swift */; };
+		1A000105 /* VerifyOTPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000106 /* VerifyOTPView.swift */; };
 		1A000100 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1A0000FF /* Supabase */; };
 /* End PBXBuildFile section */
 
@@ -38,6 +41,9 @@
 		1A00001D /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		1A00001E /* GlassComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassComponents.swift; sourceTree = "<group>"; };
 		1A00001F /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		1A000102 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		1A000104 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
+		1A000106 /* VerifyOTPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyOTPView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +94,8 @@
 			children = (
 				1A000017 /* MainTabView.swift */,
 				1A000016 /* ExploreView.swift */,
+				1A000102 /* SearchView.swift */,
+				1A000104 /* ActivityView.swift */,
 				1A000061 /* Auth */,
 				1A000062 /* Events */,
 				1A000063 /* Profile */,
@@ -100,6 +108,7 @@
 			children = (
 				1A000013 /* LoginView.swift */,
 				1A00001D /* SplashView.swift */,
+				1A000106 /* VerifyOTPView.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -248,10 +257,13 @@
 				1A000005 /* ProfileView.swift in Sources */,
 				1A000006 /* ExploreView.swift in Sources */,
 		1A000007 /* MainTabView.swift in Sources */,
+				1A000101 /* SearchView.swift in Sources */,
+				1A000103 /* ActivityView.swift in Sources */,
 		1A00000B /* GlassEffectExtensions.swift in Sources */,
 				1A00000C /* SplashView.swift in Sources */,
 				1A00000D /* GlassComponents.swift in Sources */,
 				1A00000E /* AuthViewModel.swift in Sources */,
+				1A000105 /* VerifyOTPView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
