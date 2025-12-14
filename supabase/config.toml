@@ -1,0 +1,16 @@
+# Configuración de Supabase Edge Functions
+# Este archivo es usado por Supabase CLI
+
+[functions]
+  [functions.create-payment-intent]
+    verify_jwt = true
+  
+  [functions.stripe-webhook]
+    verify_jwt = false  # Los webhooks de Stripe no usan JWT
+  
+  [functions.redeem-ticket]
+    verify_jwt = true
+  
+  [functions.send-notification]
+    verify_jwt = true
+
