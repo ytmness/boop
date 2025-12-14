@@ -163,29 +163,30 @@ struct EventFeedCard: View {
             // INFO SECTION - Debajo de la imagen (tipo Instagram)
             VStack(alignment: .leading, spacing: 20) {  // ✅ Spacing aumentado de 12 a 20
                 // Botones de acción con sistema glass nativo
-                if #available(iOS 26.0, *) {
-                    GlassEffectContainer(spacing: 20) {
-                        HStack(spacing: 10) {
-                            glassIconButton("heart", isOn: isLiked) {
-                                withAnimation(.bouncy(duration: 0.35)) {
-                                    isLiked.toggle()
+                HStack(spacing: 16) {
+                    if #available(iOS 26.0, *) {
+                        GlassEffectContainer(spacing: 20) {
+                            HStack(spacing: 10) {
+                                glassIconButton("heart", isOn: isLiked) {
+                                    withAnimation(.bouncy(duration: 0.35)) {
+                                        isLiked.toggle()
+                                    }
                                 }
-                            }
-                            
-                            glassIconButton("bookmark", isOn: isSaved) {
-                                withAnimation(.bouncy(duration: 0.35)) {
-                                    isSaved.toggle()
+                                
+                                glassIconButton("bookmark", isOn: isSaved) {
+                                    withAnimation(.bouncy(duration: 0.35)) {
+                                        isSaved.toggle()
+                                    }
                                 }
-                            }
-                            
-                            glassIconButton("square.and.arrow.up") {
-                                // share action
+                                
+                                glassIconButton("square.and.arrow.up") {
+                                    // share action
+                                }
                             }
                         }
+                    } else {
+                        ActionButtonsGroup()
                     }
-                } else {
-                    ActionButtonsGroup()
-                }
                     
                     Spacer()
                     
