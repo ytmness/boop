@@ -30,76 +30,9 @@ struct EventsHubView: View {
                 // Background
                 GlassAnimatedBackground()
                 
-                VStack(spacing: 0) {
-                    // Fixed Header (como historias de Instagram)
-                    VStack(spacing: 0) {
-                        // Logo BOOP centrado
-                        Text("BOOP")
-                            .font(.system(size: 28, weight: .bold))
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding(.top, 8)
-                            .padding(.bottom, 12)
-                        
-                        // Tab selector (burbujas fijas)
-                        GeometryReader { proxy in
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 10) {
-                                    ForEach(EventsTab.allCases, id: \.self) { tab in
-                                        GlassTabChip(
-                                            title: tab.rawValue,
-                                            isSelected: selectedTab == tab
-                                        ) {
-                                            withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
-                                                selectedTab = tab
-                                            }
-                                        }
-                                    }
-                                }
-                                // Centrado con padding simétrico
-                                .frame(minWidth: proxy.size.width, alignment: .center)
-                                .padding(.horizontal, 24)
-                                .padding(.vertical, 10)
-                            }
-                        }
-                        .frame(height: 52)
-                        
-                        // Filter bar (solo para My Events)
-                        if selectedTab == .myEvents {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 12) {
-                                    ForEach(EventFilter.allCases, id: \.self) { filter in
-                                        FilterChip(
-                                            title: filter.rawValue,
-                                            isSelected: selectedFilter == filter
-                                        ) {
-                                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                                selectedFilter = filter
-                                            }
-                                        }
-                                    }
-                                }
-                                .padding(.leading, 24)
-                                .padding(.trailing, 16)
-                                .padding(.vertical, 8)
-                            }
-                        }
-                    }
-                    .background {
-                        // Fondo glass para el header fijo
-                        if #available(iOS 26.0, *) {
-                            Rectangle()
-                                .fill(.ultraThinMaterial)
-                                .glassEffect(.regular)
-                        } else {
-                            Rectangle()
-                                .fill(.ultraThinMaterial)
-                        }
-                    }
-                    
-                    // Content scrollable (solo esto se desplaza)
-                    ScrollView {
-                        LazyVStack(spacing: 24) {  // ✅ Más espacio entre posts tipo Instagram
+                ScrollView {
+                    LazyVStack(spacing: 24, pinnedViews: [.sectionHeaders]) {
+                        Section {
                             // Events feed según tab seleccionado
                             ForEach(0..<10, id: \.self) { index in
                                 EventFeedCard(
@@ -107,17 +40,97 @@ struct EventsHubView: View {
                                     tabType: selectedTab
                                 )
                             }
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 16)
+                            .padding(.top, 8)
+                        } header: {
+                            HomePinnedHeader(
+                                selectedTab: $selectedTab,
+                                selectedFilter: $selectedFilter
+                            )
                         }
-                        .padding(.horizontal, 16)  // ✅ Padding horizontal restaurado
-                        .padding(.bottom, 16)
-                        .padding(.top, 8)  // ✅ Padding top para el primer evento
                     }
-                    // Extender contenido debajo de la tab bar para efecto blur
-                    .ignoresSafeArea(.container, edges: .bottom)
+                }
+                .ignoresSafeArea(.container, edges: .bottom)
+            }
+            .navigationBarHidden(true)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+        }
+    }
+}
+
+// MARK: - Home Pinned Header
+private struct HomePinnedHeader: View {
+    @Binding var selectedTab: EventsHubView.EventsTab
+    @Binding var selectedFilter: EventsHubView.EventFilter
+    
+    var body: some View {
+        VStack(spacing: 10) {
+            // Logo BOOP más grande, sin recuadro
+            Text("BOOP")
+                .font(.system(size: 32, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
+                .padding(.top, 6)
+            
+            // Tab selector (burbujas fijas)
+            GeometryReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(EventsHubView.EventsTab.allCases, id: \.self) { tab in
+                            GlassTabChip(
+                                title: tab.rawValue,
+                                isSelected: selectedTab == tab
+                            ) {
+                                withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
+                                    selectedTab = tab
+                                }
+                            }
+                        }
+                    }
+                    // Centrado con padding simétrico
+                    .frame(minWidth: proxy.size.width, alignment: .center)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 10)
                 }
             }
-            .navigationBarHidden(true)  // Ocultar navigation bar nativo
-            .toolbarColorScheme(.dark, for: .navigationBar)
+            .frame(height: 52)
+            
+            // Filter bar (solo para My Events)
+            if selectedTab == .myEvents {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(EventsHubView.EventFilter.allCases, id: \.self) { filter in
+                            FilterChip(
+                                title: filter.rawValue,
+                                isSelected: selectedFilter == filter
+                            ) {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    selectedFilter = filter
+                                }
+                            }
+                        }
+                    }
+                    .padding(.leading, 24)
+                    .padding(.trailing, 16)
+                    .padding(.vertical, 8)
+                }
+            }
+        }
+        .padding(.top, 10)
+        .padding(.bottom, 10)
+        .frame(maxWidth: .infinity)
+        .background {
+            // Material sutil para legibilidad al hacer scroll
+            Rectangle()
+                .fill(.ultraThinMaterial)
+                .opacity(0.18)
+                .ignoresSafeArea()
+        }
+        .overlay(alignment: .bottom) {
+            // Línea separadora sutil
+            Rectangle()
+                .fill(.white.opacity(0.12))
+                .frame(height: 1)
         }
     }
 }
