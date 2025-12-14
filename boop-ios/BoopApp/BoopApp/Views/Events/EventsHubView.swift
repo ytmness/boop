@@ -270,7 +270,7 @@ struct EventFeedCard: View {
         Button {
             // share action
         } label: {
-            Image(systemName: "paperplane")
+            Image(systemName: "square.and.arrow.up")
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(.white.opacity(0.9))
                 .frame(width: 34, height: 34)
