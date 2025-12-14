@@ -25,31 +25,31 @@ struct PhoneLoginView: View {
                 .padding()
                 
                 ScrollView {
-                    VStack(alignment: .leading, spacing: Spacing.lg) {  // ✅ Reducido spacing
+                    VStack(alignment: .leading, spacing: Spacing.md) {  // ✅ Reducido spacing de lg a md
                         // Título
-                        VStack(alignment: .leading, spacing: Spacing.xs) {  // ✅ Reducido spacing
+                        VStack(alignment: .leading, spacing: Spacing.xs) {
                             Text("Iniciar sesión")
-                                .font(.system(size: 20, weight: .bold))  // ✅ Reducido de 22 a 20
+                                .font(.system(size: 18, weight: .bold))  // ✅ Reducido de 20 a 18
                                 .foregroundStyle(.white)
                             
                             Text("Ingresa tu número de teléfono")
-                                .font(.system(size: 16, weight: .semibold))  // ✅ Reducido de 18 a 16
+                                .font(.system(size: 14, weight: .semibold))  // ✅ Reducido de 16 a 14
                                 .foregroundStyle(.white)
                             
                             Text("Te enviaremos un código de verificación")
-                                .font(.system(size: 14))  // ✅ Reducido de 16 a 14
+                                .font(.system(size: 13))  // ✅ Reducido de 14 a 13
                                 .foregroundStyle(.white.opacity(0.8))
                         }
-                        .padding(.horizontal, Spacing.xl)  // ✅ Aumentado padding horizontal
+                        .padding(.horizontal, Spacing.md)  // ✅ Reducido padding horizontal de xl a md
                         
                         // Campo de teléfono
-                        HStack(spacing: Spacing.md) {
+                        HStack(spacing: Spacing.sm) {  // ✅ Reducido spacing de md a sm
                             GlassContainer(cornerRadius: InputSize.cornerRadius, padding: 0) {
                                 Text(countryCode)
                                     .foregroundStyle(.white)
-                                    .frame(width: 80)
+                                    .frame(width: 70)  // ✅ Reducido de 80 a 70
                                     .multilineTextAlignment(.center)
-                                    .padding(.vertical, Spacing.sm)
+                                    .padding(.vertical, Spacing.xs)  // ✅ Reducido de sm a xs
                             }
                             
                             GlassTextField(
@@ -59,12 +59,12 @@ struct PhoneLoginView: View {
                             )
                             .focused($isPhoneFocused)
                         }
-                        .padding(.horizontal, Spacing.xl)  // ✅ Aumentado padding horizontal
+                        .padding(.horizontal, Spacing.md)  // ✅ Reducido padding horizontal de xl a md
                         
                         Spacer()
                         
                         // Botón enviar
-                        VStack(spacing: Spacing.lg) {
+                        VStack(spacing: Spacing.md) {  // ✅ Reducido spacing de lg a md
                             NavigationLink {
                                 VerifyOTPView(phoneOrEmail: "\(countryCode)\(phoneNumber)", isEmail: false)
                             } label: {
@@ -80,14 +80,14 @@ struct PhoneLoginView: View {
                                 // Navegar a soporte
                             }
                             .foregroundStyle(.white)
-                            .font(.system(size: 14))
+                            .font(.system(size: 13))  // ✅ Reducido de 14 a 13
                         }
-                        .padding(.horizontal, Spacing.xl)  // ✅ Aumentado padding horizontal
-                        .padding(.bottom, Spacing.lg)
+                        .padding(.horizontal, Spacing.md)  // ✅ Reducido padding horizontal de xl a md
+                        .padding(.bottom, Spacing.md)  // ✅ Reducido de lg a md
                     }
-                    .frame(maxWidth: 500)  // ✅ Limitar ancho máximo
+                    .frame(maxWidth: 320)  // ✅ Reducido ancho máximo de 500 a 320
                     .frame(maxWidth: .infinity)  // Centrar en pantallas grandes
-                    .padding(.top, Spacing.xl)
+                    .padding(.top, Spacing.md)  // ✅ Reducido padding top de xl a md
                 }
             }
         }
