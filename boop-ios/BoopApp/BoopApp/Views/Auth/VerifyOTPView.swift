@@ -2,7 +2,7 @@
 //  VerifyOTPView.swift
 //  BoopApp
 //
-//  Pantalla de verificación OTP - 6 dígitos
+//  Pantalla de verificación OTP - 8 dígitos
 //
 
 import SwiftUI
@@ -57,68 +57,67 @@ struct VerifyOTPView: View {
                             // Campos de código (8 dígitos)
                             HStack(spacing: 12) {
                                 ForEach(0..<otpLength, id: \.self) { index in
-                                TextField("", text: $codeDigits[index])
-                                    .keyboardType(.numberPad)
-                                    .textContentType(.oneTimeCode)
-                                    .multilineTextAlignment(.center)
-                                    .font(.system(size: 24, weight: .semibold))
-                                    .foregroundStyle(.white)
-                                    .focused($focusedIndex, equals: index)
-                                    .frame(width: 50, height: 60)
-                                    .background {
-                                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                            .fill(.thinMaterial)
-                                    }
-                                    .overlay {
-                                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                            .strokeBorder(
-                                                focusedIndex == index ? Color.white.opacity(0.5) : Color.white.opacity(0.2),
-                                                lineWidth: focusedIndex == index ? 2 : 1
-                                            )
-                                    }
-                                    .onChange(of: codeDigits[index]) { oldValue, newValue in
-                                        handleCodeChange(at: index, newValue: newValue)
-                                    }
+                                    TextField("", text: $codeDigits[index])
+                                        .keyboardType(.numberPad)
+                                        .textContentType(.oneTimeCode)
+                                        .multilineTextAlignment(.center)
+                                        .font(.system(size: 24, weight: .semibold))
+                                        .foregroundStyle(.white)
+                                        .focused($focusedIndex, equals: index)
+                                        .frame(width: 50, height: 60)
+                                        .background {
+                                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                                .fill(.thinMaterial)
+                                        }
+                                        .overlay {
+                                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                                .strokeBorder(
+                                                    focusedIndex == index ? Color.white.opacity(0.5) : Color.white.opacity(0.2),
+                                                    lineWidth: focusedIndex == index ? 2 : 1
+                                                )
+                                        }
+                                        .onChange(of: codeDigits[index]) { oldValue, newValue in
+                                            handleCodeChange(at: index, newValue: newValue)
+                                        }
+                                }
                             }
-                        }
-                        .padding(.horizontal)
-                        
-                        Spacer()
-                        
-                        // Error message
-                        if let error = viewModel.errorMessage {
-                            Text(error)
-                                .font(.caption)
-                                .foregroundStyle(.red)
-                                .padding(.horizontal)
-                        }
-                        
-                        // Botón verificar
-                        VStack(spacing: 16) {
-                            Button(action: verifyCode) {
-                                Text("Verificar")
-                                    .font(.system(size: 17, weight: .semibold))
-                                    .foregroundStyle(.white)
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 52)
-                                    .background {
-                                        Capsule()
-                                            .fill(viewModel.isLoading ? Color.white.opacity(0.3) : Color.white.opacity(0.2))
-                                    }
-                            }
-                            .disabled(viewModel.isLoading)
-                            .padding(.horizontal)
                             
-                            Button("Reenviar código") {
-                                resendCode()
+                            // Error message
+                            if let error = viewModel.errorMessage {
+                                Text(error)
+                                    .font(.caption)
+                                    .foregroundStyle(.red)
                             }
-                            .foregroundStyle(.white.opacity(0.8))
-                            .font(.system(size: 14))
-                            .disabled(viewModel.isLoading)
+                            
+                            // Botón verificar
+                            VStack(spacing: 16) {
+                                Button(action: verifyCode) {
+                                    Text("Verificar")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.white)
+                                        .padding(.vertical, 10)
+                                        .padding(.horizontal, 22)
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .controlSize(.small)
+                                .cornerRadius(14)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .disabled(viewModel.isLoading)
+                                
+                                Button("Reenviar código") {
+                                    resendCode()
+                                }
+                                .foregroundStyle(.white.opacity(0.8))
+                                .font(.system(size: 14))
+                                .disabled(viewModel.isLoading)
+                            }
+                            .padding(.top, 8)
                         }
-                        .padding(.bottom)
+                        .frame(maxWidth: 420)
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, 24)
+                        .padding(.top, 12)
                     }
-                    .padding(.top, 40)
                 }
             }
         }
