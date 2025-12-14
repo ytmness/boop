@@ -159,7 +159,7 @@ private struct HomeOverlayHeader: View {
                     }
                 }
             }
-            .padding(.top, geo.safeAreaInsets.top + 8)
+            .padding(.top, geo.safeAreaInsets.top + 2)
             .padding(.bottom, 10)
             .frame(maxWidth: .infinity, alignment: .top)
         }
