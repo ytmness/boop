@@ -52,14 +52,14 @@ enum CardSize {
 
 // MARK: - Input Sizes
 enum InputSize {
-    /// Altura estándar para inputs
-    static let height: CGFloat = 52
+    /// Altura estándar para inputs (más compacta, consistente con diseño de tarjetas)
+    static let height: CGFloat = 48
     
     /// Corner radius para inputs
     static let cornerRadius: CGFloat = 16
     
-    /// Padding interno para inputs
-    static let padding: CGFloat = 16
+    /// Padding interno para inputs (reducido para consistencia con tarjetas)
+    static let padding: CGFloat = 12
 }
 
 // MARK: - Grid Spacing

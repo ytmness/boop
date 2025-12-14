@@ -24,9 +24,9 @@ struct EmailLoginView: View {
                 .padding()
                 
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 24) {
+                    VStack(alignment: .leading, spacing: Spacing.xl) {
                         // Título
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: Spacing.sm) {
                             Text(codeSent ? "Revisa tu correo" : "Ingresa tu correo electrónico")
                                 .font(.system(size: 24, weight: .bold))
                                 .foregroundStyle(.white)
@@ -41,7 +41,7 @@ struct EmailLoginView: View {
                                     .foregroundStyle(.white.opacity(0.8))
                             }
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, Spacing.lg)
                         
                         if !codeSent {
                             // Campo de email
@@ -51,13 +51,13 @@ struct EmailLoginView: View {
                                 keyboardType: .emailAddress
                             )
                             .focused($isEmailFocused)
-                            .padding(.horizontal)
+                            .padding(.horizontal, Spacing.lg)
                         }
                         
                         Spacer()
                         
                         // Botones
-                        VStack(spacing: 16) {
+                        VStack(spacing: Spacing.lg) {
                             if codeSent {
                                 NavigationLink {
                                     VerifyOTPView(phoneOrEmail: email, isEmail: true)
@@ -87,10 +87,10 @@ struct EmailLoginView: View {
                             .foregroundStyle(.white)
                             .font(.system(size: 14))
                         }
-                        .padding(.horizontal)
-                        .padding(.bottom)
+                        .padding(.horizontal, Spacing.lg)
+                        .padding(.bottom, Spacing.lg)
                     }
-                    .padding(.top, 40)
+                    .padding(.top, Spacing.xl)
                 }
             }
         }

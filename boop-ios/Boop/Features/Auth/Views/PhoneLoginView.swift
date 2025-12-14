@@ -25,9 +25,9 @@ struct PhoneLoginView: View {
                 .padding()
                 
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 24) {
+                    VStack(alignment: .leading, spacing: Spacing.xl) {
                         // Título
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: Spacing.sm) {
                             Text("Iniciar sesión")
                                 .font(.system(size: 28, weight: .bold))
                                 .foregroundStyle(.white)
@@ -40,15 +40,16 @@ struct PhoneLoginView: View {
                                 .font(.system(size: 16))
                                 .foregroundStyle(.white.opacity(0.8))
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, Spacing.lg)
                         
                         // Campo de teléfono
-                        HStack(spacing: 12) {
-                            GlassContainer(cornerRadius: 16, padding: 0) {
+                        HStack(spacing: Spacing.md) {
+                            GlassContainer(cornerRadius: InputSize.cornerRadius, padding: 0) {
                                 Text(countryCode)
                                     .foregroundStyle(.white)
                                     .frame(width: 80)
                                     .multilineTextAlignment(.center)
+                                    .padding(.vertical, Spacing.sm)
                             }
                             
                             GlassTextField(
@@ -58,12 +59,12 @@ struct PhoneLoginView: View {
                             )
                             .focused($isPhoneFocused)
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, Spacing.lg)
                         
                         Spacer()
                         
                         // Botón enviar
-                        VStack(spacing: 16) {
+                        VStack(spacing: Spacing.lg) {
                             NavigationLink {
                                 VerifyOTPView(phoneOrEmail: "\(countryCode)\(phoneNumber)", isEmail: false)
                             } label: {
@@ -74,7 +75,7 @@ struct PhoneLoginView: View {
                                 )
                             }
                             .disabled(viewModel.isLoading || phoneNumber.isEmpty)
-                            .padding(.horizontal)
+                            .padding(.horizontal, Spacing.lg)
                             
                             Button("¿Problemas con el código?") {
                                 // Navegar a soporte
@@ -82,9 +83,9 @@ struct PhoneLoginView: View {
                             .foregroundStyle(.white)
                             .font(.system(size: 14))
                         }
-                        .padding(.bottom)
+                        .padding(.bottom, Spacing.lg)
                     }
-                    .padding(.top, 40)
+                    .padding(.top, Spacing.xl)
                 }
             }
         }
