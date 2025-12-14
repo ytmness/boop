@@ -182,7 +182,8 @@ struct EventFeedCard: View {
                         
                         Spacer(minLength: 0)
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.leading, 28)  // ✅ Padding izquierdo aumentado para mover botones a la derecha
+                    .padding(.trailing, 16)
                     .padding(.top, 12)
                 } else {
                     HStack(spacing: 12) {
@@ -191,7 +192,8 @@ struct EventFeedCard: View {
                         ticketsButton
                         Spacer(minLength: 0)
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.leading, 28)  // ✅ Padding izquierdo aumentado para mover botones a la derecha
+                    .padding(.trailing, 16)
                     .padding(.top, 12)
                 }
                 
@@ -207,7 +209,7 @@ struct EventFeedCard: View {
                         .foregroundStyle(.white.opacity(0.9))
                         .lineLimit(3)
                 }
-                .padding(.leading, 24)  // ✅ Padding izquierdo aumentado para mover a la derecha
+                .padding(.leading, 32)  // ✅ Padding izquierdo aumentado para mover info a la derecha
                 .padding(.trailing, 16)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
@@ -218,7 +220,7 @@ struct EventFeedCard: View {
                 }
                 .font(.system(size: 12))  // ✅ Tamaño normal para feed
                 .foregroundStyle(.white.opacity(0.7))
-                .padding(.leading, 24)  // ✅ Padding izquierdo aumentado para mover a la derecha
+                .padding(.leading, 32)  // ✅ Padding izquierdo aumentado para mover info a la derecha
                 .padding(.trailing, 16)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
