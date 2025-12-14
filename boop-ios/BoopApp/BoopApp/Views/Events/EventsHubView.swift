@@ -162,51 +162,38 @@ struct EventFeedCard: View {
             
             // INFO SECTION - Debajo de la imagen (tipo Instagram)
             VStack(alignment: .leading, spacing: 20) {  // ✅ Spacing aumentado de 12 a 20
-                // Botones de acción con sistema glass nativo
-                HStack(spacing: 16) {
-                    if #available(iOS 26.0, *) {
-                        GlassEffectContainer(spacing: 20) {
-                            HStack(spacing: 10) {
-                                glassIconButton("heart", isOn: isLiked) {
-                                    withAnimation(.bouncy(duration: 0.35)) {
-                                        isLiked.toggle()
-                                    }
-                                }
-                                
-                                glassIconButton("bookmark", isOn: isSaved) {
-                                    withAnimation(.bouncy(duration: 0.35)) {
-                                        isSaved.toggle()
-                                    }
-                                }
-                                
-                                glassIconButton("square.and.arrow.up") {
-                                    // share action
-                                }
-                            }
-                        }
-                    } else {
-                        ActionButtonsGroup()
-                    }
-                    
-                    Spacer()
-                    
+                // Botones de acción con sistema glass nativo (idéntico al ejemplo)
+                HStack(spacing: 12) {
                     // Botón Tickets compacto
                     if #available(iOS 26.0, *) {
                         Button { } label: {
                             Label("Tickets", systemImage: "ticket")
-                                .font(.system(size: 18, weight: .semibold))  // ✅ Aumentado de 15 a 18
+                                .font(.system(size: 18, weight: .semibold))
+                                .lineLimit(1)
                         }
                         .buttonStyle(.glassProminent)
                         .tint(.purple)
-                        .frame(height: 44)  // ✅ Aumentado de 36 a 44
-                        .fixedSize(horizontal: true, vertical: false)  // ✅ Evitar truncamiento
-                        .padding(.horizontal, 24)  // ✅ Padding suficiente para el texto completo
+                        .frame(height: 44)
+                        .fixedSize(horizontal: true, vertical: false)
+                        .padding(.horizontal, 24)
+                        .layoutPriority(1)  // ✅ Tickets se adapta mejor
                     } else {
                         ticketsButton
+                            .layoutPriority(1)
+                            .lineLimit(1)
+                    }
+                    
+                    if #available(iOS 26.0, *) {
+                        ActionButtonsGroup(isLiked: $isLiked, isSaved: $isSaved)
+                            .fixedSize(horizontal: true, vertical: false)  // ✅ no se comprime raro
+                    } else {
+                        ActionButtonsGroupFallback(isLiked: $isLiked, isSaved: $isSaved)
+                            .fixedSize(horizontal: true, vertical: false)
                     }
                 }
-                .padding(.horizontal, 32)  // ✅ Padding aumentado de 24 a 32
-                .padding(.top, 20)  // ✅ Padding aumentado de 12 a 20
+                .padding(.horizontal, 12)  // ✅ evita corte con clip
+                .padding(.top, 20)
+                .padding(.bottom, 8)
                 
                 // Título y descripción
                 VStack(alignment: .leading, spacing: 10) {  // ✅ Spacing aumentado de 6 a 10
@@ -235,7 +222,7 @@ struct EventFeedCard: View {
             }
             .padding(.bottom, 24)  // ✅ Padding aumentado de 16 a 24
         }
-        .padding(.horizontal, 16)  // ✅ Padding externo estándar
+        .padding(.horizontal, 16)  // ✅ Padding externo antes del clip
         .background {
             if reduceTransparency {
                 RoundedRectangle(cornerRadius: 32, style: .continuous)  // ✅ Más redondeado tipo burbuja
@@ -251,47 +238,6 @@ struct EventFeedCard: View {
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))  // ✅ Más redondeado tipo burbuja
-    }
-    
-    // MARK: - Glass Icon Button (sistema nativo iOS 26+)
-    @available(iOS 26.0, *)
-    private func glassIconButton(
-        _ systemName: String,
-        isOn: Bool? = nil,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            Image(systemName: resolvedSymbol(systemName, isOn: isOn))
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(isOn == true && systemName == "heart" ? .red : .white.opacity(0.9))
-                .contentTransition(.symbolEffect(.replace))  // ✅ swap suave fill/unfill
-                .frame(width: 44, height: 44)
-                .modifier(BounceEffectModifier(systemName: systemName, isOn: isOn))
-        }
-        .buttonStyle(.glass)  // ✅ sistema = mismo efecto
-        .buttonBorderShape(.circle)  // ✅ highlight correcto
-    }
-    
-    // MARK: - Bounce Effect Modifier (solo para heart)
-    @available(iOS 26.0, *)
-    private struct BounceEffectModifier: ViewModifier {
-        let systemName: String
-        let isOn: Bool?
-        
-        func body(content: Content) -> some View {
-            if systemName == "heart" {
-                content.symbolEffect(.bounce, value: isOn)  // ✅ pop evidente solo en heart
-            } else {
-                content
-            }
-        }
-    }
-    
-    // MARK: - Resolved Symbol Helper
-    @available(iOS 26.0, *)
-    private func resolvedSymbol(_ base: String, isOn: Bool?) -> String {
-        guard let isOn else { return base }
-        return isOn ? "\(base).fill" : base
     }
     
     // MARK: - Wide Card (Horizontal - Layout actual)
@@ -380,15 +326,71 @@ struct EventFeedCard: View {
     }
 }
 
-// MARK: - Action Buttons con Liquid Glass real
+// MARK: - Action Buttons con Liquid Glass real (idéntico al ejemplo)
 
-struct ActionButtonsGroup: View {
-    @State private var isLiked = false
-    @State private var isSaved = false
+@available(iOS 26.0, *)
+private struct ActionButtonsGroup: View {
+    @Binding var isLiked: Bool
+    @Binding var isSaved: Bool
+    
+    var body: some View {
+        GlassEffectContainer(spacing: 16) {
+            HStack(spacing: 12) {
+                iconToggle(
+                    on: isLiked,
+                    offName: "heart",
+                    onName: "heart.fill"
+                ) { isLiked.toggle() }
+                
+                iconToggle(
+                    on: isSaved,
+                    offName: "bookmark",
+                    onName: "bookmark.fill"
+                ) { isSaved.toggle() }
+                
+                iconButton("square.and.arrow.up") {
+                    // share action
+                }
+            }
+        }
+    }
+    
+    private func iconToggle(on: Bool, offName: String, onName: String, _ action: @escaping () -> Void) -> some View {
+        Button {
+            withAnimation(.bouncy(duration: 0.35)) {
+                action()
+            }
+        } label: {
+            Image(systemName: on ? onName : offName)
+                .foregroundStyle(on && offName == "heart" ? .red : .white.opacity(0.9))
+                .contentTransition(.symbolEffect(.replace))
+                .frame(width: 44, height: 44)
+        }
+        .buttonStyle(.glass)  // ✅ igual que el ejemplo
+        .buttonBorderShape(.circle)  // ✅ igual que el ejemplo
+        .controlSize(.small)  // ✅ tamaño como ejemplo
+        .symbolEffect(.bounce, value: on && offName == "heart")  // ✅ bounce solo en heart
+    }
+    
+    private func iconButton(_ name: String, _ action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: name)
+                .foregroundStyle(.white.opacity(0.9))
+                .frame(width: 44, height: 44)
+        }
+        .buttonStyle(.glass)
+        .buttonBorderShape(.circle)
+        .controlSize(.small)
+    }
+}
+
+// Fallback para versiones anteriores a iOS 26
+struct ActionButtonsGroupFallback: View {
+    @Binding var isLiked: Bool
+    @Binding var isSaved: Bool
     
     var body: some View {
         HStack(spacing: 6) {
-            // Botón Like
             Button(action: {
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                     isLiked.toggle()
@@ -399,7 +401,6 @@ struct ActionButtonsGroup: View {
                     .glassCircleButton(diameter: 32, tint: isLiked ? .red : .white)
             }
             
-            // Botón Save
             Button(action: {
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                     isSaved.toggle()
@@ -410,7 +411,6 @@ struct ActionButtonsGroup: View {
                     .glassCircleButton(diameter: 32, tint: .white)
             }
             
-            // Botón Share
             Button(action: {}) {
                 Image(systemName: "square.and.arrow.up")
                     .actionIcon(font: .system(size: 14))
