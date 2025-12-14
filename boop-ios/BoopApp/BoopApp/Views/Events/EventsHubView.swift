@@ -8,9 +8,6 @@
 import SwiftUI
 
 struct EventsHubView: View {
-    @State private var searchText = ""
-    @FocusState private var isSearchFocused: Bool
-    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -20,13 +17,6 @@ struct EventsHubView: View {
                 // Content sin GeometryReader (evita expansión forzada)
                 ScrollView {
                         LazyVStack(spacing: 24) {  // ✅ Más espacio entre posts tipo Instagram
-                        // Search bar
-                        SearchBar(
-                            text: $searchText,
-                            isFocused: $isSearchFocused
-                        )
-                        .padding(.top, 8)
-                        
                         // Events feed
                         ForEach(0..<10, id: \.self) { index in
                             EventFeedCard(eventNumber: index + 1)
@@ -34,6 +24,7 @@ struct EventsHubView: View {
                         }
                         .padding(.horizontal, 16)  // ✅ Padding horizontal restaurado
                         .padding(.bottom, 16)
+                        .padding(.top, 8)  // ✅ Padding top para el primer evento
                 }
                 // Extender contenido debajo de la tab bar para efecto blur
                 .ignoresSafeArea(.container, edges: .bottom)

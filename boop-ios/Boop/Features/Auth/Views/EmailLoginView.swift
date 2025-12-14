@@ -91,7 +91,7 @@ struct EmailLoginView: View {
                         .padding(.bottom, Spacing.md)  // ✅ Reducido de lg a md
                     }
                     .frame(maxWidth: 320)  // ✅ Reducido ancho máximo de 500 a 320
-                    .frame(maxWidth: .infinity)  // Centrar en pantallas grandes
+                    .frame(maxWidth: .infinity, alignment: .center)  // Centrar en pantallas grandes
                     .padding(.top, Spacing.md)  // ✅ Reducido padding top de xl a md
                 }
             }
