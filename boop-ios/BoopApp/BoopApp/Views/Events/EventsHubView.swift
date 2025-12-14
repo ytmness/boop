@@ -159,11 +159,11 @@ struct EventFeedCard: View {
                         Button { } label: {
                             Label("Tickets", systemImage: "ticket")
                                 .font(.system(size: 15, weight: .semibold))
-                                .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.glassProminent)
                         .tint(.purple)
-                        .frame(height: 36)  // ✅ más delgado tipo original
+                        .frame(height: 36)
+                        .padding(.horizontal, 16)  // ✅ padding interno para hacerlo más compacto
                     } else {
                         ticketsButton
                     }
