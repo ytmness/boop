@@ -115,22 +115,26 @@ private struct HomeOverlayHeader: View {
                     .foregroundStyle(.white)
                     .shadow(color: .black.opacity(0.35), radius: 10, x: 0, y: 6)
                 
-                // Burbujas siempre visibles (filtros de pestañas)
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
-                        ForEach(EventsHubView.EventsTab.allCases, id: \.self) { tab in
-                            GlassTabChip(
-                                title: tab.rawValue,
-                                isSelected: selectedTab == tab
-                            ) {
-                                withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
-                                    selectedTab = tab
+                // Burbujas siempre visibles (filtros de pestañas) - Centradas como en SearchView
+                GeometryReader { proxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 10) {
+                            ForEach(EventsHubView.EventsTab.allCases, id: \.self) { tab in
+                                GlassTabChip(
+                                    title: tab.rawValue,
+                                    isSelected: selectedTab == tab
+                                ) {
+                                    withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
+                                        selectedTab = tab
+                                    }
                                 }
                             }
                         }
+                        // Centrado con padding simétrico
+                        .frame(minWidth: proxy.size.width, alignment: .center)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 8)
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 8)
                 }
                 .frame(height: 44)
                 
