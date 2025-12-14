@@ -84,10 +84,10 @@ struct EventFeedCard: View {
     let eventNumber: Int
     @State private var isPressed = false
     @Environment(\.accessibilityReduceTransparency) var reduceTransparency
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.horizontalSizeClass) private var hSize
     
     private var isCompact: Bool {
-        horizontalSizeClass == .compact
+        hSize == .compact
     }
     
     var body: some View {
@@ -98,20 +98,8 @@ struct EventFeedCard: View {
                 wideCard
             }
         }
-        .background {
-            if reduceTransparency {
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Color(white: 0.2))
-            } else {
-                if #available(iOS 26.0, *) {
-                    RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                } else {
-                    RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .fill(.regularMaterial)
-                }
-            }
-        }
+        .padding(.horizontal, 12)  // ✅ evita que toque bordes pantalla
+        .padding(.vertical, 8)
         .scaleEffect(isPressed ? 0.98 : 1.0)
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
         .onTapGesture {
@@ -125,27 +113,31 @@ struct EventFeedCard: View {
     // MARK: - Compact Card (Vertical - Overlay design)
     private var compactCard: some View {
         ZStack(alignment: .bottomLeading) {
-            // Media
+            // MEDIA
             ZStack {
                 LinearGradient(
-                    colors: [Color.blue, Color.purple, Color.pink],
+                    colors: [.blue, .purple, .pink],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
+                
                 Image(systemName: "music.note")
-                    .font(.system(size: 40))
+                    .font(.system(size: 38, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.9))
             }
-            .frame(height: 200) // Un poco más alto, pero ya NO es "sándwich"
+            .frame(height: 210)  // ✅ más "cuerpo" en vertical
             .clipped()
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             
-            // Overlay info (glass)
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Evento \(eventNumber)")
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .lineLimit(1)
+            // OVERLAY (INFO + ACCIONES) como una sola pieza
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("Evento \(eventNumber)")
+                        .font(.headline.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                    
+                    Spacer(minLength: 8)
+                }
                 
                 HStack(spacing: 10) {
                     Label("Vie 15 Dic · 21:00", systemImage: "calendar")
@@ -160,25 +152,68 @@ struct EventFeedCard: View {
                     .foregroundStyle(.white.opacity(0.75))
                     .lineLimit(2)
                 
-                HStack {
-                    ticketsButton
-                    Spacer()
-                    ActionButtonsGroup()
+                HStack(spacing: 10) {
+                    if #available(iOS 26.0, *) {
+                        Button { } label: {
+                            Label("Tickets", systemImage: "ticket")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.glassProminent)
+                        .tint(.purple)
+                        .frame(height: 44)  // ✅ ya no "delgado"
+                    } else {
+                        ticketsButton
+                    }
+                    
+                    if #available(iOS 26.0, *) {
+                        HStack(spacing: 8) {
+                            iconGlassButton("heart")
+                            iconGlassButton("bookmark")
+                            iconGlassButton("paperplane")
+                        }
+                    } else {
+                        ActionButtonsGroup()
+                    }
                 }
-                .padding(.top, 4)
             }
-            .padding(10)
+            .padding(12)  // ✅ esto evita recorte izquierda
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background {
                 if #available(iOS 26.0, *) {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 } else {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
                         .fill(.thinMaterial)
                 }
             }
-            .padding(10)
+            .padding(12)  // ✅ separa overlay del borde del media
         }
+        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))  // ✅ clip final (1 sola vez)
+        .background {
+            if reduceTransparency {
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(Color(white: 0.2))
+            } else {
+                if #available(iOS 26.0, *) {
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                } else {
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .fill(.regularMaterial)
+                }
+            }
+        }
+    }
+    
+    // MARK: - Icon Glass Button Helper
+    @available(iOS 26.0, *)
+    private func iconGlassButton(_ name: String) -> some View {
+        Button(action: {}) {
+            Image(systemName: name)
+                .frame(width: 44, height: 44)
+        }
+        .buttonStyle(.glass)
     }
     
     // MARK: - Wide Card (Horizontal - Layout actual)
@@ -227,6 +262,21 @@ struct EventFeedCard: View {
                 .padding(.top, 6)
             }
             .padding(12)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .background {
+            if reduceTransparency {
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(Color(white: 0.2))
+            } else {
+                if #available(iOS 26.0, *) {
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                } else {
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .fill(.regularMaterial)
+                }
+            }
         }
     }
     
