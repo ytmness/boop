@@ -32,6 +32,7 @@ struct EventsHubView: View {
             .navigationTitle("BOOP")
             .navigationBarTitleDisplayMode(.large)
             .toolbarColorScheme(.dark, for: .navigationBar)  // ✅ Texto blanco en el título
+            .safeAreaInset(edge: .top) { Color.clear.frame(height: 0) }  // ✅ Asegurar safe area consistente
         }
     }
 }
@@ -79,6 +80,7 @@ struct EventFeedCard: View {
     @State private var isSaved = false
     @Environment(\.accessibilityReduceTransparency) var reduceTransparency
     @Environment(\.horizontalSizeClass) private var hSize
+    @Environment(\.safeAreaInsets) private var safeAreaInsets
     
     private var isCompact: Bool {
         hSize == .compact
@@ -156,7 +158,7 @@ struct EventFeedCard: View {
                     .font(.system(size: eventTheme.iconSize, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.9))
             }
-            .frame(height: isCompact ? 400 : 380)  // ✅ Altura aproximadamente el doble del contenedor del perfil
+            .aspectRatio(4/3, contentMode: .fill)  // ✅ Proporción 4:3 consistente en todos los dispositivos
             .frame(maxWidth: .infinity)
             .clipped()
             
