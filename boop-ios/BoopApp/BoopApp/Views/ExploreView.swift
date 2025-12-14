@@ -35,10 +35,10 @@ struct ExploreView: View {
                         showPicker: $showCityPicker
                     )
                     .frame(maxWidth: 360)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .padding(.trailing, 14)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 16)
                     .padding(.top, 10)
-                    .padding(.horizontal, 16)
+                    .padding(.trailing, 16)
                     
                     // Events feed
                     ScrollView {

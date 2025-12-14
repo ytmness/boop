@@ -48,7 +48,7 @@ struct EventsHubView: View {
                         .padding(.vertical, 10)
                         .frame(maxWidth: 320, alignment: .trailing)
                         .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.trailing, 14)
+                        .padding(.trailing, 24)
                     }
                     
                     // Filter bar (solo para My Events)
