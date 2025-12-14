@@ -159,7 +159,7 @@ private struct HomeOverlayHeader: View {
                     }
                 }
             }
-            .padding(.top, geo.safeAreaInsets.top)
+            .padding(.top, geo.safeAreaInsets.top - 20) // Sube BOOP y burbujas
             .padding(.bottom, 10)
             .frame(maxWidth: .infinity, alignment: .top)
         }
