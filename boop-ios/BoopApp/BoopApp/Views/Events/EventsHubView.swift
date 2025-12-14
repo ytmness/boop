@@ -19,7 +19,7 @@ struct EventsHubView: View {
                 
                 // Content sin GeometryReader (evita expansión forzada)
                 ScrollView {
-                    LazyVStack(spacing: 16) {
+                        LazyVStack(spacing: 24) {  // ✅ Más espacio entre posts tipo Instagram
                         // Search bar
                         SearchBar(
                             text: $searchText,
@@ -31,9 +31,8 @@ struct EventsHubView: View {
                         ForEach(0..<10, id: \.self) { index in
                             EventFeedCard(eventNumber: index + 1)
                         }
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 16)
+                        }
+                        .padding(.bottom, 16)  // ✅ Sin padding horizontal para full-width posts
                 }
                 // Extender contenido debajo de la tab bar para efecto blur
                 .ignoresSafeArea(.container, edges: .bottom)
@@ -100,8 +99,6 @@ struct EventFeedCard: View {
                 wideCard
             }
         }
-        .padding(.horizontal, 12)  // ✅ evita que toque bordes pantalla
-        .padding(.vertical, 8)
         .scaleEffect(isPressed ? 0.98 : 1.0)
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
         .onTapGesture {
@@ -112,10 +109,10 @@ struct EventFeedCard: View {
         }
     }
     
-    // MARK: - Compact Card (Vertical - Overlay design)
+    // MARK: - Compact Card (Instagram-style post)
     private var compactCard: some View {
-        ZStack(alignment: .bottomLeading) {
-            // MEDIA
+        VStack(alignment: .leading, spacing: 0) {
+            // MEDIA - Imagen cuadrada tipo Instagram
             ZStack {
                 LinearGradient(
                     colors: [.blue, .purple, .pink],
@@ -124,107 +121,96 @@ struct EventFeedCard: View {
                 )
                 
                 Image(systemName: "music.note")
-                    .font(.system(size: 38, weight: .semibold))
+                    .font(.system(size: 50, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.9))
             }
-            .frame(height: 210)  // ✅ más "cuerpo" en vertical
+            .aspectRatio(1.0, contentMode: .fill)  // ✅ 1:1 como Instagram
+            .frame(maxWidth: .infinity)
             .clipped()
             
-            // OVERLAY (INFO + ACCIONES) como una sola pieza
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text("Evento \(eventNumber)")
-                        .font(.headline.weight(.semibold))
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
-                    
-                    Spacer(minLength: 8)
-                }
-                
-                HStack(spacing: 10) {
-                    Label("Vie 15 Dic · 21:00", systemImage: "calendar")
-                    Label("Club Nocturno", systemImage: "mappin.circle.fill")
-                }
-                .font(.caption)
-                .foregroundStyle(.white.opacity(0.85))
-                .lineLimit(1)
-                
-                Text("Música electrónica y buena vibra!")
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.75))
-                    .lineLimit(2)
-                
-                HStack(spacing: 10) {
+            // INFO SECTION - Debajo de la imagen (tipo Instagram)
+            VStack(alignment: .leading, spacing: 12) {
+                // Botones de acción (arriba, como Instagram)
+                HStack(spacing: 16) {
                     if #available(iOS 26.0, *) {
+                        likeButton
                         Button { } label: {
-                            Label("Tickets", systemImage: "ticket")
-                                .font(.system(size: 15, weight: .semibold))
+                            Image(systemName: "message")
+                                .font(.system(size: 24, weight: .regular))
+                                .foregroundStyle(.white)
                         }
-                        .buttonStyle(.glassProminent)
-                        .tint(.purple)
-                        .frame(height: 36)
-                        .padding(.horizontal, 16)  // ✅ padding interno para hacerlo más compacto
-                    } else {
-                        ticketsButton
-                    }
-                    
-                    if #available(iOS 26.0, *) {
-                        HStack(spacing: 10) {
-                            likeButton
-                            saveButton
-                            shareButton
-                        }
+                        shareButton
                     } else {
                         ActionButtonsGroup()
                     }
+                    
+                    Spacer()
+                    
+                    if #available(iOS 26.0, *) {
+                        saveButton
+                    }
                 }
-            }
-            .padding(.horizontal, 12)
-            .padding(.top, 12)
-            .padding(.bottom, 6)  // ✅ menos abajo = sube visualmente
-            .offset(y: -10)  // ✅ sube el overlay
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background {
+                .padding(.horizontal, 12)
+                .padding(.top, 8)
+                
+                // Título y descripción
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Evento \(eventNumber)")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(.white)
+                    
+                    Text("Música electrónica y buena vibra!")
+                        .font(.system(size: 14))
+                        .foregroundStyle(.white.opacity(0.9))
+                        .lineLimit(3)
+                }
+                .padding(.horizontal, 12)
+                
+                // Fecha y ubicación
+                HStack(spacing: 12) {
+                    Label("Vie 15 Dic · 21:00", systemImage: "calendar")
+                    Label("Club Nocturno", systemImage: "mappin.circle.fill")
+                }
+                .font(.system(size: 12))
+                .foregroundStyle(.white.opacity(0.7))
+                .padding(.horizontal, 12)
+                
+                // Botón Tickets
                 if #available(iOS 26.0, *) {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    Button { } label: {
+                        Label("Tickets", systemImage: "ticket")
+                            .font(.system(size: 15, weight: .semibold))
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.glassProminent)
+                    .tint(.purple)
+                    .frame(height: 44)
+                    .padding(.horizontal, 12)
                 } else {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(.thinMaterial)
+                    ticketsButton
+                        .padding(.horizontal, 12)
                 }
             }
+            .padding(.bottom, 12)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))  // ✅ clip final (1 sola vez)
         .background {
             if reduceTransparency {
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(Color(white: 0.2))
             } else {
                 if #available(iOS 26.0, *) {
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                 } else {
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
                         .fill(.regularMaterial)
                 }
             }
         }
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
     
-    // MARK: - Glass Circle Background
-    private var glassCircle: some View {
-        Group {
-            if #available(iOS 26.0, *) {
-                Circle()
-                    .glassEffect(.regular, in: Circle())
-            } else {
-                Circle()
-                    .fill(.ultraThinMaterial)
-            }
-        }
-    }
-    
-    // MARK: - Like Button con animación y relleno
+    // MARK: - Like Button con animación y relleno (tipo Instagram)
     @available(iOS 26.0, *)
     private var likeButton: some View {
         Button {
@@ -233,18 +219,15 @@ struct EventFeedCard: View {
             }
         } label: {
             Image(systemName: isLiked ? "heart.fill" : "heart")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(isLiked ? .red : .white.opacity(0.9))
+                .font(.system(size: 24, weight: .regular))
+                .foregroundStyle(isLiked ? .red : .white)
                 .contentTransition(.symbolEffect(.replace))  // ✅ swap suave
                 .symbolEffect(.bounce, value: isLiked)  // ✅ pop evidente
-                .frame(width: 34, height: 34)
-                .background(glassCircle)
         }
         .buttonStyle(.plain)  // ✅ evita que SwiftUI cambie el look
-        .contentShape(Circle())
     }
     
-    // MARK: - Save Button con animación y relleno
+    // MARK: - Save Button con animación y relleno (tipo Instagram)
     @available(iOS 26.0, *)
     private var saveButton: some View {
         Button {
@@ -253,31 +236,25 @@ struct EventFeedCard: View {
             }
         } label: {
             Image(systemName: isSaved ? "bookmark.fill" : "bookmark")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.9))
+                .font(.system(size: 24, weight: .regular))
+                .foregroundStyle(.white)
                 .contentTransition(.symbolEffect(.replace))  // ✅
                 .symbolEffect(.bounce, value: isSaved)  // ✅ pop evidente
-                .frame(width: 34, height: 34)
-                .background(glassCircle)
         }
         .buttonStyle(.plain)
-        .contentShape(Circle())
     }
     
-    // MARK: - Share Button
+    // MARK: - Share Button (tipo Instagram)
     @available(iOS 26.0, *)
     private var shareButton: some View {
         Button {
             // share action
         } label: {
-            Image(systemName: "square.and.arrow.up")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.9))
-                .frame(width: 34, height: 34)
-                .background(glassCircle)
+            Image(systemName: "paperplane")
+                .font(.system(size: 24, weight: .regular))
+                .foregroundStyle(.white)
         }
         .buttonStyle(.plain)
-        .contentShape(Circle())
     }
     
     // MARK: - Wide Card (Horizontal - Layout actual)
