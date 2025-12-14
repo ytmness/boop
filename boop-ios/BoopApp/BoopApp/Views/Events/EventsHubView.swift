@@ -44,6 +44,8 @@ struct EventsHubView: View {
                         scrollOffset: scrollOffset,
                         height: headerHeight
                     )
+                    .background(Color.clear)
+                    .overlay(Color.clear)
                     .padding(.top, 10)
                     
                     // Events feed (hace scroll, header se mantiene fijo arriba)
@@ -81,9 +83,14 @@ struct EventsHubView: View {
                     }
                     .ignoresSafeArea(.container, edges: .bottom)
                 }
+                .background(Color.clear)
+                .overlay(Color.clear)
+                .ignoresSafeArea(edges: .top)
             }
             .navigationBarHidden(true)
             .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbarBackground(.hidden, for: .navigationBar)
+            .toolbarBackground(.hidden, for: .tabBar)
         }
     }
 }
@@ -160,6 +167,9 @@ private struct HomeOverlayHeader: View {
         }
         .frame(height: height)
         .frame(maxWidth: .infinity, alignment: .top)
+        .background(Color.clear)
+        .overlay(Color.clear)
+        .compositingGroup()
         .allowsHitTesting(true)
     }
 }
