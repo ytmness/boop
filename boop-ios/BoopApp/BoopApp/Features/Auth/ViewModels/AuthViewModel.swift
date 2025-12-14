@@ -132,9 +132,7 @@ class AuthViewModel: ObservableObject {
                 type: .email
             )
             
-            guard let user = response.user else {
-                throw AuthError.authenticationFailed
-            }
+            let user = response.user
             
             // Guardar sesión si está disponible
             if let session = response.session {
