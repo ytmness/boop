@@ -156,89 +156,68 @@ struct EventFeedCard: View {
                     .font(.system(size: eventTheme.iconSize, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.9))
             }
-            .frame(height: 400)  // ✅ Altura fija grande (aproximadamente el doble)
+            .frame(height: isCompact ? 210 : 190)  // ✅ Altura normal para feed
             .frame(maxWidth: .infinity)
             .clipped()
             
             // INFO SECTION - Debajo de la imagen (tipo Instagram)
-            VStack(alignment: .leading, spacing: 20) {  // ✅ Spacing aumentado de 12 a 20
+            VStack(alignment: .leading, spacing: 12) {  // ✅ Spacing normal
                 // Botones de acción con sistema glass nativo (idéntico al ejemplo)
-                HStack(alignment: .center, spacing: 12) {
-                    // Botón Tickets compacto
-                    if #available(iOS 26.0, *) {
+                if #available(iOS 26.0, *) {
+                    HStack(spacing: 12) {
                         Button { } label: {
                             Label("Tickets", systemImage: "ticket")
-                                .font(.system(size: 18, weight: .semibold))
                                 .lineLimit(1)
                         }
                         .buttonStyle(.glassProminent)
                         .tint(.purple)
                         .frame(height: 44)
-                        .fixedSize(horizontal: true, vertical: false)
-                        .padding(.horizontal, 24)
-                        .layoutPriority(1)  // ✅ Tickets se adapta mejor
-                    } else {
-                        ticketsButton
-                            .layoutPriority(1)
-                            .lineLimit(1)
-                    }
-                    
-                    // Botones de acción (idénticos al ejemplo)
-                    if #available(iOS 26.0, *) {
+                        
+                        Spacer(minLength: 0)
+                        
                         HStack(spacing: 12) {
-                            GlassIconButton(
-                                onSymbol: "heart.fill",
-                                offSymbol: "heart",
-                                isOn: $isLiked
-                            )
-                            
-                            GlassIconButton(
-                                onSymbol: "bookmark.fill",
-                                offSymbol: "bookmark",
-                                isOn: $isSaved
-                            )
-                            
-                            GlassIconButton(
-                                onSymbol: "square.and.arrow.up",
-                                offSymbol: nil,
-                                isOn: .constant(true)
-                            ) {
-                                // share action
-                            }
+                            GlassIconButton(onSymbol: "heart.fill", offSymbol: "heart", isOn: $isLiked)
+                            GlassIconButton(onSymbol: "bookmark.fill", offSymbol: "bookmark", isOn: $isSaved)
+                            GlassIconButton(onSymbol: "square.and.arrow.up", offSymbol: nil, isOn: .constant(true)) { }
                         }
-                        .fixedSize()  // 🔑 evita compresión y cortes
-                    } else {
-                        ActionButtonsGroupFallback(isLiked: $isLiked, isSaved: $isSaved)
-                            .fixedSize()
+                        .fixedSize(horizontal: true, vertical: false)  // ✅ evita que se compriman/corten
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                } else {
+                    HStack(spacing: 12) {
+                        ticketsButton
+                        Spacer(minLength: 0)
+                        ActionButtonsGroupFallback(isLiked: $isLiked, isSaved: $isSaved)
+                            .fixedSize(horizontal: true, vertical: false)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
                 }
-                .padding(.horizontal, 12)  // ✅ evita corte con clip
-                .padding(.top, 20)
-                .padding(.bottom, 8)
                 
                 // Título y descripción
-                VStack(alignment: .leading, spacing: 10) {  // ✅ Spacing aumentado de 6 a 10
+                VStack(alignment: .leading, spacing: 6) {
                     Text("Evento \(eventNumber)")
-                        .font(.system(size: 22, weight: .semibold))  // ✅ Aumentado de 15 a 22
+                        .font(.system(size: 18, weight: .semibold))  // ✅ Tamaño normal para feed
                         .foregroundStyle(.white)
                         .lineLimit(1)
                     
                     Text("Música electrónica y buena vibra!")
-                        .font(.system(size: 18))  // ✅ Aumentado de 14 a 18
+                        .font(.system(size: 14))  // ✅ Tamaño normal para feed
                         .foregroundStyle(.white.opacity(0.9))
                         .lineLimit(3)
                 }
-                .padding(.horizontal, 32)  // ✅ Padding aumentado de 24 a 32
+                .padding(.horizontal, 16)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
                 // Fecha y ubicación
-                HStack(spacing: 16) {  // ✅ Spacing aumentado de 12 a 16
+                HStack(spacing: 12) {
                     Label("Vie 15 Dic · 21:00", systemImage: "calendar")
                     Label("Club Nocturno", systemImage: "mappin.circle.fill")
                 }
-                .font(.system(size: 16))  // ✅ Aumentado de 12 a 16
+                .font(.system(size: 12))  // ✅ Tamaño normal para feed
                 .foregroundStyle(.white.opacity(0.7))
-                .padding(.horizontal, 32)  // ✅ Padding aumentado de 24 a 32
+                .padding(.horizontal, 16)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.bottom, 24)  // ✅ Padding aumentado de 16 a 24
