@@ -39,7 +39,7 @@ struct EventsHubView: View {
                     }
                 }
             }
-            .navigationTitle("Inicio")
+            .navigationTitle("INICIO ✅ CAMBIO")
             .navigationBarTitleDisplayMode(.large)
         }
     }
@@ -87,8 +87,8 @@ struct EventFeedCard: View {
     @Environment(\.accessibilityReduceTransparency) var reduceTransparency
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Event image con aspect ratio 4:3 (mejor para móvil)
+        VStack(alignment: .leading, spacing: 6) {
+            // Event image - altura fija compacta
             ZStack {
                 LinearGradient(
                     colors: [.blue, .purple, .pink],
@@ -100,16 +100,16 @@ struct EventFeedCard: View {
                     .font(.system(size: 40, weight: .light))
                     .foregroundStyle(.white.opacity(0.9))
             }
-            .frame(height: 180)
+            .frame(height: 160)
             .clipped()
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             
             // Event info
             VStack(alignment: .leading, spacing: 4) {
-                // Título
-                Text("Evento \(eventNumber)")
+                // Título con DEBUG para verificar
+                Text("DEBUG CARD ✅ Evento \(eventNumber)")
                     .font(.system(size: 17, weight: .bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.yellow)
                 
                 // Fecha
                 HStack(spacing: 4) {
@@ -175,8 +175,7 @@ struct EventFeedCard: View {
             } else {
                 if #available(iOS 26.0, *) {
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .fill(Color.clear)
-                        .glassEffect(.clear.interactive())
+                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                 } else {
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
                         .fill(.regularMaterial)
