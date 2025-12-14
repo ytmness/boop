@@ -100,7 +100,7 @@ struct EventCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Imagen
+            // Imagen - Altura fija para evitar tarjetas gigantes
             if let imageUrl = event.imageUrl, let url = URL(string: imageUrl) {
                 AsyncImage(url: url) { image in
                     image
@@ -109,15 +109,15 @@ struct EventCard: View {
                 } placeholder: {
                     Color.gray.opacity(0.3)
                 }
-                .frame(height: 150)
+                .frame(height: 180)
                 .clipped()
             } else {
                 Color.gray.opacity(0.3)
-                    .frame(height: 150)
+                    .frame(height: 180)
             }
             
-            // Contenido con padding mejorado
-            VStack(alignment: .leading, spacing: Spacing.sm) {
+            // Contenido con spacing más compacto
+            VStack(alignment: .leading, spacing: 6) {
                 Text(event.title)
                     .font(.system(size: Typography.body, weight: .semibold))
                     .foregroundStyle(.white)
@@ -133,22 +133,20 @@ struct EventCard: View {
                     .font(.system(size: Typography.caption - 2))
                     .foregroundStyle(.white.opacity(0.6))
             }
-            // Liquid Glass: Padding interno suficiente para evitar aspecto comprimido
-            .padding(.horizontal, Spacing.lg)
-            .padding(.vertical, Spacing.md)
+            // Padding reducido para diseño más compacto
+            .padding(10)
         }
-        // Liquid Glass: Aplicar glassEffect directamente al contenedor del evento
+        // Liquid Glass: Aplicar glassEffect al contenedor completo con .regular
         .background {
             if #available(iOS 26.0, *) {
-                RoundedRectangle(cornerRadius: CardSize.cornerRadius)
-                    .fill(Color.clear)
-                    .glassEffect(.regular)
+                RoundedRectangle(cornerRadius: CardSize.cornerRadius, style: .continuous)
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: CardSize.cornerRadius, style: .continuous))
             } else {
-                RoundedRectangle(cornerRadius: CardSize.cornerRadius)
-                    .fill(.ultraThinMaterial)
+                RoundedRectangle(cornerRadius: CardSize.cornerRadius, style: .continuous)
+                    .fill(.regularMaterial)
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: CardSize.cornerRadius))
+        .clipShape(RoundedRectangle(cornerRadius: CardSize.cornerRadius, style: .continuous))
     }
 }
 
