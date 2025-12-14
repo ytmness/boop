@@ -6,7 +6,6 @@
 - Dart SDK >= 3.0.0
 - Cuenta de Supabase
 - Cuenta de Stripe
-- Firebase project (para notificaciones push)
 
 ## Pasos de Configuración
 
@@ -57,14 +56,7 @@
    - URL: `https://tu-proyecto.supabase.co/functions/v1/stripe-webhook`
    - Eventos: `payment_intent.succeeded`, `payment_intent.payment_failed`
 
-### 3. Configurar Firebase
-
-1. Crea un proyecto en [Firebase Console](https://console.firebase.google.com)
-2. Agrega apps iOS y Android
-3. Descarga `GoogleService-Info.plist` (iOS) y `google-services.json` (Android)
-4. Colócalos en las carpetas correspondientes del proyecto Flutter
-
-### 4. Configurar la App Flutter
+### 3. Configurar la App Flutter
 
 1. Clona el repositorio
 2. Instala dependencias:

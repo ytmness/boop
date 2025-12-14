@@ -5,7 +5,6 @@
 - **Frontend**: Flutter (Dart) con widgets Cupertino para diseño iOS nativo
 - **Backend**: Supabase (PostgreSQL, Auth, Storage, Edge Functions)
 - **Pagos**: Stripe
-- **Notificaciones**: Firebase Cloud Messaging
 - **State Management**: Riverpod
 
 ## Estructura del Proyecto

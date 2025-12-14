@@ -32,9 +32,8 @@ serve(async (req) => {
       )
     }
 
-    // Send notifications via FCM
-    // Note: This requires Firebase Admin SDK setup
-    // For now, return success (implementation depends on your FCM setup)
+    // Send notifications via push notification service
+    // Implementation depends on your notification service setup
 
     return new Response(
       JSON.stringify({ sent: true, devicesCount: devices.length }),

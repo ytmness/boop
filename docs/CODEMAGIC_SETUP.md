@@ -83,7 +83,7 @@ Edita el archivo `codemagic.yaml` y reemplaza `user@example.com` con tu email re
 ### boop-web
 - **Plataforma**: Web
 - **Artefactos**: Carpeta `build/web/` completa
-- **Uso**: Despliegue en hosting web (Firebase Hosting, Netlify, Vercel, etc.)
+- **Uso**: Despliegue en hosting web (Netlify, Vercel, etc.)
 
 ### boop-android
 - **Plataforma**: Android
@@ -109,16 +109,17 @@ Puedes editar `codemagic.yaml` para:
 - Cambiar las notificaciones de email
 - Agregar pasos de despliegue automático
 
-### Ejemplo: Agregar Despliegue Automático a Firebase Hosting
+### Ejemplo: Agregar Despliegue Automático
 
 ```yaml
 scripts:
   - name: Build web
     script: |
       flutter build web --release
-  - name: Deploy to Firebase
+  - name: Deploy to hosting
     script: |
-      firebase deploy --only hosting
+      # Agregar comandos de despliegue según tu proveedor
+      # Ejemplo para Netlify: netlify deploy --prod --dir=build/web
 ```
 
 ## Troubleshooting

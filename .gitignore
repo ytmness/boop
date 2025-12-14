@@ -57,9 +57,6 @@ app.*.map.json
 # Supabase
 supabase/.temp/
 
-# Firebase
-GoogleService-Info.plist
-
 # Cursor IDE
 .cursor/
 
