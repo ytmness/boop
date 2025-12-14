@@ -21,6 +21,7 @@
 		1A00000C /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00001D /* SplashView.swift */; };
 		1A00000D /* GlassComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00001E /* GlassComponents.swift */; };
 		1A00000E /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00001F /* AuthViewModel.swift */; };
+		1A000100 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1A0000FF /* Supabase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A000100 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,6 +183,9 @@
 			dependencies = (
 			);
 			name = BoopApp;
+			packageProductDependencies = (
+				1A0000FF /* Supabase */,
+			);
 			productName = BoopApp;
 			productReference = 1A000010 /* BoopApp.app */;
 			productType = "com.apple.product-type.application";
@@ -209,6 +214,9 @@
 				Base,
 			);
 			mainGroup = 1A000030;
+			packageReferences = (
+				1A0000FE /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			productRefGroup = 1A000050 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -453,6 +461,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1A0000FE /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1A0000FF /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A0000FE /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1A0000D0 /* Project object */;
 }
