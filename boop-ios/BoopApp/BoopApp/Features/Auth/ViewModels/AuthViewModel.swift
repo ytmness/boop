@@ -39,7 +39,7 @@ class AuthViewModel: ObservableObject {
         Task {
             do {
                 let session = try await supabase.auth.session
-                if let user = session.user {
+                if let session = session, let user = session.user {
                     await MainActor.run {
                         self.currentUser = user
                         self.isAuthenticated = true
@@ -136,8 +136,10 @@ class AuthViewModel: ObservableObject {
                 throw AuthError.authenticationFailed
             }
             
-            // Guardar sesión
-            await saveSession(response.session)
+            // Guardar sesión si está disponible
+            if let session = response.session {
+                await saveSession(session)
+            }
             
             await MainActor.run {
                 self.currentUser = user
@@ -175,11 +177,17 @@ class AuthViewModel: ObservableObject {
                 // Crear perfil nuevo con valores por defecto
                 let defaultName = currentUser?.email?.components(separatedBy: "@").first ?? "Usuario"
                 
-                let newProfile: [String: Any] = [
-                    "user_id": userId.uuidString,
-                    "name": defaultName,
-                    "is_verified": false
-                ]
+                struct ProfileInsert: Encodable {
+                    let user_id: String
+                    let name: String
+                    let is_verified: Bool
+                }
+                
+                let newProfile = ProfileInsert(
+                    user_id: userId.uuidString,
+                    name: defaultName,
+                    is_verified: false
+                )
                 
                 try await supabase
                     .from("profiles")
