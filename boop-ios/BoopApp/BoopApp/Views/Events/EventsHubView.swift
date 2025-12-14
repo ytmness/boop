@@ -10,6 +10,7 @@ import SwiftUI
 struct EventsHubView: View {
     @State private var selectedTab: EventsTab = .explore
     @State private var selectedFilter: EventFilter = .all
+    @State private var scrollOffset: CGFloat = 0
     
     enum EventsTab: String, CaseIterable {
         case explore = "Explorar"
@@ -43,13 +44,26 @@ struct EventsHubView: View {
                             .padding(.horizontal, 16)
                             .padding(.bottom, 16)
                             .padding(.top, 8)
+                            .background(
+                                GeometryReader { geometry in
+                                    Color.clear.preference(
+                                        key: ScrollOffsetPreferenceKey.self,
+                                        value: geometry.frame(in: .named("scroll")).minY
+                                    )
+                                }
+                            )
                         } header: {
                             HomePinnedHeader(
                                 selectedTab: $selectedTab,
-                                selectedFilter: $selectedFilter
+                                selectedFilter: $selectedFilter,
+                                scrollOffset: scrollOffset
                             )
                         }
                     }
+                }
+                .coordinateSpace(name: "scroll")
+                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+                    scrollOffset = value
                 }
                 .ignoresSafeArea(.container, edges: .bottom)
             }
@@ -59,18 +73,47 @@ struct EventsHubView: View {
     }
 }
 
+// MARK: - Scroll Offset Preference Key
+private struct ScrollOffsetPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
 // MARK: - Home Pinned Header
 private struct HomePinnedHeader: View {
     @Binding var selectedTab: EventsHubView.EventsTab
     @Binding var selectedFilter: EventsHubView.EventFilter
+    let scrollOffset: CGFloat
+    
+    // Animación basada en scroll: cuando scrolleas hacia arriba, el logo se hace más pequeño y transparente
+    private var logoScale: CGFloat {
+        let offset = abs(scrollOffset)
+        if offset > 50 {
+            return max(0.85, 1.0 - (offset - 50) / 200)
+        }
+        return 1.0
+    }
+    
+    private var logoOpacity: Double {
+        let offset = abs(scrollOffset)
+        if offset > 50 {
+            return max(0.6, 1.0 - Double((offset - 50) / 300))
+        }
+        return 1.0
+    }
     
     var body: some View {
         VStack(spacing: 10) {
-            // Logo BOOP más grande, sin recuadro
+            // Logo BOOP con animación basada en scroll
             Text("BOOP")
                 .font(.system(size: 32, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
                 .padding(.top, 6)
+                .scaleEffect(logoScale)
+                .opacity(logoOpacity)
+                .animation(.spring(response: 0.3, dampingFraction: 0.8), value: scrollOffset)
             
             // Tab selector (burbujas fijas)
             GeometryReader { proxy in
@@ -119,19 +162,7 @@ private struct HomePinnedHeader: View {
         .padding(.top, 10)
         .padding(.bottom, 10)
         .frame(maxWidth: .infinity)
-        .background {
-            // Material sutil para legibilidad al hacer scroll
-            Rectangle()
-                .fill(.ultraThinMaterial)
-                .opacity(0.18)
-                .ignoresSafeArea()
-        }
-        .overlay(alignment: .bottom) {
-            // Línea separadora sutil
-            Rectangle()
-                .fill(.white.opacity(0.12))
-                .frame(height: 1)
-        }
+        // Sin background - completamente transparente
     }
 }
 
