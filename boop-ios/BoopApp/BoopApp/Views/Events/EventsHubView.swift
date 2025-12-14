@@ -17,27 +17,26 @@ struct EventsHubView: View {
                 // Background
                 GlassAnimatedBackground()
                 
-                // Content con safe area dinámica
-                GeometryReader { geometry in
-                    ScrollView {
-                        LazyVStack(spacing: 16) {
-                            // Search bar
-                            SearchBar(
-                                text: $searchText,
-                                isFocused: $isSearchFocused
-                            )
-                            .padding(.top, 8)
-                            
-                            // Events feed
-                            ForEach(0..<10, id: \.self) { index in
-                                EventFeedCard(eventNumber: index + 1)
-                            }
+                // Content sin GeometryReader (evita expansión forzada)
+                ScrollView {
+                    LazyVStack(spacing: 16) {
+                        // Search bar
+                        SearchBar(
+                            text: $searchText,
+                            isFocused: $isSearchFocused
+                        )
+                        .padding(.top, 8)
+                        
+                        // Events feed
+                        ForEach(0..<10, id: \.self) { index in
+                            EventFeedCard(eventNumber: index + 1)
                         }
-                        .padding(.horizontal, 16)
-                        // Safe area bottom dinámica
-                        .padding(.bottom, geometry.safeAreaInsets.bottom + 16)
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
                 }
+                // Extender contenido debajo de la tab bar para efecto blur
+                .ignoresSafeArea(.container, edges: .bottom)
             }
             .navigationTitle("INICIO ✅ CAMBIO")
             .navigationBarTitleDisplayMode(.large)
@@ -88,19 +87,19 @@ struct EventFeedCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            // Event image - altura fija compacta
+            // Event image - altura fija SIN GeometryReader
             ZStack {
                 LinearGradient(
-                    colors: [.blue, .purple, .pink],
+                    colors: [Color.blue, Color.purple, Color.pink],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
                 
                 Image(systemName: "music.note")
-                    .font(.system(size: 40, weight: .light))
+                    .font(.system(size: 40))
                     .foregroundStyle(.white.opacity(0.9))
             }
-            .frame(height: 160)
+            .frame(height: 160)  // 👈 CONTROL REAL DEL TAMAÑO (sin GeometryReader)
             .clipped()
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             
