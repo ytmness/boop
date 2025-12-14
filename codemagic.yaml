@@ -1,0 +1,139 @@
+workflows:
+  boop-web:
+    name: BOOP Web Build
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      groups:
+        - app_config
+      vars:
+        APP_ID: "com.boop.app"
+        APP_NAME: "BOOP"
+        PACKAGE_NAME: "com.boop.app"
+    scripts:
+      - name: Get Flutter dependencies
+        script: |
+          flutter pub get
+      - name: Run tests
+        script: |
+          flutter test
+      - name: Build web
+        script: |
+          flutter build web --release --base-href "/"
+    artifacts:
+      - build/web/**
+    publishing:
+      email:
+        recipients:
+          - user@example.com
+        notify:
+          success: true
+          failure: false
+
+  boop-android:
+    name: BOOP Android Build
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      flutter: stable
+      # android_signing se puede agregar aquí cuando tengas credenciales configuradas
+      # android_signing:
+      #   - keystore_reference
+      groups:
+        - app_config
+        # - android_credentials  # Descomentar cuando configures credenciales de Android
+      vars:
+        APP_ID: "com.boop.app"
+        APP_NAME: "BOOP"
+        PACKAGE_NAME: "com.boop.app"
+    scripts:
+      - name: Get Flutter dependencies
+        script: |
+          flutter pub get
+      - name: Run tests
+        script: |
+          flutter test
+      - name: Build APK (sin firma)
+        script: |
+          flutter build apk --release
+      - name: Build App Bundle (sin firma)
+        script: |
+          flutter build appbundle --release
+    artifacts:
+      - build/app/outputs/flutter-apk/**/*.apk
+      - build/app/outputs/bundle/**/*.aab
+    publishing:
+      email:
+        recipients:
+          - user@example.com
+        notify:
+          success: true
+          failure: false
+
+  boop-ios:
+    name: BOOP iOS Build
+    max_build_duration: 120
+    instance_type: mac_mini_m1
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      # Configuración de firma iOS (descomentar cuando tengas credenciales)
+      # Opción 1: Con certificados .p12 y provisioning profiles
+      # ios_signing:
+      #   distribution_type: app_store  # o 'ad_hoc' para distribución interna
+      #   bundle_identifier: com.boop.app
+      # Opción 2: Con App Store Connect API Key (más moderno)
+      # ios_signing:
+      #   distribution_type: app_store
+      #   bundle_identifier: com.boop.app
+      #   app_store_connect_api_key:
+      #     key_id: YOUR_KEY_ID
+      #     issuer_id: YOUR_ISSUER_ID
+      #     key_file: path/to/AuthKey.p8
+      # Ver docs/IOS_SIGNING_SETUP.md para más detalles
+      groups:
+        - app_config
+        # - ios_credentials  # Descomentar cuando configures credenciales de iOS en Codemagic
+      vars:
+        APP_ID: "com.boop.app"
+        APP_NAME: "BOOP"
+        PACKAGE_NAME: "com.boop.app"
+    scripts:
+      - name: Get Flutter dependencies
+        script: |
+          flutter pub get
+      - name: Run tests
+        script: |
+          flutter test
+      - name: Install CocoaPods dependencies
+        script: |
+          cd ios && pod install
+      - name: Build iOS IPA (sin firma para AltStore)
+        script: |
+          # Configurar Xcode para builds sin firma
+          # El project.pbxproj tiene CODE_SIGN_STYLE = Manual y DEVELOPMENT_TEAM = "0000000000"
+          # El valor dummy "0000000000" satisface a Xcode en modo archive sin requerir firma real
+          flutter build ipa --release --no-codesign
+          # El .ipa sin firmar se genera en build/ios/ipa/Runner.ipa
+          # Listo para usar con AltStore
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - build/ios/**/*.app
+      # Alternativa: Build con firma (descomentar cuando configures ios_signing arriba)
+      # - name: Build iOS IPA (con firma)
+      #   script: |
+      #     flutter build ipa --release
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - user@example.com
+        notify:
+          success: true
+          failure: false
+
