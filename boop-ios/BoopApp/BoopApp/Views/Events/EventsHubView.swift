@@ -117,50 +117,51 @@ private struct HomeOverlayHeader: View {
                     .font(.system(size: isCollapsed ? 22 : 30, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
                     .shadow(color: .black.opacity(0.35), radius: 10, x: 0, y: 6)
-            
-            if !isCollapsed {
-                // Burbujas visibles solo al inicio (tipo Instagram)
-                GeometryReader { proxy in
+                
+                if !isCollapsed {
+                    // Burbujas visibles solo al inicio (tipo Instagram)
+                    GeometryReader { proxy in
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 10) {
+                                ForEach(EventsHubView.EventsTab.allCases, id: \.self) { tab in
+                                    GlassTabChip(
+                                        title: tab.rawValue,
+                                        isSelected: selectedTab == tab
+                                    ) {
+                                        withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
+                                            selectedTab = tab
+                                        }
+                                    }
+                                }
+                            }
+                            .frame(minWidth: proxy.size.width, alignment: .center)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 8)
+                        }
+                    }
+                    .frame(height: 44)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                }
+                
+                // Filter bar (solo para My Events)
+                if selectedTab == .myEvents && !isCollapsed {
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 10) {
-                            ForEach(EventsHubView.EventsTab.allCases, id: \.self) { tab in
-                                GlassTabChip(
-                                    title: tab.rawValue,
-                                    isSelected: selectedTab == tab
+                        HStack(spacing: 12) {
+                            ForEach(EventsHubView.EventFilter.allCases, id: \.self) { filter in
+                                FilterChip(
+                                    title: filter.rawValue,
+                                    isSelected: selectedFilter == filter
                                 ) {
-                                    withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
-                                        selectedTab = tab
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                        selectedFilter = filter
                                     }
                                 }
                             }
                         }
-                        .frame(minWidth: proxy.size.width, alignment: .center)
-                        .padding(.horizontal, 24)
+                        .padding(.leading, 24)
+                        .padding(.trailing, 16)
                         .padding(.vertical, 8)
                     }
-                }
-                .frame(height: 44)
-                .transition(.opacity.combined(with: .move(edge: .top)))
-            }
-            
-            // Filter bar (solo para My Events)
-            if selectedTab == .myEvents && !isCollapsed {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        ForEach(EventsHubView.EventFilter.allCases, id: \.self) { filter in
-                            FilterChip(
-                                title: filter.rawValue,
-                                isSelected: selectedFilter == filter
-                            ) {
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                    selectedFilter = filter
-                                }
-                            }
-                        }
-                    }
-                    .padding(.leading, 24)
-                    .padding(.trailing, 16)
-                    .padding(.vertical, 8)
                 }
             }
             .padding(.top, geo.safeAreaInsets.top + 8)
