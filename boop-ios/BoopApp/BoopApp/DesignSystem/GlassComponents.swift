@@ -108,12 +108,12 @@ struct GlassAnimatedBackground: View {
     }
 }
 
-// MARK: - DEPRECATED: GlassCard (migrar a GlassContainer de Boop/Core/Design/)
-// Este componente "pinta" glass falso y debe reemplazarse
-// Usa material simple (NO glass real para cards estáticas)
+// MARK: - GlassCard con soporte iOS 26+ Liquid Glass
 struct GlassCard<Content: View>: View {
     let content: Content
     let cornerRadius: CGFloat
+    
+    @Environment(\.accessibilityReduceTransparency) var reduceTransparency
     
     init(
         cornerRadius: CGFloat = 24,
@@ -124,12 +124,24 @@ struct GlassCard<Content: View>: View {
     }
     
     var body: some View {
-        // Usar material simple (NO glass real para cards estáticas)
         content
-            .padding(16) // CardSize.padding, pero sin depender del módulo
+            .padding(16)
             .background {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .fill(.thinMaterial)
+                if reduceTransparency {
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(Color(white: 0.2))
+                } else {
+                    if #available(iOS 26.0, *) {
+                        // Liquid Glass nativo para containers flotantes
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .fill(Color.clear)
+                            .glassEffect(.clear.interactive())
+                    } else {
+                        // Fallback para iOS < 26
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .fill(.thinMaterial)
+                    }
+                }
             }
     }
 }
@@ -197,28 +209,38 @@ struct GlassButton: View {
     }
     
     private var glassBackground: some View {
-        ZStack {
-            Capsule()
-                .fill(.ultraThinMaterial)
-            
-            Capsule()
-                .fill(gradientFill)
-            
-            Capsule()
-                .strokeBorder(
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.5),
-                            Color.white.opacity(0.2)
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    ),
-                    lineWidth: 1
-                )
+        Group {
+            if #available(iOS 26.0, *) {
+                // Liquid Glass nativo - PURO sin overlays
+                Capsule()
+                    .fill(Color.clear)
+                    .glassEffect(.clear.interactive())
+            } else {
+                // Fallback para iOS < 26
+                ZStack {
+                    Capsule()
+                        .fill(.ultraThinMaterial)
+                    
+                    Capsule()
+                        .fill(gradientFill)
+                    
+                    Capsule()
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(0.5),
+                                    Color.white.opacity(0.2)
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            ),
+                            lineWidth: 1
+                        )
+                }
+                .shadow(color: .black.opacity(0.3), radius: 15, x: 0, y: 8)
+                .shadow(color: shadowColor, radius: 10, x: 0, y: 5)
+            }
         }
-        .shadow(color: .black.opacity(0.3), radius: 15, x: 0, y: 8)
-        .shadow(color: shadowColor, radius: 10, x: 0, y: 5)
     }
     
     private var gradientFill: LinearGradient {
@@ -325,142 +347,57 @@ struct GlassTextField: View {
                 RoundedRectangle(cornerRadius: 14)
                     .fill(Color(white: 0.25))
             } else {
-                ZStack {
+                if #available(iOS 26.0, *) {
+                    // Liquid Glass nativo para inputs interactivos
                     RoundedRectangle(cornerRadius: 14)
-                        .fill(.thinMaterial)
-                    
-                    RoundedRectangle(cornerRadius: 14)
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(0.1),
-                                    Color.white.opacity(0.05)
-                                ],
-                                startPoint: .top,
-                                endPoint: .bottom
+                        .fill(Color.clear)
+                        .glassEffect(.clear.interactive())
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 14)
+                                .strokeBorder(
+                                    isFocused ? Color.white.opacity(0.4) : Color.white.opacity(0.2),
+                                    lineWidth: isFocused ? 2 : 1
+                                )
+                        }
+                } else {
+                    // Fallback para iOS < 26
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(.thinMaterial)
+                        
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        Color.white.opacity(0.1),
+                                        Color.white.opacity(0.05)
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
                             )
-                        )
-                    
-                    RoundedRectangle(cornerRadius: 14)
-                        .strokeBorder(
-                            isFocused ?
-                            LinearGradient(
-                                colors: [.blue.opacity(0.6), .purple.opacity(0.4)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            ) :
-                            LinearGradient(
-                                colors: [.white.opacity(0.3), .white.opacity(0.1)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            ),
-                            lineWidth: isFocused ? 2 : 1
-                        )
+                        
+                        RoundedRectangle(cornerRadius: 14)
+                            .strokeBorder(
+                                isFocused ?
+                                LinearGradient(
+                                    colors: [.blue.opacity(0.6), .purple.opacity(0.4)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ) :
+                                LinearGradient(
+                                    colors: [.white.opacity(0.3), .white.opacity(0.1)],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                ),
+                                lineWidth: isFocused ? 2 : 1
+                            )
+                    }
+                    .shadow(color: isFocused ? .blue.opacity(0.3) : .black.opacity(0.2), radius: isFocused ? 15 : 8, x: 0, y: 4)
                 }
-                .shadow(color: isFocused ? .blue.opacity(0.3) : .black.opacity(0.2), radius: isFocused ? 15 : 8, x: 0, y: 4)
             }
         }
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isFocused)
-    }
-}
-
-// MARK: - Glass Background with Animation
-
-struct GlassAnimatedBackground: View {
-    @State private var animateGradient = false
-    @State private var rotationAngle: Double = 0
-    @Environment(\.accessibilityReduceMotion) var reduceMotion
-    
-    var body: some View {
-        ZStack {
-            // Base gradient
-            LinearGradient(
-                colors: [
-                    Color(red: 0.08, green: 0.05, blue: 0.25),
-                    Color.black,
-                    Color(red: 0.15, green: 0.1, blue: 0.35)
-                ],
-                startPoint: animateGradient ? .topLeading : .bottomLeading,
-                endPoint: animateGradient ? .bottomTrailing : .topTrailing
-            )
-            
-            // Orb 1 - Azul
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            Color.blue.opacity(0.4),
-                            Color.cyan.opacity(0.3),
-                            Color.clear
-                        ],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 300
-                    )
-                )
-                .frame(width: 500, height: 500)
-                .offset(
-                    x: animateGradient ? -50 : 100,
-                    y: animateGradient ? -100 : 50
-                )
-                .blur(radius: 80)
-                .rotationEffect(.degrees(rotationAngle))
-            
-            // Orb 2 - Púrpura
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            Color.purple.opacity(0.4),
-                            Color.pink.opacity(0.3),
-                            Color.clear
-                        ],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 300
-                    )
-                )
-                .frame(width: 500, height: 500)
-                .offset(
-                    x: animateGradient ? 100 : -50,
-                    y: animateGradient ? 150 : -100
-                )
-                .blur(radius: 80)
-                .rotationEffect(.degrees(-rotationAngle * 0.7))
-            
-            // Orb 3 - Rosa
-            Circle()
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            Color.pink.opacity(0.3),
-                            Color.orange.opacity(0.2),
-                            Color.clear
-                        ],
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: 250
-                    )
-                )
-                .frame(width: 400, height: 400)
-                .offset(
-                    x: animateGradient ? -80 : 80,
-                    y: animateGradient ? 100 : -150
-                )
-                .blur(radius: 70)
-                .rotationEffect(.degrees(rotationAngle * 0.5))
-        }
-        .ignoresSafeArea()
-        .onAppear {
-            if !reduceMotion {
-                withAnimation(.easeInOut(duration: 10).repeatForever(autoreverses: true)) {
-                    animateGradient = true
-                }
-                withAnimation(.linear(duration: 30).repeatForever(autoreverses: false)) {
-                    rotationAngle = 360
-                }
-            }
-        }
     }
 }
 

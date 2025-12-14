@@ -113,7 +113,7 @@ struct LoginView: View {
                     
                     // Sign up link
                     Button(action: {}) {
-                        HStack(spacing: Spacing.xs) {
+                        HStack(spacing: 4) {
                             Text("¿No tienes cuenta?")
                                 .foregroundStyle(.white.opacity(0.7))
                             Text("Regístrate")
@@ -186,7 +186,7 @@ private struct SimpleTextField: View {
                 .fill(.thinMaterial)
         }
         .overlay {
-            RoundedRectangle(cornerRadius: InputSize.cornerRadius)
+            RoundedRectangle(cornerRadius: 16)
                 .strokeBorder(
                     isFocused ? Color.white.opacity(0.3) : Color.white.opacity(0.1),
                     lineWidth: isFocused ? 1.5 : 1
