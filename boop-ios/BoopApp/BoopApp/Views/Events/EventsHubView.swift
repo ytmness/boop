@@ -114,7 +114,7 @@ struct EventFeedCard: View {
     // MARK: - Compact Card (Instagram-style post)
     private var compactCard: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // MEDIA - Imagen cuadrada tipo Instagram
+            // MEDIA - Imagen más grande (aproximadamente el doble)
             ZStack {
                 LinearGradient(
                     colors: [.blue, .purple, .pink],
@@ -123,17 +123,17 @@ struct EventFeedCard: View {
                 )
                 
                 Image(systemName: "music.note")
-                    .font(.system(size: 50, weight: .semibold))
+                    .font(.system(size: 100, weight: .semibold))  // ✅ Duplicado de 50 a 100
                     .foregroundStyle(.white.opacity(0.9))
             }
-            .aspectRatio(1.0, contentMode: .fill)  // ✅ 1:1 como Instagram
+            .frame(height: 400)  // ✅ Altura fija grande (aproximadamente el doble)
             .frame(maxWidth: .infinity)
             .clipped()
             
             // INFO SECTION - Debajo de la imagen (tipo Instagram)
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 20) {  // ✅ Spacing aumentado de 12 a 20
                 // Botones de acción (restaurados - pequeños con glassCircle)
-                HStack(spacing: 10) {
+                HStack(spacing: 16) {  // ✅ Spacing aumentado de 10 a 16
                     if #available(iOS 26.0, *) {
                         likeButton
                         saveButton
@@ -148,47 +148,47 @@ struct EventFeedCard: View {
                     if #available(iOS 26.0, *) {
                         Button { } label: {
                             Label("Tickets", systemImage: "ticket")
-                                .font(.system(size: 15, weight: .semibold))
+                                .font(.system(size: 18, weight: .semibold))  // ✅ Aumentado de 15 a 18
                         }
                         .buttonStyle(.glassProminent)
                         .tint(.purple)
-                        .frame(height: 36)
-                        .padding(.horizontal, 16)
+                        .frame(height: 44)  // ✅ Aumentado de 36 a 44
+                        .padding(.horizontal, 20)  // ✅ Aumentado de 16 a 20
                     } else {
                         ticketsButton
                     }
                 }
-                .padding(.horizontal, 24)  // ✅ Padding aumentado aún más
-                .padding(.top, 12)
+                .padding(.horizontal, 32)  // ✅ Padding aumentado de 24 a 32
+                .padding(.top, 20)  // ✅ Padding aumentado de 12 a 20
                 
                 // Título y descripción
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 10) {  // ✅ Spacing aumentado de 6 a 10
                     Text("Evento \(eventNumber)")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.system(size: 22, weight: .semibold))  // ✅ Aumentado de 15 a 22
                         .foregroundStyle(.white)
                         .lineLimit(1)
                     
                     Text("Música electrónica y buena vibra!")
-                        .font(.system(size: 14))
+                        .font(.system(size: 18))  // ✅ Aumentado de 14 a 18
                         .foregroundStyle(.white.opacity(0.9))
                         .lineLimit(3)
                 }
-                .padding(.horizontal, 24)  // ✅ Padding aumentado aún más
+                .padding(.horizontal, 32)  // ✅ Padding aumentado de 24 a 32
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
                 // Fecha y ubicación
-                HStack(spacing: 12) {
+                HStack(spacing: 16) {  // ✅ Spacing aumentado de 12 a 16
                     Label("Vie 15 Dic · 21:00", systemImage: "calendar")
                     Label("Club Nocturno", systemImage: "mappin.circle.fill")
                 }
-                .font(.system(size: 12))
+                .font(.system(size: 16))  // ✅ Aumentado de 12 a 16
                 .foregroundStyle(.white.opacity(0.7))
-                .padding(.horizontal, 24)  // ✅ Padding aumentado aún más
+                .padding(.horizontal, 32)  // ✅ Padding aumentado de 24 a 32
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.bottom, 16)
+            .padding(.bottom, 24)  // ✅ Padding aumentado de 16 a 24
         }
-        .padding(.horizontal, 20)  // ✅ Padding externo aumentado aún más
+        .padding(.horizontal, 16)  // ✅ Padding externo estándar
         .background {
             if reduceTransparency {
                 RoundedRectangle(cornerRadius: 32, style: .continuous)  // ✅ Más redondeado tipo burbuja
@@ -228,11 +228,11 @@ struct EventFeedCard: View {
             }
         } label: {
             Image(systemName: isLiked ? "heart.fill" : "heart")
-                .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 22, weight: .semibold))  // ✅ Aumentado de 16 a 22
                 .foregroundStyle(isLiked ? .red : .white.opacity(0.9))
                 .contentTransition(.symbolEffect(.replace))  // ✅ swap suave
                 .symbolEffect(.bounce, value: isLiked)  // ✅ pop evidente
-                .frame(width: 34, height: 34)
+                .frame(width: 48, height: 48)  // ✅ Aumentado de 34 a 48
                 .background(glassCircle)
         }
         .buttonStyle(.plain)  // ✅ evita que SwiftUI cambie el look
@@ -248,11 +248,11 @@ struct EventFeedCard: View {
             }
         } label: {
             Image(systemName: isSaved ? "bookmark.fill" : "bookmark")
-                .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 22, weight: .semibold))  // ✅ Aumentado de 16 a 22
                 .foregroundStyle(.white.opacity(0.9))
                 .contentTransition(.symbolEffect(.replace))  // ✅
                 .symbolEffect(.bounce, value: isSaved)  // ✅ pop evidente
-                .frame(width: 34, height: 34)
+                .frame(width: 48, height: 48)  // ✅ Aumentado de 34 a 48
                 .background(glassCircle)
         }
         .buttonStyle(.plain)
@@ -266,9 +266,9 @@ struct EventFeedCard: View {
             // share action
         } label: {
             Image(systemName: "square.and.arrow.up")
-                .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 22, weight: .semibold))  // ✅ Aumentado de 16 a 22
                 .foregroundStyle(.white.opacity(0.9))
-                .frame(width: 34, height: 34)
+                .frame(width: 48, height: 48)  // ✅ Aumentado de 34 a 48
                 .background(glassCircle)
         }
         .buttonStyle(.plain)
