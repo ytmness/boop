@@ -34,7 +34,7 @@ struct SearchView: View {
                     
                     // Category selector
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
+                        HStack(spacing: 10) {
                             ForEach(SearchCategory.allCases, id: \.self) { category in
                                 CategoryChip(
                                     title: category.rawValue,
@@ -46,9 +46,10 @@ struct SearchView: View {
                                 }
                             }
                         }
-                        .padding(.leading, 24)
-                        .padding(.trailing, 16)
-                        .padding(.vertical, 12)
+                        .padding(.vertical, 10)
+                        .frame(maxWidth: 340, alignment: .trailing)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .padding(.trailing, 14)
                     }
                     
                     // Results
@@ -132,10 +133,10 @@ private struct CategoryChip: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 14, weight: .semibold))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(isSelected ? .black : .white)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
                 .background {
                     Capsule()
                         .fill(isSelected ? .white : .white.opacity(0.2))

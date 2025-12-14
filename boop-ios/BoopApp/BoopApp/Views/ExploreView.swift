@@ -34,8 +34,11 @@ struct ExploreView: View {
                         cities: cities,
                         showPicker: $showCityPicker
                     )
+                    .frame(maxWidth: 360)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .padding(.trailing, 14)
+                    .padding(.top, 10)
                     .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
                     
                     // Events feed
                     ScrollView {
@@ -81,10 +84,10 @@ private struct CitySelector: View {
             HStack(spacing: 8) {
                 Image(systemName: "mappin.circle.fill")
                     .foregroundStyle(.white.opacity(0.8))
-                    .font(.system(size: 18))
+                    .font(.system(size: 16))
                 
                 Text(selectedCity)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(.white)
                 
                 Spacer()
@@ -93,8 +96,8 @@ private struct CitySelector: View {
                     .foregroundStyle(.white.opacity(0.6))
                     .font(.system(size: 12))
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 9)
             .background {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
                     .fill(.thinMaterial)

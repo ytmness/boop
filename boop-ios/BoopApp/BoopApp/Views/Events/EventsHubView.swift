@@ -33,7 +33,7 @@ struct EventsHubView: View {
                 VStack(spacing: 0) {
                     // Tab selector
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
+                        HStack(spacing: 10) {
                             ForEach(EventsTab.allCases, id: \.self) { tab in
                                 TabChip(
                                     title: tab.rawValue,
@@ -45,9 +45,10 @@ struct EventsHubView: View {
                                 }
                             }
                         }
-                        .padding(.leading, 24)
-                        .padding(.trailing, 16)
-                        .padding(.vertical, 12)
+                        .padding(.vertical, 10)
+                        .frame(maxWidth: 320, alignment: .trailing)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .padding(.trailing, 14)
                     }
                     
                     // Filter bar (solo para My Events)
@@ -107,10 +108,10 @@ private struct TabChip: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(isSelected ? .black : .white)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 10)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 7)
                 .background {
                     Capsule()
                         .fill(isSelected ? .white : .white.opacity(0.2))
