@@ -46,7 +46,8 @@ struct SearchView: View {
                                 }
                             }
                         }
-                        .padding(.horizontal, 16)
+                        .padding(.leading, 24)
+                        .padding(.trailing, 16)
                         .padding(.vertical, 12)
                     }
                     
