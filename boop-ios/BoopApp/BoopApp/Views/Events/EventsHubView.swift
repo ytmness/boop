@@ -87,33 +87,56 @@ private struct HomePinnedHeader: View {
     @Binding var selectedFilter: EventsHubView.EventFilter
     let scrollOffset: CGFloat
     
-    // Animación basada en scroll: cuando scrolleas hacia arriba, el logo se hace más pequeño y transparente
-    private var logoScale: CGFloat {
+    // Animación basada en scroll: BOOP grande centrado al inicio, pequeño a la izquierda al scrollear
+    private var logoSize: CGFloat {
         let offset = abs(scrollOffset)
-        if offset > 50 {
-            return max(0.85, 1.0 - (offset - 50) / 200)
+        if offset > 30 {
+            // Se reduce de 40 a 28 cuando scrolleas
+            let progress = min(1.0, (offset - 30) / 100)
+            return 40 - (12 * progress)
         }
-        return 1.0
+        return 40 // Tamaño grande al inicio
     }
     
-    private var logoOpacity: Double {
+    private var logoAlignment: Alignment {
         let offset = abs(scrollOffset)
-        if offset > 50 {
-            return max(0.6, 1.0 - Double((offset - 50) / 300))
+        if offset > 30 {
+            return .leading // Se mueve a la izquierda al scrollear
         }
-        return 1.0
+        return .center // Centrado al inicio
+    }
+    
+    private var logoPadding: EdgeInsets {
+        let offset = abs(scrollOffset)
+        if offset > 30 {
+            let progress = min(1.0, (offset - 30) / 100)
+            return EdgeInsets(
+                top: 6,
+                leading: 16 + (8 * progress), // Se mueve hacia la izquierda
+                bottom: 0,
+                trailing: 0
+            )
+        }
+        return EdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 0) // Centrado
     }
     
     var body: some View {
         VStack(spacing: 10) {
             // Logo BOOP con animación basada en scroll
-            Text("BOOP")
-                .font(.system(size: 32, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
-                .padding(.top, 6)
-                .scaleEffect(logoScale)
-                .opacity(logoOpacity)
-                .animation(.spring(response: 0.3, dampingFraction: 0.8), value: scrollOffset)
+            HStack {
+                if logoAlignment == .leading {
+                    Spacer()
+                }
+                Text("BOOP")
+                    .font(.system(size: logoSize, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+                    .padding(logoPadding)
+                    .animation(.spring(response: 0.4, dampingFraction: 0.75), value: scrollOffset)
+                if logoAlignment == .center {
+                    Spacer()
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: logoAlignment)
             
             // Tab selector (burbujas fijas)
             GeometryReader { proxy in
