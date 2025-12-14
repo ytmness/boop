@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct EventsHubView: View {
+    @State var viewModel: EventsViewModel
     @State private var selectedTab: EventsTab = .explore
     @State private var selectedFilter: EventFilter = .all
     @State private var scrollOffset: CGFloat = 0
@@ -51,14 +52,30 @@ struct EventsHubView: View {
                             )
                         
                         // FEED
-                        ForEach(0..<10, id: \.self) { index in
-                            EventFeedCard(
-                                eventNumber: index + 1,
-                                tabType: selectedTab
-                            )
+                        if viewModel.isLoading && viewModel.events.isEmpty {
+                            ProgressView()
+                                .tint(.white)
+                                .padding(.top, 100)
+                        } else if viewModel.events.isEmpty {
+                            VStack(spacing: 16) {
+                                Image(systemName: "calendar.badge.exclamationmark")
+                                    .font(.system(size: 48))
+                                    .foregroundStyle(.white.opacity(0.5))
+                                Text("No hay eventos disponibles")
+                                    .font(.headline)
+                                    .foregroundStyle(.white.opacity(0.7))
+                            }
+                            .padding(.top, 100)
+                        } else {
+                            ForEach(viewModel.events) { event in
+                                EventFeedCard(
+                                    event: event,
+                                    tabType: selectedTab
+                                )
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 16)
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 16)
                     }
                     .padding(.top, headerHeight + 10) // deja espacio para el header fijo
                     .padding(.bottom, 24)
@@ -86,6 +103,9 @@ struct EventsHubView: View {
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbarBackground(.hidden, for: .tabBar)
+        }
+        .task {
+            await viewModel.load()
         }
     }
 }
@@ -285,7 +305,7 @@ private struct SearchBar: View {
 // MARK: - Event Feed Card (proporción 4:3 para móvil)
 
 struct EventFeedCard: View {
-    let eventNumber: Int
+    let event: EventRow
     var tabType: EventsHubView.EventsTab = .explore
     @State private var isPressed = false
     @State private var isLiked = false
@@ -299,7 +319,9 @@ struct EventFeedCard: View {
     
     // MARK: - Event Theme (diferentes gradientes e iconos por evento)
     private var eventTheme: (gradient: LinearGradient, icon: String, iconSize: CGFloat) {
-        switch eventNumber % 6 {
+        // Usar el hash del UUID para generar tema consistente
+        let hash = abs(event.id.hashValue)
+        switch hash % 6 {
         case 0:
             return (
                 LinearGradient(colors: [.blue, .purple, .pink], startPoint: .topLeading, endPoint: .bottomTrailing),
@@ -412,15 +434,17 @@ struct EventFeedCard: View {
                 
                 // Título y descripción
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Evento \(eventNumber)")
+                    Text(event.title)
                         .font(.system(size: 18, weight: .semibold))  // ✅ Tamaño normal para feed
                         .foregroundStyle(.white)
                         .lineLimit(1)
                     
-                    Text("Música electrónica y buena vibra!")
-                        .font(.system(size: 14))  // ✅ Tamaño normal para feed
-                        .foregroundStyle(.white.opacity(0.9))
-                        .lineLimit(3)
+                    if let description = event.description, !description.isEmpty {
+                        Text(description)
+                            .font(.system(size: 14))  // ✅ Tamaño normal para feed
+                            .foregroundStyle(.white.opacity(0.9))
+                            .lineLimit(3)
+                    }
                 }
                 .padding(.leading, 32)  // ✅ Padding izquierdo aumentado para mover info a la derecha
                 .padding(.trailing, 16)
@@ -428,8 +452,12 @@ struct EventFeedCard: View {
                 
                 // Fecha y ubicación
                 HStack(spacing: 12) {
-                    Label("Vie 15 Dic · 21:00", systemImage: "calendar")
-                    Label("Club Nocturno", systemImage: "mappin.circle.fill")
+                    Label(formatDate(event.startsAt), systemImage: "calendar")
+                    if let venue = event.venue, !venue.isEmpty {
+                        Label(venue, systemImage: "mappin.circle.fill")
+                    } else if let city = event.city, !city.isEmpty {
+                        Label(city, systemImage: "mappin.circle.fill")
+                    }
                 }
                 .font(.system(size: 12))  // ✅ Tamaño normal para feed
                 .foregroundStyle(.white.opacity(0.7))
@@ -471,26 +499,36 @@ struct EventFeedCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))  // ✅ Más redondeado para la imagen
             
             VStack(alignment: .leading, spacing: 4) {
-                Text("Evento \(eventNumber)")
+                Text(event.title)
                     .font(.system(size: 17, weight: .bold))
                     .foregroundStyle(.white)
                 
                 HStack(spacing: 4) {
                     Image(systemName: "calendar").font(.system(size: 11))
-                    Text("Vie 15 Dic · 21:00").font(.system(size: 12))
+                    Text(formatDate(event.startsAt)).font(.system(size: 12))
                 }
                 .foregroundStyle(.white.opacity(0.8))
                 
-                HStack(spacing: 4) {
-                    Image(systemName: "mappin.circle.fill").font(.system(size: 11))
-                    Text("Club Nocturno").font(.system(size: 12))
+                if let venue = event.venue, !venue.isEmpty {
+                    HStack(spacing: 4) {
+                        Image(systemName: "mappin.circle.fill").font(.system(size: 11))
+                        Text(venue).font(.system(size: 12))
+                    }
+                    .foregroundStyle(.white.opacity(0.8))
+                } else if let city = event.city, !city.isEmpty {
+                    HStack(spacing: 4) {
+                        Image(systemName: "mappin.circle.fill").font(.system(size: 11))
+                        Text(city).font(.system(size: 12))
+                    }
+                    .foregroundStyle(.white.opacity(0.8))
                 }
-                .foregroundStyle(.white.opacity(0.8))
                 
-                Text("Música electrónica y buena vibra!")
-                    .font(.system(size: 13))
-                    .foregroundStyle(.white.opacity(0.7))
-                    .lineLimit(1)
+                if let description = event.description, !description.isEmpty {
+                    Text(description)
+                        .font(.system(size: 13))
+                        .foregroundStyle(.white.opacity(0.7))
+                        .lineLimit(1)
+                }
                 
                 if #available(iOS 26.0, *) {
                     HStack(spacing: 12) {
@@ -634,6 +672,14 @@ struct ActionButtonsGroupFallback: View {
     }
 }
 
+// MARK: - Date Formatting Helper
+private func formatDate(_ date: Date) -> String {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "es_ES")
+    formatter.dateFormat = "EEE d MMM · HH:mm"
+    return formatter.string(from: date)
+}
+
 #Preview {
-    EventsHubView()
+    EventsHubView(viewModel: EventsViewModel())
 }

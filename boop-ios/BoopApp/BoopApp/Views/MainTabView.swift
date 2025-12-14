@@ -11,10 +11,15 @@ struct MainTabView: View {
     @ObservedObject var authViewModel: AuthViewModel
     @State private var selectedTab = 0
     @State private var showCreateEvent = false
+    @State private var eventsViewModel = EventsViewModel()
+    
+    private var currentUserId: UUID? {
+        authViewModel.currentUser?.id
+    }
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            EventsHubView()
+            EventsHubView(viewModel: eventsViewModel)
                 .tabItem {
                     Label("Inicio", systemImage: "house.fill")
                 }
@@ -64,26 +69,122 @@ struct MainTabView: View {
             }
         }
         .sheet(isPresented: $showCreateEvent) {
-            CreateEventView()
+            if let userId = currentUserId {
+                CreateEventView(
+                    currentUserId: userId,
+                    onCreated: { event in
+                        Task { @MainActor in
+                            eventsViewModel.addToTop(event)
+                        }
+                    }
+                )
+            } else {
+                VStack {
+                    Text("Debes iniciar sesión para crear eventos")
+                        .foregroundStyle(.white)
+                    Button("Cerrar") {
+                        showCreateEvent = false
+                    }
+                    .foregroundStyle(.white)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(GlassAnimatedBackground())
+            }
         }
     }
 }
 
-// Vista temporal para crear eventos
+// Vista para crear eventos con formulario Liquid Glass
 struct CreateEventView: View {
-    @Environment(\.dismiss) var dismiss
-    
+    @Environment(\.dismiss) private var dismiss
+    let currentUserId: UUID
+    let onCreated: (EventRow) -> Void
+
+    @State private var title = ""
+    @State private var description = ""
+    @State private var city = ""
+    @State private var venue = ""
+    @State private var startsAt = Date().addingTimeInterval(3600)
+
+    @State private var isSaving = false
+    @State private var errorMessage: String?
+
+    private let repo = EventsRepository()
+
     var body: some View {
         NavigationStack {
             ZStack {
                 GlassAnimatedBackground()
                 
-                VStack {
-                    Text("Crear Nuevo Evento")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.white)
+                ScrollView {
+                    VStack(spacing: 14) {
+                        Text("Crear evento")
+                            .font(.system(size: 30, weight: .bold, design: .rounded))
+                            .foregroundStyle(.white)
+                            .padding(.top, 10)
+
+                        GlassField(title: "Título", text: $title, systemImage: "sparkles")
+                        GlassField(title: "Descripción", text: $description, systemImage: "text.alignleft")
+                        GlassField(title: "Ciudad", text: $city, systemImage: "mappin.and.ellipse")
+                        GlassField(title: "Lugar / Dirección", text: $venue, systemImage: "building.2")
+
+                        VStack(alignment: .leading, spacing: 10) {
+                            HStack {
+                                Image(systemName: "calendar")
+                                    .foregroundStyle(.white.opacity(0.85))
+                                Text("Fecha y hora")
+                                    .foregroundStyle(.white.opacity(0.9))
+                                    .font(.system(size: 14, weight: .semibold))
+                            }
+
+                            DatePicker("", selection: $startsAt, displayedComponents: [.date, .hourAndMinute])
+                                .datePickerStyle(.compact)
+                                .labelsHidden()
+                                .tint(.white)
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 12)
+                        .background(.ultraThinMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                .stroke(.white.opacity(0.18), lineWidth: 1)
+                        )
+
+                        if let errorMessage {
+                            Text(errorMessage)
+                                .foregroundStyle(.red.opacity(0.9))
+                                .font(.system(size: 13))
+                                .padding(.top, 6)
+                        }
+
+                        Button {
+                            Task { await save() }
+                        } label: {
+                            HStack(spacing: 10) {
+                                if isSaving { 
+                                    ProgressView().tint(.white) 
+                                }
+                                Text(isSaving ? "Guardando..." : "Publicar")
+                                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .foregroundStyle(.white)
+                            .background(.ultraThinMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                    .stroke(.white.opacity(0.22), lineWidth: 1)
+                            )
+                        }
+                        .disabled(isSaving || title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+                        Spacer(minLength: 30)
+                    }
+                    .padding(.horizontal, 18)
                 }
+                .scrollIndicators(.hidden)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -94,6 +195,32 @@ struct CreateEventView: View {
                     .foregroundStyle(.white)
                 }
             }
+        }
+    }
+
+    @MainActor
+    private func save() async {
+        errorMessage = nil
+        isSaving = true
+        defer { isSaving = false }
+
+        do {
+            let payload = CreateEventPayload(
+                title: title.trimmingCharacters(in: .whitespacesAndNewlines),
+                description: description.isEmpty ? nil : description,
+                city: city.isEmpty ? nil : city,
+                venue: venue.isEmpty ? nil : venue,
+                startsAt: startsAt,
+                coverUrl: nil,
+                createdBy: currentUserId
+            )
+
+            let created = try await repo.createEvent(payload: payload)
+            onCreated(created)
+            dismiss()
+        } catch {
+            errorMessage = error.localizedDescription
+            print("❌ Error al crear evento: \(error.localizedDescription)")
         }
     }
 }
