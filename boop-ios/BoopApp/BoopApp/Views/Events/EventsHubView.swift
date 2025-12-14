@@ -275,39 +275,37 @@ struct EventFeedCard: View {
                     .foregroundStyle(.white.opacity(0.7))
                     .lineLimit(1)
                 
-                HStack(alignment: .center, spacing: 12) {
-                    ticketsButton
-                        .layoutPriority(1)
-                    
-                    if #available(iOS 26.0, *) {
-                        HStack(spacing: 12) {
-                            GlassIconButton(
-                                onSymbol: "heart.fill",
-                                offSymbol: "heart",
-                                isOn: $isLiked
-                            )
-                            
-                            GlassIconButton(
-                                onSymbol: "bookmark.fill",
-                                offSymbol: "bookmark",
-                                isOn: $isSaved
-                            )
-                            
-                            GlassIconButton(
-                                onSymbol: "square.and.arrow.up",
-                                offSymbol: nil,
-                                isOn: .constant(true)
-                            ) {
-                                // share action
-                            }
+                if #available(iOS 26.0, *) {
+                    HStack(spacing: 12) {
+                        Button { } label: {
+                            Label("Tickets", systemImage: "ticket")
+                                .lineLimit(1)
                         }
-                        .fixedSize()  // 🔑 evita compresión y cortes
-                    } else {
-                        ActionButtonsGroupFallback(isLiked: $isLiked, isSaved: $isSaved)
-                            .fixedSize()
+                        .buttonStyle(.glassProminent)
+                        .tint(.purple)
+                        .frame(height: 44)
+                        
+                        Spacer(minLength: 0)
+                        
+                        HStack(spacing: 12) {
+                            GlassIconButton(onSymbol: "heart.fill", offSymbol: "heart", isOn: $isLiked)
+                            GlassIconButton(onSymbol: "bookmark.fill", offSymbol: "bookmark", isOn: $isSaved)
+                            GlassIconButton(onSymbol: "square.and.arrow.up", offSymbol: nil, isOn: .constant(true)) { }
+                        }
+                        .fixedSize(horizontal: true, vertical: false)  // ✅ evita que se compriman/corten
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 6)
+                } else {
+                    HStack(spacing: 12) {
+                        ticketsButton
+                        Spacer(minLength: 0)
+                        ActionButtonsGroupFallback(isLiked: $isLiked, isSaved: $isSaved)
+                            .fixedSize(horizontal: true, vertical: false)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 6)
                 }
-                .padding(.top, 6)
             }
             .padding(12)
         }
