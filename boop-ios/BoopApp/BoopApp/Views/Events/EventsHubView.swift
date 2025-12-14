@@ -36,51 +36,51 @@ struct EventsHubView: View {
                 // Background
                 GlassAnimatedBackground()
                 
-                ScrollView {
-                    LazyVStack(spacing: 24) {
-                        // Lector de offset
-                        Color.clear
-                            .frame(height: 1)
-                            .background(
-                                GeometryReader { geometry in
-                                    Color.clear.preference(
-                                        key: ScrollOffsetPreferenceKey.self,
-                                        value: geometry.frame(in: .named("scroll")).minY
-                                    )
-                                }
-                            )
-                        
-                        // FEED
-                        ForEach(0..<10, id: \.self) { index in
-                            EventFeedCard(
-                                eventNumber: index + 1,
-                                tabType: selectedTab
-                            )
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 16)
-                    }
-                    .padding(.top, headerHeight + 20)
-                }
-                .coordinateSpace(name: "scroll")
-                .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
-                        scrollOffset = max(0, -value)
-                    }
-                }
-                .ignoresSafeArea(.container, edges: .bottom)
-                
-                // Header overlay fijo (fuera del ScrollView)
                 VStack(spacing: 0) {
+                    // Header fijo (fuera del ScrollView, como el selector en ExploreView)
                     HomeOverlayHeader(
                         selectedTab: $selectedTab,
                         selectedFilter: $selectedFilter,
                         scrollOffset: scrollOffset,
                         height: headerHeight
                     )
-                    Spacer()
+                    .padding(.top, 10)
+                    
+                    // Events feed (hace scroll, header se mantiene fijo arriba)
+                    ScrollView {
+                        LazyVStack(spacing: 24) {
+                            // Lector de offset
+                            Color.clear
+                                .frame(height: 1)
+                                .background(
+                                    GeometryReader { geometry in
+                                        Color.clear.preference(
+                                            key: ScrollOffsetPreferenceKey.self,
+                                            value: geometry.frame(in: .named("scroll")).minY
+                                        )
+                                    }
+                                )
+                            
+                            // FEED
+                            ForEach(0..<10, id: \.self) { index in
+                                EventFeedCard(
+                                    eventNumber: index + 1,
+                                    tabType: selectedTab
+                                )
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 16)
+                        }
+                        .padding(.top, 8)
+                    }
+                    .coordinateSpace(name: "scroll")
+                    .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                            scrollOffset = max(0, -value)
+                        }
+                    }
+                    .ignoresSafeArea(.container, edges: .bottom)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
             .navigationBarHidden(true)
             .toolbarColorScheme(.dark, for: .navigationBar)
@@ -160,7 +160,6 @@ private struct HomeOverlayHeader: View {
         }
         .frame(height: height)
         .frame(maxWidth: .infinity, alignment: .top)
-        .padding(.top, 10)
         .allowsHitTesting(true)
     }
 }
