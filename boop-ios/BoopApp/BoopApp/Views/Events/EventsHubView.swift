@@ -93,6 +93,48 @@ struct EventFeedCard: View {
         hSize == .compact
     }
     
+    // MARK: - Event Theme (diferentes gradientes e iconos por evento)
+    private var eventTheme: (gradient: LinearGradient, icon: String, iconSize: CGFloat) {
+        switch eventNumber % 6 {
+        case 0:
+            return (
+                LinearGradient(colors: [.blue, .purple, .pink], startPoint: .topLeading, endPoint: .bottomTrailing),
+                "music.note",
+                100
+            )
+        case 1:
+            return (
+                LinearGradient(colors: [.orange, .red, .pink], startPoint: .topLeading, endPoint: .bottomTrailing),
+                "party.popper",
+                90
+            )
+        case 2:
+            return (
+                LinearGradient(colors: [.green, .mint, .cyan], startPoint: .topLeading, endPoint: .bottomTrailing),
+                "guitars",
+                95
+            )
+        case 3:
+            return (
+                LinearGradient(colors: [.purple, .indigo, .blue], startPoint: .topLeading, endPoint: .bottomTrailing),
+                "waveform",
+                100
+            )
+        case 4:
+            return (
+                LinearGradient(colors: [.pink, .purple, .blue], startPoint: .topLeading, endPoint: .bottomTrailing),
+                "music.mic",
+                90
+            )
+        default:
+            return (
+                LinearGradient(colors: [.yellow, .orange, .red], startPoint: .topLeading, endPoint: .bottomTrailing),
+                "music.note.list",
+                95
+            )
+        }
+    }
+    
     var body: some View {
         Group {
             if isCompact {
@@ -277,12 +319,8 @@ struct EventFeedCard: View {
     private var wideCard: some View {
         VStack(alignment: .leading, spacing: 10) {
             ZStack {
-                LinearGradient(
-                    colors: [Color.blue, Color.purple, Color.pink],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                Image(systemName: "music.note")
+                eventTheme.gradient
+                Image(systemName: eventTheme.icon)
                     .font(.system(size: 40))
                     .foregroundStyle(.white.opacity(0.9))
             }
