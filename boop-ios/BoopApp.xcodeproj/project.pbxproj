@@ -26,6 +26,10 @@
 		1A000105 /* VerifyOTPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000106 /* VerifyOTPView.swift */; };
 		1A000107 /* SupabaseConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000108 /* SupabaseConfig.swift */; };
 		1A000109 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A00010A /* DesignTokens.swift */; };
+		1A000200 /* EventRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000201 /* EventRow.swift */; };
+		1A000202 /* EventsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000203 /* EventsRepository.swift */; };
+		1A000204 /* EventsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000205 /* EventsViewModel.swift */; };
+		1A000206 /* GlassField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000207 /* GlassField.swift */; };
 		1A000100 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1A0000FF /* Supabase */; };
 /* End PBXBuildFile section */
 
@@ -48,6 +52,10 @@
 		1A000106 /* VerifyOTPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyOTPView.swift; sourceTree = "<group>"; };
 		1A000108 /* SupabaseConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseConfig.swift; sourceTree = "<group>"; };
 		1A00010A /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
+		1A000201 /* EventRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRow.swift; sourceTree = "<group>"; };
+		1A000203 /* EventsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsRepository.swift; sourceTree = "<group>"; };
+		1A000205 /* EventsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsViewModel.swift; sourceTree = "<group>"; };
+		1A000207 /* GlassField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassField.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +153,7 @@
 			isa = PBXGroup;
 			children = (
 				1A000077 /* Auth */,
+				1A000208 /* Events */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -153,6 +162,7 @@
 			isa = PBXGroup;
 			children = (
 				1A00001E /* GlassComponents.swift */,
+				1A000207 /* GlassField.swift */,
 			);
 			path = DesignSystem;
 			sourceTree = "<group>";
@@ -169,6 +179,40 @@
 			isa = PBXGroup;
 			children = (
 				1A00001F /* AuthViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		1A000208 /* Events */ = {
+			isa = PBXGroup;
+			children = (
+				1A000209 /* Models */,
+				1A00020A /* Repositories */,
+				1A00020B /* ViewModels */,
+			);
+			path = Events;
+			sourceTree = "<group>";
+		};
+		1A000209 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				1A000201 /* EventRow.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		1A00020A /* Repositories */ = {
+			isa = PBXGroup;
+			children = (
+				1A000203 /* EventsRepository.swift */,
+			);
+			path = Repositories;
+			sourceTree = "<group>";
+		};
+		1A00020B /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				1A000205 /* EventsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -288,6 +332,10 @@
 				1A000105 /* VerifyOTPView.swift in Sources */,
 				1A000107 /* SupabaseConfig.swift in Sources */,
 				1A000109 /* DesignTokens.swift in Sources */,
+				1A000200 /* EventRow.swift in Sources */,
+				1A000202 /* EventsRepository.swift in Sources */,
+				1A000204 /* EventsViewModel.swift in Sources */,
+				1A000206 /* GlassField.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
