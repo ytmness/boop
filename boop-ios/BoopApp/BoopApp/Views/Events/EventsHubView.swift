@@ -156,7 +156,7 @@ struct EventFeedCard: View {
                     .font(.system(size: eventTheme.iconSize, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.9))
             }
-            .frame(height: isCompact ? 280 : 240)  // ✅ Altura aumentada para eventos más largos
+            .frame(height: isCompact ? 400 : 380)  // ✅ Altura aproximadamente el doble del contenedor del perfil
             .frame(maxWidth: .infinity)
             .clipped()
             
