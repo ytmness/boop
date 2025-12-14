@@ -1,9 +1,16 @@
 import SwiftUI
 
-/// Componentes reutilizables con Liquid Glass
-/// Siguiendo el patrón del ejemplo de liquidglass
+/// Componentes reutilizables con Liquid Glass REAL (Apple-safe)
+/// 
+/// IMPORTANTE: Estos componentes usan GlassSurface que aplica glassEffect() nativo
+/// sin overlays, gradientes, strokes ni sombras que "pintarían" el glass.
+/// 
+/// REGLAS:
+/// - GlassButton: Usar en botones flotantes o toolbars (NO en formularios)
+/// - GlassTextField: Usar material sutil (NO glass real para inputs)
+/// - GlassContainer: Usar en sheets/modals flotantes (NO en cards estáticas)
 
-// MARK: - Glass Button
+// MARK: - Glass Button (para botones flotantes/toolbars)
 struct GlassButton: View {
     let title: String
     let action: () -> Void
@@ -15,48 +22,97 @@ struct GlassButton: View {
         case secondary
     }
     
+    private var buttonHeight: CGFloat {
+        style == .primary ? ButtonSize.primaryHeight : ButtonSize.secondaryHeight
+    }
+    
     var body: some View {
         Button(action: action) {
-            HStack {
+            HStack(spacing: Spacing.sm) {
                 if isLoading {
                     ProgressView()
                         .tint(.white)
                 } else {
                     Text(title)
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.system(size: Typography.body, weight: .semibold))
                         .foregroundStyle(.white)
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .boopGlassContainer(
-                spacing: 0,
-                padding: 0,
-                cornerRadius: 20
-            )
+            .frame(height: buttonHeight)
+            .padding(.horizontal, ButtonSize.primaryHorizontalPadding)
         }
+        .buttonStyle(GlassButtonStyle())
         .disabled(isLoading)
     }
 }
 
-// MARK: - Glass Text Field
+// MARK: - Glass Button Style
+private struct GlassButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceTransparency) var reduceTransparency
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background {
+                if reduceTransparency {
+                    Capsule()
+                        .fill(Color(white: 0.3))
+                } else {
+                    // Liquid Glass real en Capsule shape
+                    if #available(iOS 26.0, *) {
+                        Capsule()
+                            .fill(Color.clear)
+                            .glassEffect(.clear.interactive())
+                    } else {
+                        Capsule()
+                            .fill(.ultraThinMaterial)
+                    }
+                }
+            }
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
+    }
+}
+
+// MARK: - Glass Text Field (material sutil, NO glass real)
 struct GlassTextField: View {
     let placeholder: String
     @Binding var text: String
     var keyboardType: UIKeyboardType = .default
+    var icon: String? = nil
+    
+    @FocusState private var isFocused: Bool
     
     var body: some View {
-        TextField(placeholder, text: $text)
-            .keyboardType(keyboardType)
-            .textInputAutocapitalization(.never)
-            .autocorrectionDisabled()
-            .padding()
-            .foregroundStyle(.white)
-            .boopGlassContainer(
-                spacing: 0,
-                padding: 0,
-                cornerRadius: 16
-            )
+        HStack(spacing: Spacing.md) {
+            if let icon {
+                Image(systemName: icon)
+                    .foregroundStyle(.white.opacity(0.6))
+                    .frame(width: 20)
+            }
+            
+            TextField(placeholder, text: $text)
+                .keyboardType(keyboardType)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .foregroundStyle(.white)
+                .focused($isFocused)
+        }
+        .frame(height: InputSize.height)
+        .padding(.horizontal, InputSize.padding)
+        .background {
+            // Material sutil para inputs (NO glass real)
+            RoundedRectangle(cornerRadius: InputSize.cornerRadius)
+                .fill(.thinMaterial)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: InputSize.cornerRadius)
+                .strokeBorder(
+                    isFocused ? Color.white.opacity(0.3) : Color.white.opacity(0.1),
+                    lineWidth: isFocused ? 1.5 : 1
+                )
+        }
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isFocused)
     }
 }
 
@@ -68,20 +124,20 @@ struct GlassBackButton: View {
         Button(action: action) {
             Image(systemName: "chevron.left")
                 .font(.system(size: 18, weight: .semibold))
-                .boopGlassCircleButton(diameter: 44)
+                .boopGlassCircleButton(diameter: ButtonSize.iconSize)
         }
     }
 }
 
-// MARK: - Glass Container (wrapper simple)
+// MARK: - Glass Container (para sheets/modals flotantes)
 struct GlassContainer<Content: View>: View {
     let content: Content
-    var cornerRadius: CGFloat = 20
-    var padding: CGFloat = 20
+    var cornerRadius: CGFloat = CardSize.cornerRadius
+    var padding: CGFloat = CardSize.padding
     
     init(
-        cornerRadius: CGFloat = 20,
-        padding: CGFloat = 20,
+        cornerRadius: CGFloat = CardSize.cornerRadius,
+        padding: CGFloat = CardSize.padding,
         @ViewBuilder content: () -> Content
     ) {
         self.cornerRadius = cornerRadius
@@ -90,10 +146,10 @@ struct GlassContainer<Content: View>: View {
     }
     
     var body: some View {
-        content
-            .padding(padding)
-            .boopGlassEffect(interactive: true)
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        GlassSurface(cornerRadius: cornerRadius, interactive: true) {
+            content
+                .padding(padding)
+        }
     }
 }
 

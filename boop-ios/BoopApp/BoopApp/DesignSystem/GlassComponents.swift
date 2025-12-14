@@ -2,18 +2,118 @@
 //  GlassComponents.swift
 //  BoopApp
 //
-//  Design System para Liquid Glass
-//  Preparado para iOS 26+ con fallback para versiones anteriores
+//  NOTA: Este archivo está siendo reemplazado por los componentes en Boop/Core/Design/
+//  Los componentes aquí usan glass "pintado" (falso) y deben migrarse a GlassSurface.
+//  Este archivo se mantiene temporalmente para compatibilidad durante la migración.
 //
 
 import SwiftUI
 
-// MARK: - Glass Card Component
+// MARK: - Background Animado (sin glass, solo gradientes)
+struct GlassAnimatedBackground: View {
+    @State private var animateGradient = false
+    @State private var rotationAngle: Double = 0
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+    
+    var body: some View {
+        ZStack {
+            // Base gradient
+            LinearGradient(
+                colors: [
+                    Color(red: 0.08, green: 0.05, blue: 0.25),
+                    Color.black,
+                    Color(red: 0.15, green: 0.1, blue: 0.35)
+                ],
+                startPoint: animateGradient ? .topLeading : .bottomLeading,
+                endPoint: animateGradient ? .bottomTrailing : .topTrailing
+            )
+            
+            // Orb 1 - Azul
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            Color.blue.opacity(0.4),
+                            Color.cyan.opacity(0.3),
+                            Color.clear
+                        ],
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: 300
+                    )
+                )
+                .frame(width: 500, height: 500)
+                .offset(
+                    x: animateGradient ? -50 : 100,
+                    y: animateGradient ? -100 : 50
+                )
+                .blur(radius: 80)
+                .rotationEffect(.degrees(rotationAngle))
+            
+            // Orb 2 - Púrpura
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            Color.purple.opacity(0.4),
+                            Color.pink.opacity(0.3),
+                            Color.clear
+                        ],
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: 300
+                    )
+                )
+                .frame(width: 500, height: 500)
+                .offset(
+                    x: animateGradient ? 100 : -50,
+                    y: animateGradient ? 150 : -100
+                )
+                .blur(radius: 80)
+                .rotationEffect(.degrees(-rotationAngle * 0.7))
+            
+            // Orb 3 - Rosa
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            Color.pink.opacity(0.3),
+                            Color.orange.opacity(0.2),
+                            Color.clear
+                        ],
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: 250
+                    )
+                )
+                .frame(width: 400, height: 400)
+                .offset(
+                    x: animateGradient ? -80 : 80,
+                    y: animateGradient ? 100 : -150
+                )
+                .blur(radius: 70)
+                .rotationEffect(.degrees(rotationAngle * 0.5))
+        }
+        .ignoresSafeArea()
+        .onAppear {
+            if !reduceMotion {
+                withAnimation(.easeInOut(duration: 10).repeatForever(autoreverses: true)) {
+                    animateGradient = true
+                }
+                withAnimation(.linear(duration: 30).repeatForever(autoreverses: false)) {
+                    rotationAngle = 360
+                }
+            }
+        }
+    }
+}
 
+// MARK: - DEPRECATED: GlassCard (migrar a GlassContainer de Boop/Core/Design/)
+// Este componente "pinta" glass falso y debe reemplazarse
+// Usa material simple (NO glass real para cards estáticas)
 struct GlassCard<Content: View>: View {
     let content: Content
     let cornerRadius: CGFloat
-    @Environment(\.accessibilityReduceTransparency) var reduceTransparency
     
     init(
         cornerRadius: CGFloat = 24,
@@ -24,53 +124,12 @@ struct GlassCard<Content: View>: View {
     }
     
     var body: some View {
+        // Usar material simple (NO glass real para cards estáticas)
         content
-            .padding(20)
+            .padding(16) // CardSize.padding, pero sin depender del módulo
             .background {
-                if reduceTransparency {
-                    // Modo accesibilidad: fondo sólido
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .fill(Color(white: 0.2))
-                } else {
-                    // Liquid Glass completo
-                    ZStack {
-                        // Capa 1: Material base
-                        RoundedRectangle(cornerRadius: cornerRadius)
-                            .fill(.ultraThinMaterial)
-                        
-                        // Capa 2: Gradiente de luz
-                        RoundedRectangle(cornerRadius: cornerRadius)
-                            .fill(
-                                LinearGradient(
-                                    colors: [
-                                        Color.white.opacity(0.15),
-                                        Color.white.opacity(0.05),
-                                        Color.white.opacity(0.1)
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                        
-                        // Capa 3: Borde brillante (efecto lente)
-                        RoundedRectangle(cornerRadius: cornerRadius)
-                            .strokeBorder(
-                                LinearGradient(
-                                    colors: [
-                                        Color.white.opacity(0.6),
-                                        Color.white.opacity(0.2),
-                                        Color.white.opacity(0.4)
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 1.5
-                            )
-                    }
-                    // Sombras para profundidad
-                    .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
-                    .shadow(color: .white.opacity(0.1), radius: 5, x: 0, y: -2)
-                }
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .fill(.thinMaterial)
             }
     }
 }

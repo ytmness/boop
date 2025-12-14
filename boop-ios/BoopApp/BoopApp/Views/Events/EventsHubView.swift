@@ -2,13 +2,14 @@
 //  EventsHubView.swift
 //  BoopApp
 //
-//  Events hub with Liquid Glass navigation
+//  Events hub refactorizado - Cards sin glass (material sutil)
 //
 
 import SwiftUI
 
 struct EventsHubView: View {
     @State private var searchText = ""
+    @FocusState private var isSearchFocused: Bool
     
     var body: some View {
         NavigationStack {
@@ -17,49 +18,41 @@ struct EventsHubView: View {
                 
                 ScrollView {
                     VStack(spacing: 20) {
-                        // Search bar with glass
-                        HStack {
+                        // Search bar - Material simple (sin glass pintado)
+                        HStack(spacing: 12) {
                             Image(systemName: "magnifyingglass")
                                 .foregroundStyle(.white.opacity(0.6))
                             
                             TextField("Buscar eventos...", text: $searchText)
                                 .foregroundStyle(.white)
+                                .focused($isSearchFocused)
                         }
-                        .padding(16)
+                        .frame(height: 52)
+                        .padding(.horizontal, 16)
                         .background {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(.ultraThinMaterial)
-                                
-                                RoundedRectangle(cornerRadius: 16)
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [
-                                                Color.white.opacity(0.1),
-                                                Color.white.opacity(0.05)
-                                            ],
-                                            startPoint: .top,
-                                            endPoint: .bottom
-                                        )
-                                    )
-                                
-                                RoundedRectangle(cornerRadius: 16)
-                                    .strokeBorder(Color.white.opacity(0.3), lineWidth: 1)
-                            }
-                            .shadow(color: .black.opacity(0.3), radius: 15, x: 0, y: 5)
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(.thinMaterial)
                         }
-                        .padding(.horizontal)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 16)
+                                .strokeBorder(
+                                    isSearchFocused ? Color.white.opacity(0.3) : Color.white.opacity(0.1),
+                                    lineWidth: isSearchFocused ? 1.5 : 1
+                                )
+                        }
+                        .padding(.horizontal, 16)
+                        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSearchFocused)
                         
                         // Events grid
                         LazyVGrid(columns: [
-                            GridItem(.flexible()),
-                            GridItem(.flexible())
+                            GridItem(.flexible(), spacing: 16),
+                            GridItem(.flexible(), spacing: 16)
                         ], spacing: 16) {
                             ForEach(0..<10) { index in
                                 EventCard(eventNumber: index + 1)
                             }
                         }
-                        .padding()
+                        .padding(16)
                     }
                 }
             }
@@ -99,44 +92,15 @@ struct EventCard: View {
                 
                 Text("Descripción del evento")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.white.opacity(0.7))
                     .lineLimit(2)
             }
         }
         .padding(12)
         .background {
-            ZStack {
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(.ultraThinMaterial)
-                
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.12),
-                                Color.white.opacity(0.05),
-                                Color.blue.opacity(0.08)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                
-                RoundedRectangle(cornerRadius: 16)
-                    .strokeBorder(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.4),
-                                Color.blue.opacity(0.2)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        ),
-                        lineWidth: 1
-                    )
-            }
-            .shadow(color: .black.opacity(0.3), radius: 15, x: 0, y: 8)
-            .shadow(color: .blue.opacity(0.2), radius: 10, x: 0, y: 5)
+            // Material sutil para cards estáticas (NO glass real)
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.regularMaterial)
         }
         .scaleEffect(isPressed ? 0.95 : 1.0)
         .onTapGesture {

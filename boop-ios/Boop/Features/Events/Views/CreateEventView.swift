@@ -22,7 +22,7 @@ struct CreateEventView: View {
             Color.black.ignoresSafeArea()
             
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: GridSpacing.section) {
                     // Título
                     GlassTextField(
                         placeholder: "Título del evento",
@@ -30,11 +30,11 @@ struct CreateEventView: View {
                     )
                     
                     // Descripción
-                    GlassContainer(cornerRadius: 16, padding: 0) {
+                    GlassContainer(cornerRadius: CardSize.cornerRadiusSmall, padding: 0) {
                         TextField("Descripción", text: $description, axis: .vertical)
                             .foregroundStyle(.white)
                             .lineLimit(5...10)
-                            .padding()
+                            .padding(CardSize.padding)
                     }
                     
                     // Ciudad
@@ -56,7 +56,7 @@ struct CreateEventView: View {
                         displayedComponents: [.date, .hourAndMinute]
                     )
                     .foregroundStyle(.white)
-                    .boopGlassContainer(cornerRadius: 16, padding: 16)
+                    .boopGlassContainer(cornerRadius: CardSize.cornerRadiusSmall, padding: CardSize.padding)
                     
                     // Switch público
                     HStack {
@@ -66,7 +66,7 @@ struct CreateEventView: View {
                         Toggle("", isOn: $isPublic)
                             .tint(.white)
                     }
-                    .boopGlassContainer(cornerRadius: 16, padding: 16)
+                    .boopGlassContainer(cornerRadius: CardSize.cornerRadiusSmall, padding: CardSize.padding)
                     
                     // Botón guardar
                     GlassButton(
@@ -75,7 +75,7 @@ struct CreateEventView: View {
                         isLoading: isLoading
                     )
                 }
-                .padding()
+                .padding(CardSize.padding)
             }
         }
         .navigationTitle("Crear Evento")

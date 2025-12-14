@@ -2,14 +2,13 @@
 //  ProfileView.swift
 //  BoopApp
 //
-//  Profile view with Liquid Glass
+//  Profile view refactorizado - Sin overlays, material simple
 //
 
 import SwiftUI
 
 struct ProfileView: View {
     @ObservedObject var authViewModel: AuthViewModel
-    @State private var isExpanded = false
     
     var body: some View {
         NavigationStack {
@@ -18,53 +17,17 @@ struct ProfileView: View {
                 
                 ScrollView {
                     VStack(spacing: 24) {
-                        // Profile header
+                        // Profile header - Material simple (NO glass)
                         VStack(spacing: 16) {
-                            // Profile image with glass
-                            ZStack {
-                                Circle()
-                                    .fill(.ultraThinMaterial)
-                                    .overlay {
-                                        Circle()
-                                            .fill(
-                                                LinearGradient(
-                                                    colors: [
-                                                        Color.white.opacity(0.15),
-                                                        Color.blue.opacity(0.1),
-                                                        Color.purple.opacity(0.12)
-                                                    ],
-                                                    startPoint: .topLeading,
-                                                    endPoint: .bottomTrailing
-                                                )
-                                            )
-                                    }
-                                    .overlay {
-                                        Circle()
-                                            .strokeBorder(
-                                                LinearGradient(
-                                                    colors: [
-                                                        Color.white.opacity(0.5),
-                                                        Color.blue.opacity(0.3)
-                                                    ],
-                                                    startPoint: .top,
-                                                    endPoint: .bottom
-                                                ),
-                                                lineWidth: 2
-                                            )
-                                    }
-                                    .shadow(color: .blue.opacity(0.3), radius: 20, x: 0, y: 10)
-                                
-                                Image(systemName: "person.circle.fill")
-                                    .font(.system(size: 80))
-                                    .foregroundStyle(
-                                        LinearGradient(
-                                            colors: [.white, .blue, .purple],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        )
-                                    )
-                            }
-                            .frame(width: 120, height: 120)
+                            // Profile image - Material simple sin overlays
+                            Circle()
+                                .fill(.thinMaterial)
+                                .frame(width: 120, height: 120)
+                                .overlay {
+                                    Image(systemName: "person.circle.fill")
+                                        .font(.system(size: 80))
+                                        .foregroundStyle(.white)
+                                }
                             
                             Text("Usuario")
                                 .font(.title2)
@@ -73,34 +36,16 @@ struct ProfileView: View {
                             
                             Text("usuario@email.com")
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.white.opacity(0.7))
                         }
                         .padding(20)
                         .background {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 24)
-                                    .fill(.ultraThinMaterial)
-                                
-                                RoundedRectangle(cornerRadius: 24)
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [
-                                                Color.white.opacity(0.12),
-                                                Color.white.opacity(0.05)
-                                            ],
-                                            startPoint: .top,
-                                            endPoint: .bottom
-                                        )
-                                    )
-                                
-                                RoundedRectangle(cornerRadius: 24)
-                                    .strokeBorder(Color.white.opacity(0.3), lineWidth: 1.5)
-                            }
-                            .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
+                            RoundedRectangle(cornerRadius: 24)
+                                .fill(.thinMaterial)
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, 16)
                         
-                        // Menu options
+                        // Menu options - Material simple
                         VStack(spacing: 8) {
                             ProfileMenuItem(icon: "person", title: "Editar Perfil")
                             ProfileMenuItem(icon: "ticket", title: "Mis Tickets")
@@ -110,36 +55,18 @@ struct ProfileView: View {
                         }
                         .padding(16)
                         .background {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 24)
-                                    .fill(.ultraThinMaterial)
-                                
-                                RoundedRectangle(cornerRadius: 24)
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [
-                                                Color.white.opacity(0.1),
-                                                Color.white.opacity(0.05)
-                                            ],
-                                            startPoint: .top,
-                                            endPoint: .bottom
-                                        )
-                                    )
-                                
-                                RoundedRectangle(cornerRadius: 24)
-                                    .strokeBorder(Color.white.opacity(0.3), lineWidth: 1.5)
-                            }
-                            .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
+                            RoundedRectangle(cornerRadius: 24)
+                                .fill(.thinMaterial)
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, 16)
                         
-                        // Logout button
-                        GlassButton("Cerrar Sesión", style: .tinted(.red)) {
+                        // Logout button - Glass real (botón flotante)
+                        SimpleGlassButton("Cerrar Sesión", tint: .red) {
                             authViewModel.logout()
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, 16)
                     }
-                    .padding(.vertical)
+                    .padding(.vertical, 24)
                 }
             }
             .navigationTitle("Perfil")
@@ -184,30 +111,65 @@ struct ProfileMenuItem: View {
             .padding(.vertical, 14)
             .padding(.horizontal, 16)
             .background {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 14)
-                        .fill(.thinMaterial)
-                    
-                    RoundedRectangle(cornerRadius: 14)
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(0.08),
-                                    Color.white.opacity(0.03)
-                                ],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                    
-                    RoundedRectangle(cornerRadius: 14)
-                        .strokeBorder(Color.white.opacity(0.2), lineWidth: 0.5)
-                }
-                .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+                // Material simple para items de menú
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(.ultraThinMaterial)
             }
         }
         .scaleEffect(isPressed ? 0.97 : 1.0)
-        .brightness(isPressed ? -0.05 : 0)
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isPressed)
+    }
+}
+
+// Helper para botón con tint
+private struct SimpleGlassButton: View {
+    let title: String
+    let tint: Color?
+    let action: () -> Void
+    @Environment(\.accessibilityReduceTransparency) var reduceTransparency
+    
+    init(_ title: String, tint: Color? = nil, action: @escaping () -> Void) {
+        self.title = title
+        self.tint = tint
+        self.action = action
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(tint ?? .white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 52)
+                .padding(.horizontal, 24)
+        }
+        .buttonStyle(SimpleGlassButtonStyle(tint: tint))
+    }
+}
+
+private struct SimpleGlassButtonStyle: ButtonStyle {
+    let tint: Color?
+    @Environment(\.accessibilityReduceTransparency) var reduceTransparency
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background {
+                if reduceTransparency {
+                    Capsule()
+                        .fill(tint?.opacity(0.5) ?? Color(white: 0.3))
+                } else {
+                    if #available(iOS 26.0, *) {
+                        Capsule()
+                            .fill(Color.clear)
+                            .glassEffect(.clear.interactive())
+                    } else {
+                        Capsule()
+                            .fill(.ultraThinMaterial)
+                    }
+                }
+            }
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
     }
 }
 
