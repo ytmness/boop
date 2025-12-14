@@ -10,6 +10,13 @@ import SwiftUI
 struct LoginView: View {
     @EnvironmentObject var viewModel: AuthViewModel
     
+    // Tamaños escalables que responden al Dynamic Type y Zoom
+    @ScaledMetric(relativeTo: .largeTitle) private var logoSize: CGFloat = 140
+    @ScaledMetric(relativeTo: .largeTitle) private var logoIconSize: CGFloat = 60
+    @ScaledMetric(relativeTo: .largeTitle) private var titleSize: CGFloat = 48
+    @ScaledMetric(relativeTo: .body) private var spacing: CGFloat = 24
+    @ScaledMetric(relativeTo: .body) private var topPadding: CGFloat = 60
+    
     var body: some View {
         ZStack {
             // Fondo animado (sin glass, solo gradientes)
@@ -17,26 +24,28 @@ struct LoginView: View {
             
             // Contenido principal
             ScrollView {
-                VStack(spacing: 24) { // Spacing.xxl equivalente
+                VStack(spacing: spacing) { // Spacing escalable
                     Spacer()
-                        .frame(height: 60)
+                        .frame(height: topPadding)
                     
-                    // Logo/Icon - Material simple sin overlays
+                    // Logo/Icon - Material simple sin overlays - Escalable
                     Circle()
                         .fill(.thinMaterial)
-                        .frame(width: 140, height: 140)
+                        .frame(width: logoSize, height: logoSize)
                         .overlay {
                             Image(systemName: "sparkles")
-                                .font(.system(size: 60))
+                                .font(.system(size: logoIconSize))
                                 .foregroundStyle(.white)
                         }
                     
                     Text("BOOP")
-                        .font(.system(size: 48, weight: .bold, design: .rounded))
+                        .font(.system(size: titleSize, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
+                        .minimumScaleFactor(0.5) // Permite reducir si es necesario
+                        .lineLimit(1)
                     
                     // Login form - Material simple (NO glass para cards estáticas)
-                    VStack(spacing: 16) { // Spacing.lg equivalente
+                    VStack(spacing: spacing * 0.67) { // Spacing.lg equivalente (16/24 = 0.67)
                         // Email field
                         SimpleTextField(
                             "Email",
@@ -104,12 +113,12 @@ struct LoginView: View {
                             }
                         }
                     }
-                    .padding(16) // CardSize.padding equivalente
+                    .padding(spacing * 0.67) // CardSize.padding equivalente (16/24)
                     .background {
-                        RoundedRectangle(cornerRadius: 24) // CardSize.cornerRadiusLarge equivalente
+                        RoundedRectangle(cornerRadius: spacing) // CardSize.cornerRadiusLarge equivalente
                             .fill(.thinMaterial)
                     }
-                    .padding(.horizontal, 24) // Spacing.xxl equivalente
+                    .padding(.horizontal, spacing) // Spacing.xxl equivalente
                     
                     // Sign up link
                     Button(action: {}) {
@@ -147,6 +156,13 @@ private struct SimpleTextField: View {
     let isSecure: Bool
     @FocusState private var isFocused: Bool
     
+    // Tamaños responsivos
+    @ScaledMetric(relativeTo: .body) private var fieldHeight: CGFloat = 52
+    @ScaledMetric(relativeTo: .body) private var horizontalPadding: CGFloat = 16
+    @ScaledMetric(relativeTo: .body) private var cornerRadius: CGFloat = 16
+    @ScaledMetric(relativeTo: .body) private var iconWidth: CGFloat = 20
+    @ScaledMetric(relativeTo: .body) private var spacing: CGFloat = 12
+    
     init(
         _ placeholder: String,
         text: Binding<String>,
@@ -160,11 +176,11 @@ private struct SimpleTextField: View {
     }
     
     var body: some View {
-        HStack(spacing: 12) { // Spacing.md equivalente
+        HStack(spacing: spacing) {
             if let icon {
                 Image(systemName: icon)
                     .foregroundStyle(.white.opacity(0.6))
-                    .frame(width: 20)
+                    .frame(width: iconWidth)
             }
             
             if isSecure {
@@ -179,14 +195,14 @@ private struct SimpleTextField: View {
                     .focused($isFocused)
             }
         }
-        .frame(height: 52) // InputSize.height equivalente
-        .padding(.horizontal, 16) // InputSize.padding equivalente
+        .frame(minHeight: fieldHeight) // minHeight en vez de height fijo
+        .padding(.horizontal, horizontalPadding)
         .background {
-            RoundedRectangle(cornerRadius: 16) // InputSize.cornerRadius equivalente
+            RoundedRectangle(cornerRadius: cornerRadius)
                 .fill(.thinMaterial)
         }
         .overlay {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: cornerRadius)
                 .strokeBorder(
                     isFocused ? Color.white.opacity(0.3) : Color.white.opacity(0.1),
                     lineWidth: isFocused ? 1.5 : 1
@@ -201,6 +217,10 @@ private struct SimpleGlassButton: View {
     let action: () -> Void
     @Environment(\.accessibilityReduceTransparency) var reduceTransparency
     
+    // Tamaños responsivos
+    @ScaledMetric(relativeTo: .body) private var buttonHeight: CGFloat = 52
+    @ScaledMetric(relativeTo: .body) private var horizontalPadding: CGFloat = 24
+    
     init(_ title: String, action: @escaping () -> Void) {
         self.title = title
         self.action = action
@@ -212,8 +232,8 @@ private struct SimpleGlassButton: View {
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
-                .frame(height: 52) // ButtonSize.primaryHeight equivalente
-                .padding(.horizontal, 24) // ButtonSize.primaryHorizontalPadding equivalente
+                .frame(minHeight: buttonHeight) // minHeight para responder a Dynamic Type
+                .padding(.horizontal, horizontalPadding)
         }
         .buttonStyle(SimpleGlassButtonStyle())
     }
@@ -246,9 +266,19 @@ private struct SimpleGlassButtonStyle: ButtonStyle {
 
 private struct SimpleGlassCircleButton: View {
     let icon: String
-    let size: CGFloat
+    let baseSize: CGFloat // Tamaño base antes de escalar
     let action: () -> Void
     @Environment(\.accessibilityReduceTransparency) var reduceTransparency
+    
+    // Tamaño escalable
+    @ScaledMetric private var size: CGFloat
+    
+    init(icon: String, size: CGFloat, action: @escaping () -> Void) {
+        self.icon = icon
+        self.baseSize = size
+        self._size = ScaledMetric(wrappedValue: size, relativeTo: .body)
+        self.action = action
+    }
     
     var body: some View {
         Button(action: action) {
