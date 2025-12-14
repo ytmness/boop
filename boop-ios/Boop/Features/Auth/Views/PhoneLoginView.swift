@@ -40,7 +40,7 @@ struct PhoneLoginView: View {
                                 .font(.system(size: 14))  // ✅ Reducido de 16 a 14
                                 .foregroundStyle(.white.opacity(0.8))
                         }
-                        .padding(.horizontal, Spacing.lg)
+                        .padding(.horizontal, Spacing.xl)  // ✅ Aumentado padding horizontal
                         
                         // Campo de teléfono
                         HStack(spacing: Spacing.md) {
@@ -59,7 +59,7 @@ struct PhoneLoginView: View {
                             )
                             .focused($isPhoneFocused)
                         }
-                        .padding(.horizontal, Spacing.lg)
+                        .padding(.horizontal, Spacing.xl)  // ✅ Aumentado padding horizontal
                         
                         Spacer()
                         
@@ -75,7 +75,6 @@ struct PhoneLoginView: View {
                                 )
                             }
                             .disabled(viewModel.isLoading || phoneNumber.isEmpty)
-                            .padding(.horizontal, Spacing.lg)
                             
                             Button("¿Problemas con el código?") {
                                 // Navegar a soporte
@@ -83,8 +82,11 @@ struct PhoneLoginView: View {
                             .foregroundStyle(.white)
                             .font(.system(size: 14))
                         }
+                        .padding(.horizontal, Spacing.xl)  // ✅ Aumentado padding horizontal
                         .padding(.bottom, Spacing.lg)
                     }
+                    .frame(maxWidth: 500)  // ✅ Limitar ancho máximo
+                    .frame(maxWidth: .infinity)  // Centrar en pantallas grandes
                     .padding(.top, Spacing.xl)
                 }
             }

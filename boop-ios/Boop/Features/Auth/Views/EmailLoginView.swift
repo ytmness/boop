@@ -41,7 +41,7 @@ struct EmailLoginView: View {
                                     .foregroundStyle(.white.opacity(0.8))
                             }
                         }
-                        .padding(.horizontal, Spacing.lg)
+                        .padding(.horizontal, Spacing.xl)  // ✅ Aumentado padding horizontal
                         
                         if !codeSent {
                             // Campo de email
@@ -51,7 +51,7 @@ struct EmailLoginView: View {
                                 keyboardType: .emailAddress
                             )
                             .focused($isEmailFocused)
-                            .padding(.horizontal, Spacing.lg)
+                            .padding(.horizontal, Spacing.xl)  // ✅ Aumentado padding horizontal
                         }
                         
                         Spacer()
@@ -87,9 +87,11 @@ struct EmailLoginView: View {
                             .foregroundStyle(.white)
                             .font(.system(size: 14))
                         }
-                        .padding(.horizontal, Spacing.lg)
+                        .padding(.horizontal, Spacing.xl)  // ✅ Aumentado padding horizontal
                         .padding(.bottom, Spacing.lg)
                     }
+                    .frame(maxWidth: 500)  // ✅ Limitar ancho máximo
+                    .frame(maxWidth: .infinity)  // Centrar en pantallas grandes
                     .padding(.top, Spacing.xl)
                 }
             }
