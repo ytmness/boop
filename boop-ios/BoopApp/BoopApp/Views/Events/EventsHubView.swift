@@ -265,10 +265,25 @@ struct EventFeedCard: View {
                 .foregroundStyle(isOn == true && systemName == "heart" ? .red : .white.opacity(0.9))
                 .contentTransition(.symbolEffect(.replace))  // ✅ swap suave fill/unfill
                 .frame(width: 44, height: 44)
+                .modifier(BounceEffectModifier(systemName: systemName, isOn: isOn))
         }
         .buttonStyle(.glass)  // ✅ sistema = mismo efecto
         .buttonBorderShape(.circle)  // ✅ highlight correcto
-        .symbolEffect(.bounce, value: isOn)  // ✅ pop evidente solo en heart
+    }
+    
+    // MARK: - Bounce Effect Modifier (solo para heart)
+    @available(iOS 26.0, *)
+    private struct BounceEffectModifier: ViewModifier {
+        let systemName: String
+        let isOn: Bool?
+        
+        func body(content: Content) -> some View {
+            if systemName == "heart" {
+                content.symbolEffect(.bounce, value: isOn)  // ✅ pop evidente solo en heart
+            } else {
+                content
+            }
+        }
     }
     
     // MARK: - Resolved Symbol Helper
