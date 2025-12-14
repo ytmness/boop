@@ -29,11 +29,11 @@ struct PhoneLoginView: View {
                         // Título
                         VStack(alignment: .leading, spacing: Spacing.xs) {  // ✅ Reducido spacing
                             Text("Iniciar sesión")
-                                .font(.system(size: 22, weight: .bold))  // ✅ Reducido de 28 a 22
+                                .font(.system(size: 20, weight: .bold))  // ✅ Reducido de 22 a 20
                                 .foregroundStyle(.white)
                             
                             Text("Ingresa tu número de teléfono")
-                                .font(.system(size: 18, weight: .bold))  // ✅ Reducido de 24 a 18
+                                .font(.system(size: 16, weight: .semibold))  // ✅ Reducido de 18 a 16
                                 .foregroundStyle(.white)
                             
                             Text("Te enviaremos un código de verificación")

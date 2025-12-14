@@ -191,19 +191,19 @@ struct EventFeedCard: View {
         .padding(.horizontal, 20)  // ✅ Padding externo aumentado aún más
         .background {
             if reduceTransparency {
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                RoundedRectangle(cornerRadius: 32, style: .continuous)  // ✅ Más redondeado tipo burbuja
                     .fill(Color(white: 0.2))
             } else {
                 if #available(iOS 26.0, *) {
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    RoundedRectangle(cornerRadius: 32, style: .continuous)  // ✅ Más redondeado tipo burbuja
+                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 32, style: .continuous))
                 } else {
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    RoundedRectangle(cornerRadius: 32, style: .continuous)  // ✅ Más redondeado tipo burbuja
                         .fill(.regularMaterial)
                 }
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))  // ✅ Más redondeado tipo burbuja
     }
     
     // MARK: - Glass Circle Background
@@ -290,7 +290,7 @@ struct EventFeedCard: View {
             }
             .frame(height: 190)
             .clipped()
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))  // ✅ Más redondeado para la imagen
             
             VStack(alignment: .leading, spacing: 4) {
                 Text("Evento \(eventNumber)")
@@ -322,17 +322,17 @@ struct EventFeedCard: View {
             }
             .padding(12)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))  // ✅ Más redondeado tipo burbuja
         .background {
             if reduceTransparency {
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                RoundedRectangle(cornerRadius: 32, style: .continuous)  // ✅ Más redondeado tipo burbuja
                     .fill(Color(white: 0.2))
             } else {
                 if #available(iOS 26.0, *) {
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                    RoundedRectangle(cornerRadius: 32, style: .continuous)  // ✅ Más redondeado tipo burbuja
+                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 32, style: .continuous))
                 } else {
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    RoundedRectangle(cornerRadius: 32, style: .continuous)  // ✅ Más redondeado tipo burbuja
                         .fill(.regularMaterial)
                 }
             }
