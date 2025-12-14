@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ExploreView: View {
+    @State private var viewModel = EventsViewModel()
     @State private var selectedCity: String = "Ciudad de México"
     @State private var showCityPicker = false
     
@@ -42,15 +43,31 @@ struct ExploreView: View {
                     // Events feed
                     ScrollView {
                         LazyVStack(spacing: 24) {
-                            ForEach(0..<10, id: \.self) { index in
-                                EventFeedCard(
-                                    eventNumber: index + 1,
-                                    tabType: EventsHubView.EventsTab.explore
-                                )
+                            if viewModel.isLoading && viewModel.events.isEmpty {
+                                ProgressView()
+                                    .tint(.white)
+                                    .padding(.top, 100)
+                            } else if viewModel.events.isEmpty {
+                                VStack(spacing: 16) {
+                                    Image(systemName: "calendar.badge.exclamationmark")
+                                        .font(.system(size: 48))
+                                        .foregroundStyle(.white.opacity(0.5))
+                                    Text("No hay eventos disponibles")
+                                        .font(.headline)
+                                        .foregroundStyle(.white.opacity(0.7))
+                                }
+                                .padding(.top, 100)
+                            } else {
+                                ForEach(viewModel.events) { event in
+                                    EventFeedCard(
+                                        event: event,
+                                        tabType: EventsHubView.EventsTab.explore
+                                    )
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.bottom, 16)
                             }
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 16)
                         .padding(.top, 8)
                     }
                     .ignoresSafeArea(.container, edges: .bottom)
@@ -65,6 +82,9 @@ struct ExploreView: View {
                     selectedCity: $selectedCity,
                     cities: cities
                 )
+            }
+            .task {
+                await viewModel.load()
             }
         }
     }
