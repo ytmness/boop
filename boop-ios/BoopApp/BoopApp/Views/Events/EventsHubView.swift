@@ -34,6 +34,18 @@ struct EventsHubView: View {
                 ScrollView {
                     LazyVStack(spacing: 24, pinnedViews: [.sectionHeaders]) {
                         Section {
+                            // Spacer invisible para medir scroll
+                            Color.clear
+                                .frame(height: 1)
+                                .background(
+                                    GeometryReader { geometry in
+                                        Color.clear.preference(
+                                            key: ScrollOffsetPreferenceKey.self,
+                                            value: geometry.frame(in: .named("scroll")).minY
+                                        )
+                                    }
+                                )
+                            
                             // Events feed según tab seleccionado
                             ForEach(0..<10, id: \.self) { index in
                                 EventFeedCard(
@@ -44,14 +56,6 @@ struct EventsHubView: View {
                             .padding(.horizontal, 16)
                             .padding(.bottom, 16)
                             .padding(.top, 8)
-                            .background(
-                                GeometryReader { geometry in
-                                    Color.clear.preference(
-                                        key: ScrollOffsetPreferenceKey.self,
-                                        value: geometry.frame(in: .named("scroll")).minY
-                                    )
-                                }
-                            )
                         } header: {
                             HomePinnedHeader(
                                 selectedTab: $selectedTab,
@@ -63,7 +67,9 @@ struct EventsHubView: View {
                 }
                 .coordinateSpace(name: "scroll")
                 .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
-                    scrollOffset = value
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
+                        scrollOffset = max(0, -value)
+                    }
                 }
                 .ignoresSafeArea(.container, edges: .bottom)
             }
@@ -89,54 +95,35 @@ private struct HomePinnedHeader: View {
     
     // Animación basada en scroll: BOOP grande centrado al inicio, pequeño a la izquierda al scrollear
     private var logoSize: CGFloat {
-        let offset = abs(scrollOffset)
-        if offset > 30 {
+        if scrollOffset > 30 {
             // Se reduce de 40 a 28 cuando scrolleas
-            let progress = min(1.0, (offset - 30) / 100)
+            let progress = min(1.0, (scrollOffset - 30) / 100)
             return 40 - (12 * progress)
         }
         return 40 // Tamaño grande al inicio
     }
     
-    private var logoAlignment: Alignment {
-        let offset = abs(scrollOffset)
-        if offset > 30 {
-            return .leading // Se mueve a la izquierda al scrollear
+    private var logoLeadingPadding: CGFloat {
+        if scrollOffset > 30 {
+            let progress = min(1.0, (scrollOffset - 30) / 100)
+            return 16 * progress // Se mueve hacia la izquierda progresivamente
         }
-        return .center // Centrado al inicio
-    }
-    
-    private var logoPadding: EdgeInsets {
-        let offset = abs(scrollOffset)
-        if offset > 30 {
-            let progress = min(1.0, (offset - 30) / 100)
-            return EdgeInsets(
-                top: 6,
-                leading: 16 + (8 * progress), // Se mueve hacia la izquierda
-                bottom: 0,
-                trailing: 0
-            )
-        }
-        return EdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 0) // Centrado
+        return 0 // Sin padding al inicio (centrado)
     }
     
     var body: some View {
         VStack(spacing: 10) {
             // Logo BOOP con animación basada en scroll
             HStack {
-                if logoAlignment == .leading {
-                    Spacer()
-                }
+                Spacer()
                 Text("BOOP")
                     .font(.system(size: logoSize, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
-                    .padding(logoPadding)
-                    .animation(.spring(response: 0.4, dampingFraction: 0.75), value: scrollOffset)
-                if logoAlignment == .center {
-                    Spacer()
-                }
+                    .padding(.top, 6)
+                    .padding(.leading, logoLeadingPadding)
+                Spacer()
             }
-            .frame(maxWidth: .infinity, alignment: logoAlignment)
+            .frame(maxWidth: .infinity)
             
             // Tab selector (burbujas fijas)
             GeometryReader { proxy in
