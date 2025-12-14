@@ -55,8 +55,8 @@ struct SearchView: View {
                             }
                             // CLAVE: el contenedor mide al menos el ancho visible, y alinea trailing
                             .frame(minWidth: proxy.size.width, alignment: .trailing)
-                            .padding(.trailing, 16)   // "más a la derecha"
-                            .padding(.leading, 16)    // margen normal para que no pegue al borde
+                            .padding(.trailing, 24)   // más centrado
+                            .padding(.leading, 24)    // margen simétrico para centrado
                             .padding(.vertical, 10)
                         }
                     }
