@@ -153,7 +153,7 @@ struct EventFeedCard: View {
                         .buttonStyle(.glassProminent)
                         .tint(.purple)
                         .frame(height: 44)  // ✅ Aumentado de 36 a 44
-                        .padding(.horizontal, 20)  // ✅ Aumentado de 16 a 20
+                        .padding(.horizontal, 28)  // ✅ Aumentado de 20 a 28 para hacerlo más largo
                     } else {
                         ticketsButton
                     }
