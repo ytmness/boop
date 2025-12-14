@@ -83,6 +83,8 @@ private struct SearchBar: View {
 struct EventFeedCard: View {
     let eventNumber: Int
     @State private var isPressed = false
+    @State private var isLiked = false
+    @State private var isSaved = false
     @Environment(\.accessibilityReduceTransparency) var reduceTransparency
     @Environment(\.horizontalSizeClass) private var hSize
     
@@ -156,27 +158,31 @@ struct EventFeedCard: View {
                     if #available(iOS 26.0, *) {
                         Button { } label: {
                             Label("Tickets", systemImage: "ticket")
+                                .font(.system(size: 15, weight: .semibold))
                                 .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.glassProminent)
                         .tint(.purple)
-                        .frame(height: 44)  // ✅ ya no "delgado"
+                        .frame(height: 36)  // ✅ más delgado tipo original
                     } else {
                         ticketsButton
                     }
                     
                     if #available(iOS 26.0, *) {
-                        HStack(spacing: 8) {
-                            iconGlassButton("heart")
-                            iconGlassButton("bookmark")
-                            iconGlassButton("paperplane")
+                        HStack(spacing: 10) {
+                            likeButton
+                            saveButton
+                            shareButton
                         }
                     } else {
                         ActionButtonsGroup()
                     }
                 }
             }
-            .padding(12)  // ✅ esto evita recorte izquierda
+            .padding(.horizontal, 12)
+            .padding(.top, 12)
+            .padding(.bottom, 6)  // ✅ menos abajo = sube visualmente
+            .offset(y: -10)  // ✅ sube el overlay
             .frame(maxWidth: .infinity, alignment: .leading)
             .background {
                 if #available(iOS 26.0, *) {
@@ -187,7 +193,6 @@ struct EventFeedCard: View {
                         .fill(.thinMaterial)
                 }
             }
-            .padding(12)  // ✅ separa overlay del borde del media
         }
         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))  // ✅ clip final (1 sola vez)
         .background {
@@ -206,14 +211,73 @@ struct EventFeedCard: View {
         }
     }
     
-    // MARK: - Icon Glass Button Helper
-    @available(iOS 26.0, *)
-    private func iconGlassButton(_ name: String) -> some View {
-        Button(action: {}) {
-            Image(systemName: name)
-                .frame(width: 44, height: 44)
+    // MARK: - Glass Circle Background
+    private var glassCircle: some View {
+        Group {
+            if #available(iOS 26.0, *) {
+                Circle()
+                    .glassEffect(.regular, in: Circle())
+            } else {
+                Circle()
+                    .fill(.ultraThinMaterial)
+            }
         }
-        .buttonStyle(.glass)
+    }
+    
+    // MARK: - Like Button con animación y relleno
+    @available(iOS 26.0, *)
+    private var likeButton: some View {
+        Button {
+            withAnimation(.bouncy(duration: 0.35)) {
+                isLiked.toggle()
+            }
+        } label: {
+            Image(systemName: isLiked ? "heart.fill" : "heart")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(isLiked ? .red : .white.opacity(0.9))
+                .contentTransition(.symbolEffect(.replace))  // ✅ swap suave
+                .symbolEffect(.bounce, value: isLiked)  // ✅ pop evidente
+                .frame(width: 34, height: 34)
+                .background(glassCircle)
+        }
+        .buttonStyle(.plain)  // ✅ evita que SwiftUI cambie el look
+        .contentShape(Circle())
+    }
+    
+    // MARK: - Save Button con animación y relleno
+    @available(iOS 26.0, *)
+    private var saveButton: some View {
+        Button {
+            withAnimation(.bouncy(duration: 0.35)) {
+                isSaved.toggle()
+            }
+        } label: {
+            Image(systemName: isSaved ? "bookmark.fill" : "bookmark")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.9))
+                .contentTransition(.symbolEffect(.replace))  // ✅
+                .symbolEffect(.bounce, value: isSaved)  // ✅ pop evidente
+                .frame(width: 34, height: 34)
+                .background(glassCircle)
+        }
+        .buttonStyle(.plain)
+        .contentShape(Circle())
+    }
+    
+    // MARK: - Share Button
+    @available(iOS 26.0, *)
+    private var shareButton: some View {
+        Button {
+            // share action
+        } label: {
+            Image(systemName: "paperplane")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.9))
+                .frame(width: 34, height: 34)
+                .background(glassCircle)
+        }
+        .buttonStyle(.plain)
+        .contentShape(Circle())
     }
     
     // MARK: - Wide Card (Horizontal - Layout actual)
