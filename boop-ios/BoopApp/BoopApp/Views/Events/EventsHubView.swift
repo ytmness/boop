@@ -41,7 +41,6 @@ struct EventsHubView: View {
             }
             .navigationTitle("Inicio")
             .navigationBarTitleDisplayMode(.large)
-            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         }
     }
 }
@@ -101,7 +100,8 @@ struct EventFeedCard: View {
                     .font(.system(size: 40, weight: .light))
                     .foregroundStyle(.white.opacity(0.9))
             }
-            .aspectRatio(4/3, contentMode: .fill)
+            .frame(height: 180)
+            .clipped()
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             
             // Event info
@@ -165,7 +165,7 @@ struct EventFeedCard: View {
                 }
                 .padding(.top, 4)
             }
-            .padding(12)
+            .padding(10)
         }
         .background {
             // Liquid Glass container
