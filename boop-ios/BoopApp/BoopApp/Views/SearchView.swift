@@ -35,25 +35,32 @@ struct SearchView: View {
                     .padding(.top, 8)
                     
                     // Category selector
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 10) {
-                            ForEach(SearchCategory.allCases, id: \.self) { category in
-                                CategoryChip(
-                                    title: category.rawValue,
-                                    isSelected: selectedCategory == category
-                                ) {
-                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                        selectedCategory = category
+                    GeometryReader { proxy in
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 0) {
+                                Spacer(minLength: 0)
+                                
+                                HStack(spacing: 10) {
+                                    ForEach(SearchCategory.allCases, id: \.self) { category in
+                                        GlassCategoryChip(
+                                            title: category.rawValue,
+                                            isSelected: selectedCategory == category
+                                        ) {
+                                            withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
+                                                selectedCategory = category
+                                            }
+                                        }
                                     }
                                 }
                             }
+                            // CLAVE: el contenedor mide al menos el ancho visible, y alinea trailing
+                            .frame(minWidth: proxy.size.width, alignment: .trailing)
+                            .padding(.trailing, 16)   // "más a la derecha"
+                            .padding(.leading, 16)    // margen normal para que no pegue al borde
+                            .padding(.vertical, 10)
                         }
-                        .padding(.vertical, 10)
-                        .frame(maxWidth: 340, alignment: .trailing)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.trailing, 20)
-                        .padding(.leading, 16)
                     }
+                    .frame(height: 52)
                     
                     // Results
                     ScrollView {
@@ -127,8 +134,8 @@ private struct SearchBar: View {
     }
 }
 
-// MARK: - Category Chip
-private struct CategoryChip: View {
+// MARK: - Glass Category Chip
+private struct GlassCategoryChip: View {
     let title: String
     let isSelected: Bool
     let action: () -> Void
@@ -137,14 +144,53 @@ private struct CategoryChip: View {
         Button(action: action) {
             Text(title)
                 .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(isSelected ? .black : .white)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 7)
-                .background {
-                    Capsule()
-                        .fill(isSelected ? .white : .white.opacity(0.2))
-                }
+                .foregroundStyle(.white.opacity(isSelected ? 1.0 : 0.85))
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .contentShape(Capsule())
         }
+        .buttonStyle(.plain)
+        .background {
+            Group {
+                if #available(iOS 26.0, *) {
+                    Capsule()
+                        .fill(Color.clear)
+                        .glassEffect(.clear.interactive())
+                } else {
+                    ZStack {
+                        Capsule().fill(.ultraThinMaterial)
+                        
+                        Capsule()
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        .white.opacity(isSelected ? 0.18 : 0.10),
+                                        .clear
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                        
+                        Capsule()
+                            .strokeBorder(
+                                LinearGradient(
+                                    colors: [
+                                        .white.opacity(isSelected ? 0.55 : 0.28),
+                                        .white.opacity(isSelected ? 0.20 : 0.10)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1
+                            )
+                    }
+                    .shadow(color: .black.opacity(0.25), radius: 10, x: 0, y: 6)
+                }
+            }
+        }
+        .scaleEffect(isSelected ? 1.02 : 1.0)
+        .animation(.spring(response: 0.28, dampingFraction: 0.78), value: isSelected)
     }
 }
 
