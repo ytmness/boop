@@ -38,8 +38,9 @@ struct EventsHubView: View {
                 // Extender contenido debajo de la tab bar para efecto blur
                 .ignoresSafeArea(.container, edges: .bottom)
             }
-            .navigationTitle("INICIO ✅ CAMBIO")
+            .navigationTitle("BOOP")
             .navigationBarTitleDisplayMode(.large)
+            .toolbarColorScheme(.dark, for: .navigationBar)  // ✅ Texto blanco en el título
         }
     }
 }
@@ -114,16 +115,12 @@ struct EventFeedCard: View {
     // MARK: - Compact Card (Instagram-style post)
     private var compactCard: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // MEDIA - Imagen más grande (aproximadamente el doble)
+            // MEDIA - Imagen más grande (aproximadamente el doble) con tema único
             ZStack {
-                LinearGradient(
-                    colors: [.blue, .purple, .pink],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+                eventTheme.gradient
                 
-                Image(systemName: "music.note")
-                    .font(.system(size: 100, weight: .semibold))  // ✅ Duplicado de 50 a 100
+                Image(systemName: eventTheme.icon)
+                    .font(.system(size: eventTheme.iconSize, weight: .semibold))
                     .foregroundStyle(.white.opacity(0.9))
             }
             .frame(height: 400)  // ✅ Altura fija grande (aproximadamente el doble)
