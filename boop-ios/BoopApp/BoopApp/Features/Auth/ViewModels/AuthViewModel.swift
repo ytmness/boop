@@ -39,15 +39,10 @@ class AuthViewModel: ObservableObject {
         Task {
             do {
                 let session = try await supabase.auth.session
-                if let user = session.user {
-                    await MainActor.run {
-                        self.currentUser = user
-                        self.isAuthenticated = true
-                    }
-                } else {
-                    await MainActor.run {
-                        self.isAuthenticated = false
-                    }
+                let user = session.user
+                await MainActor.run {
+                    self.currentUser = user
+                    self.isAuthenticated = true
                 }
             } catch {
                 await MainActor.run {
