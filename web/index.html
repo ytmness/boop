@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="BOOP - Descubre eventos increíbles en tu ciudad">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="boop">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>boop</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    /* Resetear márgenes y padding del body y html */
+    * {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      overflow: hidden !important;
+      background: #000000 !important;
+    }
+    /* Asegurar que el contenido de Flutter esté encima del video de YouTube */
+    flt-scene-host {
+      position: relative !important;
+      z-index: 10 !important;
+      background: transparent !important;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    flt-glass-pane {
+      z-index: 11 !important;
+      background: transparent !important;
+    }
+    flutter-view {
+      z-index: 12 !important;
+      background: transparent !important;
+      overflow: visible !important;
+    }
+    /* Asegurar que el navigationBar no limite el espacio */
+    flt-semantics-host {
+      overflow: visible !important;
+    }
+    /* El video de YouTube debe estar detrás pero visible */
+    [id^="youtube-bg-"],
+    [data-youtube-bg="true"] {
+      z-index: 0 !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      pointer-events: none !important;
+      filter: blur(8px) !important;
+      -webkit-filter: blur(8px) !important;
+      background: transparent !important;
+    }
+    [id^="youtube-bg-"] iframe,
+    [data-youtube-bg="true"] iframe {
+      width: 100vw !important;
+      height: 100vh !important;
+      min-width: 100vw !important;
+      min-height: 100vh !important;
+      max-width: none !important;
+      max-height: none !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      border: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      pointer-events: none !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      box-sizing: border-box !important;
+      object-fit: cover !important;
+      transform: scale(1.1) !important;
+      transform-origin: center center !important;
+      filter: blur(8px) !important;
+      -webkit-filter: blur(8px) !important;
+    }
+    /* Asegurar que el contenido interno del iframe también llene el espacio */
+    [id^="youtube-bg-"] iframe body,
+    [data-youtube-bg="true"] iframe body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+    }
+  </style>
+</head>
+<body>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
