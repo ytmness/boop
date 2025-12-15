@@ -323,7 +323,7 @@ struct GlassTextField: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            if let icon {
+            if let icon = icon {
                 Image(systemName: icon)
                     .foregroundStyle(.white.opacity(0.6))
                     .frame(width: 20)

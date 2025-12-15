@@ -14,7 +14,7 @@ struct GlassField: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            if let systemImage {
+            if let systemImage = systemImage {
                 Image(systemName: systemImage)
                     .foregroundStyle(.white.opacity(0.85))
                     .font(.system(size: 16))

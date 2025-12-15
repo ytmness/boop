@@ -145,7 +145,7 @@ private struct SimpleTextField: View {
     
     var body: some View {
         HStack(spacing: spacing) {
-            if let icon {
+            if let icon = icon {
                 Image(systemName: icon)
                     .foregroundStyle(.white.opacity(0.6))
                     .frame(width: iconWidth)

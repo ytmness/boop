@@ -190,7 +190,7 @@ struct CreateEventView: View {
                                 .stroke(.white.opacity(0.18), lineWidth: 1)
                         )
 
-                        if let errorMessage {
+                        if let errorMessage = errorMessage {
                             Text(errorMessage)
                                 .foregroundStyle(.red.opacity(0.9))
                                 .font(.system(size: 13))
