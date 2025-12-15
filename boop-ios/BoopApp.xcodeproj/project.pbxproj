@@ -30,6 +30,10 @@
 		1A000202 /* EventsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000203 /* EventsRepository.swift */; };
 		1A000204 /* EventsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000205 /* EventsViewModel.swift */; };
 		1A000206 /* GlassField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000207 /* GlassField.swift */; };
+		1A000210 /* EventMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000211 /* EventMedia.swift */; };
+		1A000212 /* TicketType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000213 /* TicketType.swift */; };
+		1A000214 /* EventMediaRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000215 /* EventMediaRepository.swift */; };
+		1A000216 /* TicketTypeRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000217 /* TicketTypeRepository.swift */; };
 		1A000100 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1A0000FF /* Supabase */; };
 /* End PBXBuildFile section */
 
@@ -56,6 +60,10 @@
 		1A000203 /* EventsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsRepository.swift; sourceTree = "<group>"; };
 		1A000205 /* EventsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsViewModel.swift; sourceTree = "<group>"; };
 		1A000207 /* GlassField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassField.swift; sourceTree = "<group>"; };
+		1A000211 /* EventMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMedia.swift; sourceTree = "<group>"; };
+		1A000213 /* TicketType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketType.swift; sourceTree = "<group>"; };
+		1A000215 /* EventMediaRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMediaRepository.swift; sourceTree = "<group>"; };
+		1A000217 /* TicketTypeRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketTypeRepository.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -197,6 +205,8 @@
 			isa = PBXGroup;
 			children = (
 				1A000201 /* EventRow.swift */,
+				1A000211 /* EventMedia.swift */,
+				1A000213 /* TicketType.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -205,6 +215,8 @@
 			isa = PBXGroup;
 			children = (
 				1A000203 /* EventsRepository.swift */,
+				1A000215 /* EventMediaRepository.swift */,
+				1A000217 /* TicketTypeRepository.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";
@@ -336,6 +348,10 @@
 				1A000202 /* EventsRepository.swift in Sources */,
 				1A000204 /* EventsViewModel.swift in Sources */,
 				1A000206 /* GlassField.swift in Sources */,
+				1A000210 /* EventMedia.swift in Sources */,
+				1A000212 /* TicketType.swift in Sources */,
+				1A000214 /* EventMediaRepository.swift in Sources */,
+				1A000216 /* TicketTypeRepository.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

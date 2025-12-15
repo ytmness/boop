@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct MainTabView: View {
     @ObservedObject var authViewModel: AuthViewModel
@@ -105,11 +106,39 @@ struct CreateEventView: View {
     @State private var city = ""
     @State private var venue = ""
     @State private var startsAt = Date().addingTimeInterval(3600)
+    
+    // Media (fotos/videos)
+    @State private var selectedMedia: [MediaItem] = []
+    @State private var showMediaPicker = false
+    
+    // Ticket Types (zonas de boletos)
+    @State private var ticketTypes: [TicketTypeForm] = []
+    @State private var showTicketTypeEditor = false
 
     @State private var isSaving = false
     @State private var errorMessage: String?
 
     private let repo = EventsRepository()
+    private let mediaRepo = EventMediaRepository()
+    private let ticketRepo = TicketTypeRepository()
+    
+    // Modelo temporal para formulario de ticket type
+    struct TicketTypeForm: Identifiable {
+        let id = UUID()
+        var name: String = ""
+        var price: String = ""
+        var quantity: String = ""
+        var maxPerUser: String = ""
+        var currency: String = "MXN"
+    }
+    
+    // Modelo temporal para media seleccionado
+    struct MediaItem: Identifiable {
+        let id = UUID()
+        let type: MediaType
+        let url: String
+        let thumbnailUrl: String?
+    }
 
     var body: some View {
         NavigationStack {
@@ -127,6 +156,12 @@ struct CreateEventView: View {
                         GlassField(title: "Descripción", text: $description, systemImage: "text.alignleft")
                         GlassField(title: "Ciudad", text: $city, systemImage: "mappin.and.ellipse")
                         GlassField(title: "Lugar / Dirección", text: $venue, systemImage: "building.2")
+                        
+                        // Sección Media (fotos/videos)
+                        MediaSectionView(selectedMedia: $selectedMedia, showPicker: $showMediaPicker)
+                        
+                        // Sección Boletos (zonas)
+                        TicketTypesSectionView(ticketTypes: $ticketTypes, showEditor: $showTicketTypeEditor)
 
                         VStack(alignment: .leading, spacing: 10) {
                             HStack {
@@ -223,12 +258,255 @@ struct CreateEventView: View {
             )
 
             let created = try await repo.createEvent(payload: payload)
+            
+            // Crear media si hay seleccionado
+            for (index, media) in selectedMedia.enumerated() {
+                let mediaPayload = CreateEventMediaPayload(
+                    eventId: created.id,
+                    type: media.type.rawValue,
+                    url: media.url,
+                    thumbnailUrl: media.thumbnailUrl,
+                    sortOrder: index
+                )
+                _ = try await mediaRepo.createMedia(payload: mediaPayload)
+            }
+            
+            // Crear ticket types si hay definidos
+            for ticketType in ticketTypes {
+                guard let price = Double(ticketType.price),
+                      let quantity = Int(ticketType.quantity),
+                      !ticketType.name.isEmpty,
+                      price > 0,
+                      quantity > 0 else { continue }
+                
+                let ticketPayload = CreateTicketTypePayload(
+                    eventId: created.id,
+                    name: ticketType.name,
+                    price: price,
+                    currency: ticketType.currency,
+                    quantityTotal: quantity,
+                    maxPerUser: ticketType.maxPerUser.isEmpty ? nil : Int(ticketType.maxPerUser),
+                    salesStart: nil,
+                    salesEnd: nil
+                )
+                _ = try await ticketRepo.createTicketType(payload: ticketPayload)
+            }
+            
             onCreated(created)
             dismiss()
         } catch {
             errorMessage = error.localizedDescription
             print("❌ Error al crear evento: \(error.localizedDescription)")
         }
+    }
+}
+
+// MARK: - Media Section View
+private struct MediaSectionView: View {
+    @Binding var selectedMedia: [CreateEventView.MediaItem]
+    @Binding var showPicker: Bool
+    @State private var selectedPhotos: [PhotosPickerItem] = []
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "photo.on.rectangle")
+                    .foregroundStyle(.white.opacity(0.85))
+                Text("Fotos y videos")
+                    .foregroundStyle(.white.opacity(0.9))
+                    .font(.system(size: 14, weight: .semibold))
+                Spacer()
+            }
+            
+            if selectedMedia.isEmpty {
+                Button {
+                    showPicker = true
+                } label: {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                        Text("Agregar media")
+                    }
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.8))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .stroke(.white.opacity(0.18), lineWidth: 1)
+                    )
+                }
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(selectedMedia) { media in
+                            ZStack(alignment: .topTrailing) {
+                                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                    .fill(.ultraThinMaterial)
+                                    .frame(width: 100, height: 100)
+                                    .overlay(
+                                        Image(systemName: media.type == .image ? "photo" : "video.fill")
+                                            .foregroundStyle(.white.opacity(0.6))
+                                    )
+                                
+                                Button {
+                                    selectedMedia.removeAll { $0.id == media.id }
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundStyle(.red)
+                                        .background(.white, in: Circle())
+                                }
+                                .padding(4)
+                            }
+                        }
+                        
+                        Button {
+                            showPicker = true
+                        } label: {
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(.ultraThinMaterial)
+                                .frame(width: 100, height: 100)
+                                .overlay(
+                                    Image(systemName: "plus")
+                                        .foregroundStyle(.white.opacity(0.6))
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .stroke(.white.opacity(0.18), lineWidth: 1)
+                                )
+                        }
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(.white.opacity(0.18), lineWidth: 1)
+        )
+        .photosPicker(isPresented: $showPicker, selection: $selectedPhotos, maxSelectionCount: 10, matching: .any(of: [.images, .videos]))
+        .onChange(of: selectedPhotos) { _, newItems in
+            Task {
+                for item in newItems {
+                    if let data = try? await item.loadTransferable(type: Data.self),
+                       let uiImage = UIImage(data: data) {
+                        // Por ahora guardamos como placeholder, luego subir a Storage
+                        let mediaItem = CreateEventView.MediaItem(
+                            type: .image,
+                            url: "placeholder://\(UUID().uuidString)",
+                            thumbnailUrl: nil
+                        )
+                        selectedMedia.append(mediaItem)
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Ticket Types Section View
+private struct TicketTypesSectionView: View {
+    @Binding var ticketTypes: [CreateEventView.TicketTypeForm]
+    @Binding var showEditor: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "ticket.fill")
+                    .foregroundStyle(.white.opacity(0.85))
+                Text("Zonas de boletos")
+                    .foregroundStyle(.white.opacity(0.9))
+                    .font(.system(size: 14, weight: .semibold))
+                Spacer()
+            }
+            
+            if ticketTypes.isEmpty {
+                Button {
+                    ticketTypes.append(CreateEventView.TicketTypeForm())
+                } label: {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                        Text("Agregar zona")
+                    }
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.8))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .stroke(.white.opacity(0.18), lineWidth: 1)
+                    )
+                }
+            } else {
+                VStack(spacing: 10) {
+                    ForEach(ticketTypes.indices, id: \.self) { index in
+                        TicketTypeRowView(ticketType: $ticketTypes[index], onDelete: {
+                            ticketTypes.remove(at: index)
+                        })
+                    }
+                    
+                    Button {
+                        ticketTypes.append(CreateEventView.TicketTypeForm())
+                    } label: {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                            Text("Agregar otra zona")
+                        }
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.7))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(.white.opacity(0.18), lineWidth: 1)
+        )
+    }
+}
+
+// MARK: - Ticket Type Row View
+private struct TicketTypeRowView: View {
+    @Binding var ticketType: CreateEventView.TicketTypeForm
+    let onDelete: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            HStack {
+                Text("Zona")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.7))
+                Spacer()
+                Button(action: onDelete) {
+                    Image(systemName: "trash")
+                        .foregroundStyle(.red.opacity(0.8))
+                        .font(.system(size: 12))
+                }
+            }
+            
+            GlassField(title: "Nombre (ej: General, VIP)", text: $ticketType.name, systemImage: "tag")
+            GlassField(title: "Precio", text: $ticketType.price, systemImage: "dollarsign.circle")
+                .keyboardType(.decimalPad)
+            GlassField(title: "Cantidad total", text: $ticketType.quantity, systemImage: "number")
+                .keyboardType(.numberPad)
+            GlassField(title: "Máx por usuario (opcional)", text: $ticketType.maxPerUser, systemImage: "person.2")
+                .keyboardType(.numberPad)
+        }
+        .padding(12)
+        .background(.ultraThinMaterial.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
 
