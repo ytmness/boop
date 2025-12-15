@@ -242,6 +242,79 @@ struct CreateEventView: View {
         defer { isSaving = false }
 
         do {
+            // 🔍 PRUEBA DEFINITIVA: Verificar sesión, perfil y payload antes del INSERT
+            guard let client = SupabaseConfig.shared.client else {
+                print("❌ ERROR CRÍTICO: SupabaseConfig.shared.client es nil")
+                throw NSError(domain: "CreateEvent", code: -1, userInfo: [NSLocalizedDescriptionKey: "Cliente de Supabase no configurado"])
+            }
+            
+            var sessionUserId: UUID?
+            var sessionExpired = false
+            do {
+                let session = try await client.auth.session
+                sessionUserId = session.user.id
+                sessionExpired = session.isExpired
+                
+                print("✅ session user id:", session.user.id.uuidString)
+                print("✅ session access token existe:", !session.accessToken.isEmpty)
+                print("⏰ session expirada:", sessionExpired)
+                
+                if sessionExpired {
+                    print("⚠️ ADVERTENCIA: La sesión está expirada. Intentando refrescar...")
+                    // Intentar refrescar la sesión
+                    do {
+                        let refreshedSession = try await client.auth.refreshSession()
+                        print("✅ Sesión refrescada exitosamente")
+                        sessionUserId = refreshedSession.user.id
+                        sessionExpired = refreshedSession.isExpired
+                    } catch {
+                        print("❌ Error al refrescar sesión:", error.localizedDescription)
+                        throw NSError(domain: "CreateEvent", code: -2, userInfo: [NSLocalizedDescriptionKey: "Sesión expirada y no se pudo refrescar. Por favor, inicia sesión nuevamente."])
+                    }
+                }
+            } catch {
+                print("❌ NO SESSION:", error.localizedDescription)
+                throw error
+            }
+            
+            if let userId = currentUserId {
+                print("🧾 payload createdBy:", userId.uuidString)
+                
+                // Verificar que session user id = payload createdBy
+                if let sessionId = sessionUserId {
+                    if sessionId == userId {
+                        print("✅ session user id == payload createdBy ✓")
+                    } else {
+                        print("❌ ERROR: session user id (\(sessionId.uuidString)) != payload createdBy (\(userId.uuidString))")
+                    }
+                }
+                
+                // Verificar si el usuario tiene perfil (requisito de la política RLS)
+                do {
+                    struct ProfileCheck: Codable {
+                        let user_id: String
+                    }
+                    let profiles: [ProfileCheck] = try await client
+                        .from("profiles")
+                        .select("user_id")
+                        .eq("user_id", value: userId.uuidString)
+                        .execute()
+                        .value
+                    
+                    if profiles.isEmpty {
+                        print("❌ ERROR CRÍTICO: Usuario NO tiene perfil en la tabla profiles")
+                        print("   La política RLS requiere que el usuario tenga perfil")
+                        print("   Esto causará que el INSERT falle con error de RLS")
+                    } else {
+                        print("✅ Usuario tiene perfil en la tabla profiles ✓")
+                    }
+                } catch {
+                    print("⚠️ No se pudo verificar perfil:", error.localizedDescription)
+                }
+            } else {
+                print("❌ payload createdBy: nil (no hay currentUserId)")
+            }
+            
             let payload = CreateEventPayload(
                 communityId: nil,
                 title: title.trimmingCharacters(in: .whitespacesAndNewlines),

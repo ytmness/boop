@@ -38,15 +38,38 @@ class AuthViewModel: ObservableObject {
         
         Task {
             do {
-                let session = try await supabase.auth.session
+                var session = try await supabase.auth.session
+                
+                // Verificar si la sesión está expirada y refrescarla si es necesario
+                if session.isExpired {
+                    print("⚠️ Sesión expirada, intentando refrescar...")
+                    do {
+                        session = try await supabase.auth.refreshSession()
+                        print("✅ Sesión refrescada exitosamente")
+                    } catch {
+                        print("❌ Error al refrescar sesión:", error.localizedDescription)
+                        await MainActor.run {
+                            self.isAuthenticated = false
+                            self.currentUser = nil
+                        }
+                        return
+                    }
+                }
+                
                 let user = session.user
+                
+                // Asegurar que el usuario tenga perfil (requisito para crear eventos)
+                await bootstrapProfile(userId: user.id)
+                
                 await MainActor.run {
                     self.currentUser = user
                     self.isAuthenticated = true
                 }
             } catch {
+                print("⚠️ Error al verificar estado de autenticación:", error.localizedDescription)
                 await MainActor.run {
                     self.isAuthenticated = false
+                    self.currentUser = nil
                 }
             }
         }
@@ -155,7 +178,10 @@ class AuthViewModel: ObservableObject {
     // MARK: - Bootstrap de Perfil
     
     private func bootstrapProfile(userId: UUID) async {
-        guard let supabase = supabaseClient else { return }
+        guard let supabase = supabaseClient else { 
+            print("⚠️ bootstrapProfile: Cliente de Supabase no disponible")
+            return 
+        }
         
         do {
             // Verificar si el perfil ya existe
@@ -167,6 +193,8 @@ class AuthViewModel: ObservableObject {
                 .value
             
             if existingProfiles.isEmpty {
+                print("📝 Creando perfil para usuario: \(userId.uuidString)")
+                
                 // Crear perfil nuevo con valores por defecto
                 let defaultName = currentUser?.email?.components(separatedBy: "@").first ?? "Usuario"
                 
@@ -186,10 +214,22 @@ class AuthViewModel: ObservableObject {
                     .from("profiles")
                     .insert(newProfile)
                     .execute()
+                
+                print("✅ Perfil creado exitosamente para usuario: \(userId.uuidString)")
+            } else {
+                print("✅ Usuario ya tiene perfil: \(userId.uuidString)")
             }
         } catch {
-            // Log error pero no bloquear el flujo de autenticación
-            print("⚠️ Error al crear perfil: \(error.localizedDescription)")
+            // Log error detallado - esto es crítico para crear eventos
+            print("❌ ERROR CRÍTICO al crear/verificar perfil: \(error.localizedDescription)")
+            print("   El usuario NO podrá crear eventos sin perfil")
+            
+            // Intentar obtener más detalles del error
+            if let nsError = error as NSError? {
+                print("   Domain: \(nsError.domain)")
+                print("   Code: \(nsError.code)")
+                print("   UserInfo: \(nsError.userInfo)")
+            }
         }
     }
     

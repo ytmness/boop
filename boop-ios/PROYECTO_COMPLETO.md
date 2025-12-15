@@ -268,6 +268,115 @@ Desarrollado con ❤️ usando:
 
 ---
 
+## 🔒 Verificación de Políticas RLS (Row Level Security)
+
+### Consultas SQL para verificar políticas de la tabla `events`:
+
+```sql
+-- 1. Ver todas las políticas de la tabla events
+SELECT 
+    schemaname,
+    tablename,
+    policyname,  -- ✅ Columna correcta (no "polname")
+    permissive,
+    cmd,
+    roles,
+    qual as using_condition,
+    with_check as policy_condition
+FROM pg_policies
+WHERE schemaname = 'public' 
+  AND tablename = 'events'
+ORDER BY cmd, policyname;
+
+-- 2. Verificar específicamente la política de INSERT
+SELECT 
+    policyname,
+    cmd,
+    roles,
+    with_check as policy_condition
+FROM pg_policies
+WHERE schemaname = 'public' 
+  AND tablename = 'events'
+  AND cmd = 'INSERT';
+
+-- 3. Verificar si RLS está activado en la tabla
+SELECT 
+    tablename, 
+    rowsecurity as rls_enabled
+FROM pg_tables 
+WHERE schemaname = 'public' 
+  AND tablename = 'events';
+
+-- 4. Verificar el usuario actual y su sesión
+SELECT 
+    auth.uid() as current_user_id,
+    auth.role() as current_role;
+```
+
+### Política de INSERT requerida:
+
+La política de INSERT debe tener:
+- `cmd = 'INSERT'`
+- `roles` debe incluir `'authenticated'` o `'public'`
+- `with_check` debe incluir: `created_by = auth.uid()`
+
+Ejemplo de política correcta:
+```sql
+CREATE POLICY "events_insert_authenticated"
+ON public.events
+FOR INSERT
+TO authenticated
+WITH CHECK (
+    auth.uid() IS NOT NULL
+    AND created_by = auth.uid()
+);
+```
+
+### ⚠️ Problema Común: Políticas Duplicadas
+
+Si ves **múltiples políticas de INSERT**, esto puede causar conflictos. La solución es eliminar las duplicadas:
+
+```sql
+-- Ver políticas duplicadas
+SELECT policyname, cmd, roles, with_check
+FROM pg_policies
+WHERE schemaname = 'public' 
+  AND tablename = 'events'
+  AND cmd = 'INSERT';
+
+-- Eliminar política duplicada (mantener solo events_insert_authenticated)
+DROP POLICY IF EXISTS "events_insert_own" ON public.events;
+```
+
+### 🔑 Requisito Crítico: Usuario debe tener Perfil
+
+La política `events_insert_authenticated` requiere que el usuario tenga un registro en la tabla `profiles`:
+
+```sql
+-- Verificar usuarios sin perfil
+SELECT 
+    u.id as user_id,
+    u.email,
+    CASE 
+        WHEN EXISTS (SELECT 1 FROM public.profiles WHERE user_id = u.id) 
+        THEN '✅ Tiene perfil' 
+        ELSE '❌ NO tiene perfil' 
+    END as profile_status
+FROM auth.users u;
+```
+
+**Solución:** El código iOS ya crea el perfil automáticamente en `AuthViewModel.bootstrapProfile()` después de autenticarse. Si un usuario no tiene perfil, no podrá crear eventos.
+
+### 📋 Script de Limpieza Completo
+
+Ver archivo `fix_duplicate_insert_policies.sql` en la raíz del proyecto para un script completo que:
+1. Verifica políticas duplicadas
+2. Elimina duplicados
+3. Verifica usuarios sin perfil
+4. Opcionalmente crea perfiles faltantes
+
+---
+
 ## 📄 Licencia
 
 [Definir licencia]
@@ -277,4 +386,57 @@ Desarrollado con ❤️ usando:
 **Versión:** 1.0.0  
 **Fecha:** Diciembre 2025  
 **Estado:** ✅ Producción Ready
+
+---
+
+## 🔧 Solución de Problemas de Autenticación
+
+### Problema: No se pueden publicar eventos después de autenticarse
+
+#### Cambios Implementados:
+
+1. **Configuración de Supabase con PKCE Flow**
+   - Actualizado `SupabaseConfig.swift` para usar `flowType: .pkce`
+   - Mejora el manejo de sesiones y seguridad
+
+2. **Verificación y Refresco Automático de Sesión**
+   - `MainTabView.save()` ahora verifica si la sesión está expirada
+   - Refresca automáticamente la sesión si está expirada antes de crear eventos
+   - `AuthViewModel.checkAuthState()` también refresca sesiones expiradas
+
+3. **Verificación de Perfil Mejorada**
+   - `bootstrapProfile()` ahora tiene mejor logging para diagnosticar problemas
+   - Se ejecuta automáticamente en `checkAuthState()` para asegurar que el usuario tenga perfil
+   - Logs detallados si falla la creación del perfil
+
+4. **Código de Depuración Completo**
+   - Verifica sesión activa y no expirada
+   - Verifica que `session user id == payload createdBy`
+   - Verifica que el usuario tenga perfil en la tabla `profiles`
+   - Muestra errores detallados en la consola
+
+#### Qué Verificar en la Consola:
+
+Al intentar crear un evento, deberías ver:
+```
+✅ SupabaseConfig inicializado - Cliente único creado con PKCE flow
+✅ session user id: [UUID]
+✅ session access token existe: true
+⏰ session expirada: false
+✅ session user id == payload createdBy ✓
+✅ Usuario tiene perfil en la tabla profiles ✓
+```
+
+Si ves errores:
+- `❌ NO SESSION` → El usuario no está autenticado
+- `⏰ session expirada: true` → La sesión expiró (se intentará refrescar automáticamente)
+- `❌ ERROR CRÍTICO: Usuario NO tiene perfil` → El perfil no se creó correctamente
+- `❌ ERROR: session user id != payload createdBy` → Hay un problema con el userId
+
+#### Scripts SQL Útiles:
+
+Ver archivo `fix_duplicate_insert_policies.sql` para:
+- Eliminar políticas duplicadas de INSERT
+- Verificar usuarios sin perfil
+- Crear perfiles faltantes si es necesario
 
