@@ -17,7 +17,7 @@ struct MainTabView: View {
     
     private var currentUserId: UUID? {
         guard let user = authViewModel.currentUser else { return nil }
-        return user.id
+        return Optional(user.id)
     }
     
     var body: some View {
