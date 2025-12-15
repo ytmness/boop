@@ -2,7 +2,7 @@
 //  SearchView.swift
 //  BoopApp
 //
-//  Search view - Búsqueda de eventos, usuarios y comunidades
+//  Search view - Liquid Glass iOS 26
 //
 
 import SwiftUI
@@ -24,17 +24,16 @@ struct SearchView: View {
                 GlassAnimatedBackground()
                 
                 VStack(spacing: 0) {
-                    // Search bar
-                    SearchBar(
+                    
+                    // ✅ SEARCH BAR — MÁS PEQUEÑO Y CENTRADO
+                    LiquidGlassSearchBar(
                         text: $searchText,
                         isFocused: $isSearchFocused
                     )
-                    .frame(maxWidth: 400)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.horizontal, 16)
-                    .padding(.top, 8)
+                    .frame(maxWidth: 340) // ⬅️ MÁS ANGOSTO
+                    .padding(.top, 10)
                     
-                    // Category selector
+                    // ✅ CATEGORY SELECTOR
                     GeometryReader { proxy in
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 10) {
@@ -49,7 +48,6 @@ struct SearchView: View {
                                     }
                                 }
                             }
-                            // Centrado con padding simétrico
                             .frame(minWidth: proxy.size.width, alignment: .center)
                             .padding(.horizontal, 24)
                             .padding(.vertical, 10)
@@ -57,24 +55,22 @@ struct SearchView: View {
                     }
                     .frame(height: 52)
                     
-                    // Results
+                    // ✅ CONTENT
                     ScrollView {
                         if searchText.isEmpty {
-                            // Empty state
-                            VStack(spacing: 16) {
+                            VStack(spacing: 20) {
                                 Image(systemName: "magnifyingglass")
-                                    .font(.system(size: 48))
-                                    .foregroundStyle(.white.opacity(0.5))
+                                    .font(.system(size: 44))
+                                    .foregroundStyle(.white.opacity(0.45))
                                 
-                                Text("Busca eventos, usuarios o comunidades")
+                                Text("Busca eventos, usuarios\n o comunidades")
                                     .font(.headline)
-                                    .foregroundStyle(.white.opacity(0.7))
+                                    .foregroundStyle(.white.opacity(0.75))
                                     .multilineTextAlignment(.center)
                             }
                             .frame(maxWidth: .infinity)
-                            .padding(.top, 80)
+                            .padding(.top, 100)
                         } else {
-                            // Search results placeholder
                             LazyVStack(spacing: 16) {
                                 ForEach(0..<5, id: \.self) { index in
                                     SearchResultCard(
@@ -90,42 +86,49 @@ struct SearchView: View {
                 }
             }
             .navigationTitle("Buscar")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         }
     }
 }
 
-// MARK: - Search Bar Component
-private struct SearchBar: View {
+// MARK: - Liquid Glass Search Bar
+private struct LiquidGlassSearchBar: View {
     @Binding var text: String
-    var isFocused: FocusState<Bool>.Binding
+    @FocusState.Binding var isFocused: Bool
     
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(.white.opacity(0.6))
                 .font(.system(size: 16))
             
-            TextField("Buscar...", text: $text)
+            TextField("Buscar", text: $text)
                 .foregroundStyle(.white)
                 .font(.system(size: 15))
-                .focused(isFocused)
+                .focused($isFocused)
         }
-        .frame(height: 44)
-        .padding(.horizontal, 12)
+        .padding(.horizontal, 14)
+        .frame(height: 46)
         .background {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(.thinMaterial)
+            if #available(iOS 26.0, *) {
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(Color.clear)
+                    .glassEffect(.clear.interactive())
+            } else {
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(.ultraThinMaterial)
+            }
         }
         .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .strokeBorder(
-                    isFocused.wrappedValue ? Color.white.opacity(0.3) : Color.white.opacity(0.1),
-                    lineWidth: isFocused.wrappedValue ? 1.5 : 1
+                    Color.white.opacity(isFocused ? 0.35 : 0.15),
+                    lineWidth: isFocused ? 1.5 : 1
                 )
         }
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isFocused.wrappedValue)
+        .animation(.spring(response: 0.3, dampingFraction: 0.75), value: isFocused)
     }
 }
 
@@ -142,49 +145,19 @@ private struct GlassCategoryChip: View {
                 .foregroundStyle(.white.opacity(isSelected ? 1.0 : 0.85))
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .contentShape(Capsule())
         }
         .buttonStyle(.plain)
         .background {
-            Group {
-                if #available(iOS 26.0, *) {
-                    Capsule()
-                        .fill(Color.clear)
-                        .glassEffect(.clear.interactive())
-                } else {
-                    ZStack {
-                        Capsule().fill(.ultraThinMaterial)
-                        
-                        Capsule()
-                            .fill(
-                                LinearGradient(
-                                    colors: [
-                                        .white.opacity(isSelected ? 0.18 : 0.10),
-                                        .clear
-                                    ],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
-                        
-                        Capsule()
-                            .strokeBorder(
-                                LinearGradient(
-                                    colors: [
-                                        .white.opacity(isSelected ? 0.55 : 0.28),
-                                        .white.opacity(isSelected ? 0.20 : 0.10)
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 1
-                            )
-                    }
-                    .shadow(color: .black.opacity(0.25), radius: 10, x: 0, y: 6)
-                }
+            if #available(iOS 26.0, *) {
+                Capsule()
+                    .fill(Color.clear)
+                    .glassEffect(.clear.interactive())
+            } else {
+                Capsule()
+                    .fill(.ultraThinMaterial)
             }
         }
-        .scaleEffect(isSelected ? 1.02 : 1.0)
+        .scaleEffect(isSelected ? 1.03 : 1.0)
         .animation(.spring(response: 0.28, dampingFraction: 0.78), value: isSelected)
     }
 }
@@ -196,7 +169,6 @@ private struct SearchResultCard: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            // Icon/Image
             ZStack {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(LinearGradient(
@@ -211,7 +183,6 @@ private struct SearchResultCard: View {
                     .foregroundStyle(.white)
             }
             
-            // Content
             VStack(alignment: .leading, spacing: 4) {
                 Text("\(category.rawValue) \(index + 1)")
                     .font(.system(size: 16, weight: .semibold))
@@ -252,4 +223,3 @@ private struct SearchResultCard: View {
 #Preview {
     SearchView()
 }
-

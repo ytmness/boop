@@ -28,19 +28,19 @@ class SupabaseConfig {
             return
         }
         
-        // Crear cliente único con configuración optimizada para autenticación
-        // Usar PKCE flow para mayor seguridad y mejor manejo de sesiones
+        let authOptions = SupabaseClientOptions.AuthOptions(
+            flowType: .pkce
+        )
+        
         client = SupabaseClient(
             supabaseURL: url,
             supabaseKey: supabaseAnonKey,
             options: SupabaseClientOptions(
-                auth: AuthClient.Configuration(
-                    flowType: .pkce  // Usar PKCE para mejor manejo de sesiones
-                )
+                auth: authOptions
             )
         )
         
-        print("✅ SupabaseConfig inicializado - Cliente único creado con PKCE flow")
+        print("✅ SupabaseConfig inicializado correctamente (SDK actual)")
     }
 }
 

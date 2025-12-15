@@ -12,7 +12,7 @@ struct LoginView: View {
     @State private var showOTPView = false
     @State private var emailInput = ""
     
-    // Tamaños escalables que responden al Dynamic Type y Zoom
+    // Tamaños escalables
     @ScaledMetric(relativeTo: .largeTitle) private var logoSize: CGFloat = 140
     @ScaledMetric(relativeTo: .largeTitle) private var logoIconSize: CGFloat = 60
     @ScaledMetric(relativeTo: .largeTitle) private var titleSize: CGFloat = 48
@@ -21,16 +21,13 @@ struct LoginView: View {
     
     var body: some View {
         ZStack {
-            // Fondo animado (sin glass, solo gradientes)
             GlassAnimatedBackground()
             
-            // Contenido principal
             ScrollView {
-                VStack(spacing: spacing) { // Spacing escalable
+                VStack(spacing: spacing) {
                     Spacer()
                         .frame(height: topPadding)
                     
-                    // Logo/Icon - Material simple sin overlays - Escalable
                     Circle()
                         .fill(.thinMaterial)
                         .frame(width: logoSize, height: logoSize)
@@ -43,12 +40,11 @@ struct LoginView: View {
                     Text("BOOP")
                         .font(.system(size: titleSize, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
-                        .minimumScaleFactor(0.5) // Permite reducir si es necesario
+                        .minimumScaleFactor(0.5)
                         .lineLimit(1)
                     
-                    // Login form - Material simple (NO glass para cards estáticas)
-                    VStack(spacing: spacing * 0.67) { // Spacing.lg equivalente (16/24 = 0.67)
-                        // Email field
+                    // ✅ CONTENEDOR MÁS COMPACTO Y ANGOSTO
+                    VStack(spacing: spacing * 0.35) {
                         SimpleTextField(
                             "Email",
                             text: $emailInput,
@@ -58,27 +54,26 @@ struct LoginView: View {
                         .keyboardType(.emailAddress)
                         .autocapitalization(.none)
                         
-                        // Error message
                         if let error = viewModel.errorMessage {
                             Text(error)
                                 .font(.caption)
                                 .foregroundStyle(.red)
-                                .padding(.vertical, 4) // Spacing.xs equivalente
+                                .padding(.vertical, 4)
                         }
                         
-                        // Login button - Glass real (botón flotante)
                         SimpleGlassButton("Continuar con Email") {
                             sendOTP()
                         }
                         .disabled(viewModel.isLoading || emailInput.isEmpty)
                         .opacity((viewModel.isLoading || emailInput.isEmpty) ? 0.6 : 1.0)
                     }
-                    .padding(spacing * 0.67) // CardSize.padding equivalente (16/24)
+                    .padding(spacing * 0.35)
+                    .frame(maxWidth: 340) // ⬅️ MÁS PEQUEÑO
                     .background {
-                        RoundedRectangle(cornerRadius: spacing) // CardSize.cornerRadiusLarge equivalente
+                        RoundedRectangle(cornerRadius: spacing * 0.6)
                             .fill(.thinMaterial)
                     }
-                    .padding(.horizontal, spacing) // Spacing.xxl equivalente
+                    .padding(.horizontal, spacing * 0.35)
                     
                     Spacer()
                         .frame(height: 40)
@@ -90,10 +85,8 @@ struct LoginView: View {
                 .environmentObject(viewModel)
         }
         .onChange(of: viewModel.isAuthenticated) { _, isAuth in
-            // Navegación automática al autenticarse
             if isAuth {
                 showOTPView = false
-                // ContentView manejará el cambio
             }
         }
     }
@@ -105,17 +98,13 @@ struct LoginView: View {
         }
         
         Task {
-            do {
-                try await viewModel.sendOTP(email: emailInput)
-                showOTPView = true
-            } catch {
-                // Error manejado por viewModel.errorMessage
-            }
+            try? await viewModel.sendOTP(email: emailInput)
+            showOTPView = true
         }
     }
 }
 
-// MARK: - Componentes auxiliares simplificados
+// MARK: - Componentes auxiliares
 
 private struct SimpleTextField: View {
     let placeholder: String
@@ -124,12 +113,11 @@ private struct SimpleTextField: View {
     let isSecure: Bool
     @FocusState private var isFocused: Bool
     
-    // Tamaños responsivos
-    @ScaledMetric(relativeTo: .body) private var fieldHeight: CGFloat = 52
-    @ScaledMetric(relativeTo: .body) private var horizontalPadding: CGFloat = 16
-    @ScaledMetric(relativeTo: .body) private var cornerRadius: CGFloat = 16
-    @ScaledMetric(relativeTo: .body) private var iconWidth: CGFloat = 20
-    @ScaledMetric(relativeTo: .body) private var spacing: CGFloat = 12
+    @ScaledMetric(relativeTo: .body) private var fieldHeight: CGFloat = 44
+    @ScaledMetric(relativeTo: .body) private var horizontalPadding: CGFloat = 14
+    @ScaledMetric(relativeTo: .body) private var cornerRadius: CGFloat = 14
+    @ScaledMetric(relativeTo: .body) private var iconWidth: CGFloat = 18
+    @ScaledMetric(relativeTo: .body) private var spacing: CGFloat = 10
     
     init(
         _ placeholder: String,
@@ -163,7 +151,7 @@ private struct SimpleTextField: View {
                     .focused($isFocused)
             }
         }
-        .frame(minHeight: fieldHeight) // minHeight en vez de height fijo
+        .frame(minHeight: fieldHeight)
         .padding(.horizontal, horizontalPadding)
         .background {
             RoundedRectangle(cornerRadius: cornerRadius)
@@ -176,18 +164,16 @@ private struct SimpleTextField: View {
                     lineWidth: isFocused ? 1.5 : 1
                 )
         }
-        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isFocused)
+        .animation(.spring(response: 0.25, dampingFraction: 0.75), value: isFocused)
     }
 }
 
 private struct SimpleGlassButton: View {
     let title: String
     let action: () -> Void
-    @Environment(\.accessibilityReduceTransparency) var reduceTransparency
     
-    // Tamaños responsivos
-    @ScaledMetric(relativeTo: .body) private var buttonHeight: CGFloat = 52
-    @ScaledMetric(relativeTo: .body) private var horizontalPadding: CGFloat = 24
+    @ScaledMetric(relativeTo: .body) private var buttonHeight: CGFloat = 46
+    @ScaledMetric(relativeTo: .body) private var horizontalPadding: CGFloat = 20
     
     init(_ title: String, action: @escaping () -> Void) {
         self.title = title
@@ -197,10 +183,10 @@ private struct SimpleGlassButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 17, weight: .semibold))
+                .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
-                .frame(minHeight: buttonHeight) // minHeight para responder a Dynamic Type
+                .frame(minHeight: buttonHeight)
                 .padding(.horizontal, horizontalPadding)
         }
         .buttonStyle(SimpleGlassButtonStyle())
@@ -208,69 +194,13 @@ private struct SimpleGlassButton: View {
 }
 
 private struct SimpleGlassButtonStyle: ButtonStyle {
-    @Environment(\.accessibilityReduceTransparency) var reduceTransparency
-    
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .background {
-                if reduceTransparency {
-                    Capsule()
-                        .fill(Color(white: 0.3))
-                } else {
-                    if #available(iOS 26.0, *) {
-                        Capsule()
-                            .fill(Color.clear)
-                            .glassEffect(.clear.interactive())
-                    } else {
-                        Capsule()
-                            .fill(.ultraThinMaterial)
-                    }
-                }
+                Capsule().fill(.ultraThinMaterial)
             }
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
-    }
-}
-
-private struct SimpleGlassCircleButton: View {
-    let icon: String
-    let baseSize: CGFloat // Tamaño base antes de escalar
-    let action: () -> Void
-    @Environment(\.accessibilityReduceTransparency) var reduceTransparency
-    
-    // Tamaño escalable
-    @ScaledMetric private var size: CGFloat
-    
-    init(icon: String, size: CGFloat, action: @escaping () -> Void) {
-        self.icon = icon
-        self.baseSize = size
-        self._size = ScaledMetric(wrappedValue: size, relativeTo: .body)
-        self.action = action
-    }
-    
-    var body: some View {
-        Button(action: action) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundStyle(.white)
-                .frame(width: size, height: size)
-        }
-        .background {
-            if reduceTransparency {
-                Circle()
-                    .fill(Color(white: 0.3))
-            } else {
-                if #available(iOS 26.0, *) {
-                    Circle()
-                        .fill(Color.clear)
-                        .glassEffect(.clear.interactive())
-                } else {
-                    Circle()
-                        .fill(.ultraThinMaterial)
-                }
-            }
-        }
-        .clipShape(Circle())
+            .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
     }
 }
 
@@ -278,4 +208,3 @@ private struct SimpleGlassCircleButton: View {
     LoginView()
         .environmentObject(AuthViewModel())
 }
-

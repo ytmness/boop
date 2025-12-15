@@ -2,13 +2,13 @@
 //  SplashView.swift
 //  BoopApp
 //
-//  Splash screen con animación Liquid Glass
+//  Splash screen - Liquid Glass iOS 26
 //
 
 import SwiftUI
 
 struct SplashView: View {
-    @State private var scale: CGFloat = 0.5
+    @State private var scale: CGFloat = 0.6
     @State private var opacity: Double = 0
     @State private var rotationDegrees: Double = 0
     
@@ -16,62 +16,56 @@ struct SplashView: View {
         ZStack {
             GlassAnimatedBackground()
             
-            // Logo animado con efecto glass
-            ZStack {
-                    Circle()
-                        .fill(.ultraThinMaterial)
-                        .overlay {
-                            Circle()
-                                .fill(
-                                    RadialGradient(
-                                        colors: [
-                                            Color.white.opacity(0.3),
-                                            Color.blue.opacity(0.2),
-                                            Color.purple.opacity(0.15),
-                                            Color.clear
-                                        ],
-                                        center: .center,
-                                        startRadius: 0,
-                                        endRadius: 100
-                                    )
-                                )
-                        }
-                        .overlay {
-                            Circle()
-                                .strokeBorder(
-                                    LinearGradient(
-                                        colors: [
-                                            Color.white.opacity(0.8),
-                                            Color.blue.opacity(0.5),
-                                            Color.purple.opacity(0.6)
-                                        ],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    ),
-                                    lineWidth: 3
-                                )
-                        }
-                        .shadow(color: .blue.opacity(0.5), radius: 40, x: 0, y: 20)
-                        .shadow(color: .purple.opacity(0.4), radius: 30, x: 0, y: 10)
-                        .shadow(color: .white.opacity(0.3), radius: 20, x: 0, y: -10)
+            VStack(spacing: 28) {
+                
+                // ✅ LOGO LIQUID GLASS
+                ZStack {
+                    if #available(iOS 26.0, *) {
+                        Circle()
+                            .fill(Color.clear)
+                            .glassEffect(.clear.interactive())
+                    } else {
+                        Circle()
+                            .fill(.ultraThinMaterial)
+                    }
                     
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 80, weight: .thin))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.white, .cyan, .blue, .purple],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
+                    // ✅ DISCO DE MÚSICA (VINILO)
+                    ZStack {
+                        Image(systemName: "record.circle.fill")
+                            .font(.system(size: 110))
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [
+                                        .white,
+                                        .cyan.opacity(0.9),
+                                        .blue.opacity(0.9),
+                                        .purple.opacity(0.9)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
                             )
-                        )
-                        .rotationEffect(.degrees(rotationDegrees))
+                        
+                        // Centro del disco
+                        Circle()
+                            .fill(.black.opacity(0.8))
+                            .frame(width: 14, height: 14)
+                            .overlay(
+                                Circle()
+                                    .fill(.white.opacity(0.4))
+                                    .frame(width: 6, height: 6)
+                            )
+                    }
+                    .rotationEffect(.degrees(rotationDegrees))
                 }
                 .frame(width: 180, height: 180)
                 .scaleEffect(scale)
                 .opacity(opacity)
+                .shadow(color: .blue.opacity(0.35), radius: 30, x: 0, y: 20)
+                .shadow(color: .purple.opacity(0.25), radius: 20, x: 0, y: 10)
                 
-                // Texto BOOP con efecto glass
-                VStack(spacing: 12) {
+                // ✅ TEXTO
+                VStack(spacing: 10) {
                     Text("BOOP")
                         .font(.system(size: 56, weight: .bold, design: .rounded))
                         .foregroundStyle(
@@ -81,22 +75,24 @@ struct SplashView: View {
                                 endPoint: .trailing
                             )
                         )
-                        .shadow(color: .blue.opacity(0.5), radius: 20, x: 0, y: 10)
                     
                     Text("Eventos que brillan")
                         .font(.subheadline)
                         .foregroundStyle(.white.opacity(0.7))
                 }
-                .offset(y: 140)
                 .opacity(opacity)
+            }
         }
         .ignoresSafeArea()
         .onAppear {
+            // Entrada del logo
             withAnimation(.spring(response: 1.2, dampingFraction: 0.6)) {
                 scale = 1.0
                 opacity = 1.0
             }
-            withAnimation(.linear(duration: 20).repeatForever(autoreverses: false)) {
+            
+            // Rotación tipo vinilo
+            withAnimation(.linear(duration: 18).repeatForever(autoreverses: false)) {
                 rotationDegrees = 360
             }
         }
@@ -106,4 +102,3 @@ struct SplashView: View {
 #Preview {
     SplashView()
 }
-
