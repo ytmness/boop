@@ -56,20 +56,20 @@ final class StorageRepository {
     
     /// Genera un nombre de archivo único con extensión
     static func generateFileName(for data: Data, type: MediaType) -> String {
-        let extension: String
+        let fileExtension: String
         switch type {
         case .image:
             // Detectar tipo de imagen desde los primeros bytes
             if data.starts(with: [0xFF, 0xD8, 0xFF]) {
-                extension = "jpg"
+                fileExtension = "jpg"
             } else if data.starts(with: [0x89, 0x50, 0x4E, 0x47]) {
-                extension = "png"
+                fileExtension = "png"
             } else {
-                extension = "jpg" // Default
+                fileExtension = "jpg" // Default
             }
         case .video:
-            extension = "mp4"
+            fileExtension = "mp4"
         }
-        return "\(UUID().uuidString).\(extension)"
+        return "\(UUID().uuidString).\(fileExtension)"
     }
 }
