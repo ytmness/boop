@@ -16,7 +16,8 @@ struct MainTabView: View {
     @State private var eventsViewModel = EventsViewModel()
     
     private var currentUserId: UUID? {
-        authViewModel.currentUser?.id
+        guard let user = authViewModel.currentUser else { return nil }
+        return user.id
     }
     
     var body: some View {
