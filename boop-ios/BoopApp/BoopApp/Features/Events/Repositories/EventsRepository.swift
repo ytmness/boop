@@ -28,6 +28,29 @@ final class EventsRepository {
         
         return events
     }
+    
+    /// Obtiene la primera imagen de un evento desde event_media
+    func fetchFirstEventImage(eventId: UUID) async throws -> String? {
+        guard let client = client else {
+            throw NSError(domain: "EventsRepository", code: -1, userInfo: [NSLocalizedDescriptionKey: "Supabase client no configurado"])
+        }
+        
+        struct EventMediaRow: Codable {
+            let url: String
+        }
+        
+        let media: [EventMediaRow] = try await client
+            .from("event_media")
+            .select("url")
+            .eq("event_id", value: eventId.uuidString)
+            .eq("type", value: "image")
+            .order("sort_order", ascending: true)
+            .limit(1)
+            .execute()
+            .value
+        
+        return media.first?.url
+    }
 
     func createEvent(payload: CreateEventPayload) async throws -> EventRow {
         guard let client = client else {

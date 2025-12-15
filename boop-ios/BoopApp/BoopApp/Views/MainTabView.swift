@@ -138,6 +138,8 @@ struct CreateEventView: View {
         let type: MediaType
         let url: String
         let thumbnailUrl: String?
+        let data: Data?  // Datos de la imagen/video para subir
+        let fileName: String?  // Nombre del archivo para Storage
     }
 
     var body: some View {
@@ -259,13 +261,33 @@ struct CreateEventView: View {
 
             let created = try await repo.createEvent(payload: payload)
             
-            // Crear media si hay seleccionado
+            // Subir media a Storage y crear registros en event_media
+            let storageRepo = StorageRepository()
             for (index, media) in selectedMedia.enumerated() {
+                guard let data = media.data, let fileName = media.fileName else { continue }
+                
+                // Subir a Storage
+                let storageUrl: String
+                if media.type == .image {
+                    storageUrl = try await storageRepo.uploadEventImage(
+                        eventId: created.id,
+                        imageData: data,
+                        fileName: fileName
+                    )
+                } else {
+                    storageUrl = try await storageRepo.uploadEventVideo(
+                        eventId: created.id,
+                        videoData: data,
+                        fileName: fileName
+                    )
+                }
+                
+                // Crear registro en event_media
                 let mediaPayload = CreateEventMediaPayload(
                     eventId: created.id,
                     type: media.type.rawValue,
-                    url: media.url,
-                    thumbnailUrl: media.thumbnailUrl,
+                    url: storageUrl,
+                    thumbnailUrl: nil,
                     sortOrder: index
                 )
                 _ = try await mediaRepo.createMedia(payload: mediaPayload)
@@ -342,13 +364,22 @@ private struct MediaSectionView: View {
                     HStack(spacing: 12) {
                         ForEach(selectedMedia) { media in
                             ZStack(alignment: .topTrailing) {
-                                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .fill(.ultraThinMaterial)
-                                    .frame(width: 100, height: 100)
-                                    .overlay(
-                                        Image(systemName: media.type == .image ? "photo" : "video.fill")
-                                            .foregroundStyle(.white.opacity(0.6))
-                                    )
+                                Group {
+                                    if let data = media.data, let uiImage = UIImage(data: data) {
+                                        Image(uiImage: uiImage)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                    } else {
+                                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                            .fill(.ultraThinMaterial)
+                                            .overlay(
+                                                Image(systemName: media.type == .image ? "photo" : "video.fill")
+                                                    .foregroundStyle(.white.opacity(0.6))
+                                            )
+                                    }
+                                }
+                                .frame(width: 100, height: 100)
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                                 
                                 Button {
                                     selectedMedia.removeAll { $0.id == media.id }
@@ -391,18 +422,29 @@ private struct MediaSectionView: View {
         .photosPicker(isPresented: $showPicker, selection: $selectedPhotos, maxSelectionCount: 10, matching: .any(of: [.images, .videos]))
         .onChange(of: selectedPhotos) { _, newItems in
             Task {
+                let storageRepo = StorageRepository()
                 for item in newItems {
-                    if let data = try? await item.loadTransferable(type: Data.self),
-                       let uiImage = UIImage(data: data) {
-                        // Por ahora guardamos como placeholder, luego subir a Storage
+                    if let data = try? await item.loadTransferable(type: Data.self) {
+                        // Detectar tipo de media
+                        let mediaType: MediaType = item.supportedContentTypes.first?.conforms(to: .movie) == true ? .video : .image
+                        
+                        // Generar nombre de archivo temporal (se subirá cuando se cree el evento)
+                        let tempId = UUID()
+                        let fileName = StorageRepository.generateFileName(for: data, type: mediaType)
+                        
+                        // Guardar datos temporalmente (se subirá en save())
                         let mediaItem = CreateEventView.MediaItem(
-                            type: .image,
-                            url: "placeholder://\(UUID().uuidString)",
-                            thumbnailUrl: nil
+                            type: mediaType,
+                            url: "temp://\(tempId.uuidString)",
+                            thumbnailUrl: nil,
+                            data: data,
+                            fileName: fileName
                         )
                         selectedMedia.append(mediaItem)
                     }
                 }
+                // Limpiar selección para permitir seleccionar más
+                selectedPhotos = []
             }
         }
     }

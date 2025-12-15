@@ -34,6 +34,7 @@
 		1A000212 /* TicketType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000213 /* TicketType.swift */; };
 		1A000214 /* EventMediaRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000215 /* EventMediaRepository.swift */; };
 		1A000216 /* TicketTypeRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000217 /* TicketTypeRepository.swift */; };
+		1A000218 /* StorageRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A000219 /* StorageRepository.swift */; };
 		1A000100 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1A0000FF /* Supabase */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +65,7 @@
 		1A000213 /* TicketType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketType.swift; sourceTree = "<group>"; };
 		1A000215 /* EventMediaRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMediaRepository.swift; sourceTree = "<group>"; };
 		1A000217 /* TicketTypeRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketTypeRepository.swift; sourceTree = "<group>"; };
+		1A000219 /* StorageRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageRepository.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -217,6 +219,7 @@
 				1A000203 /* EventsRepository.swift */,
 				1A000215 /* EventMediaRepository.swift */,
 				1A000217 /* TicketTypeRepository.swift */,
+				1A000219 /* StorageRepository.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";
@@ -352,6 +355,7 @@
 				1A000212 /* TicketType.swift in Sources */,
 				1A000214 /* EventMediaRepository.swift in Sources */,
 				1A000216 /* TicketTypeRepository.swift in Sources */,
+				1A000218 /* StorageRepository.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

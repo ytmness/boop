@@ -310,8 +310,11 @@ struct EventFeedCard: View {
     @State private var isPressed = false
     @State private var isLiked = false
     @State private var isSaved = false
+    @State private var eventImageUrl: String? = nil
     @Environment(\.accessibilityReduceTransparency) var reduceTransparency
     @Environment(\.horizontalSizeClass) private var hSize
+    
+    private let eventsRepo = EventsRepository()
     
     private var isCompact: Bool {
         hSize == .compact
@@ -383,17 +386,51 @@ struct EventFeedCard: View {
     // MARK: - Compact Card (Instagram-style post)
     private var compactCard: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // MEDIA - Imagen más grande (aproximadamente el doble) con tema único
+            // MEDIA - Imagen real del evento o gradiente con icono
             ZStack {
-                eventTheme.gradient
-                
-                Image(systemName: eventTheme.icon)
-                    .font(.system(size: eventTheme.iconSize, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.9))
+                if let imageUrl = eventImageUrl ?? event.imageUrl, let url = URL(string: imageUrl) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        case .failure(_), .empty:
+                            eventTheme.gradient
+                                .overlay(
+                                    Image(systemName: eventTheme.icon)
+                                        .font(.system(size: eventTheme.iconSize, weight: .semibold))
+                                        .foregroundStyle(.white.opacity(0.9))
+                                )
+                        @unknown default:
+                            eventTheme.gradient
+                                .overlay(
+                                    Image(systemName: eventTheme.icon)
+                                        .font(.system(size: eventTheme.iconSize, weight: .semibold))
+                                        .foregroundStyle(.white.opacity(0.9))
+                                )
+                        }
+                    }
+                } else {
+                    eventTheme.gradient
+                    Image(systemName: eventTheme.icon)
+                        .font(.system(size: eventTheme.iconSize, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.9))
+                }
             }
             .aspectRatio(4/3, contentMode: .fill)  // ✅ Proporción 4:3 consistente en todos los dispositivos
             .frame(maxWidth: .infinity)
             .clipped()
+            .task {
+                // Cargar primera imagen de event_media si no hay imageUrl
+                if event.imageUrl == nil && eventImageUrl == nil {
+                    do {
+                        eventImageUrl = try await eventsRepo.fetchFirstEventImage(eventId: event.id)
+                    } catch {
+                        print("❌ Error al cargar imagen del evento: \(error.localizedDescription)")
+                    }
+                }
+            }
             
             // INFO SECTION - Debajo de la imagen (tipo Instagram)
             VStack(alignment: .leading, spacing: 12) {  // ✅ Spacing normal
@@ -489,14 +526,50 @@ struct EventFeedCard: View {
     private var wideCard: some View {
         VStack(alignment: .leading, spacing: 10) {
             ZStack {
-                eventTheme.gradient
-                Image(systemName: eventTheme.icon)
-                    .font(.system(size: 40))
-                    .foregroundStyle(.white.opacity(0.9))
+                // Mostrar imagen real si existe, sino gradiente con icono
+                if let imageUrl = eventImageUrl ?? event.imageUrl, let url = URL(string: imageUrl) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                        case .failure(_), .empty:
+                            eventTheme.gradient
+                                .overlay(
+                                    Image(systemName: eventTheme.icon)
+                                        .font(.system(size: 40))
+                                        .foregroundStyle(.white.opacity(0.9))
+                                )
+                        @unknown default:
+                            eventTheme.gradient
+                                .overlay(
+                                    Image(systemName: eventTheme.icon)
+                                        .font(.system(size: 40))
+                                        .foregroundStyle(.white.opacity(0.9))
+                                )
+                        }
+                    }
+                } else {
+                    eventTheme.gradient
+                    Image(systemName: eventTheme.icon)
+                        .font(.system(size: 40))
+                        .foregroundStyle(.white.opacity(0.9))
+                }
             }
             .frame(height: 190)
             .clipped()
             .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))  // ✅ Más redondeado para la imagen
+            .task {
+                // Cargar primera imagen de event_media si no hay imageUrl
+                if event.imageUrl == nil && eventImageUrl == nil {
+                    do {
+                        eventImageUrl = try await eventsRepo.fetchFirstEventImage(eventId: event.id)
+                    } catch {
+                        print("❌ Error al cargar imagen del evento: \(error.localizedDescription)")
+                    }
+                }
+            }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(event.title)
