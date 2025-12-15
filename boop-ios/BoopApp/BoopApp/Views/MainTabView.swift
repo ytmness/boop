@@ -244,7 +244,8 @@ struct CreateEventView: View {
 
         do {
             // 🔍 PRUEBA DEFINITIVA: Verificar sesión, perfil y payload antes del INSERT
-            guard let client = SupabaseConfig.shared.client else {
+            let optionalClient = SupabaseConfig.shared.client
+            guard let client = optionalClient else {
                 print("❌ ERROR CRÍTICO: SupabaseConfig.shared.client es nil")
                 throw NSError(domain: "CreateEvent", code: -1, userInfo: [NSLocalizedDescriptionKey: "Cliente de Supabase no configurado"])
             }
