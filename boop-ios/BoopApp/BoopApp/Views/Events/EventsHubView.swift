@@ -553,14 +553,32 @@ struct EventFeedCard: View {
                     
                     if isVideo {
                         // Reproducir video
-                        VideoPlayer(player: AVPlayer(url: url))
-                            .onAppear {
-                                // Auto-play silencioso
-                                if let player = AVPlayer(url: url) as? AVPlayer {
-                                    player.isMuted = true
-                                    player.play()
-                                }
+                        Group {
+                            if let player = videoPlayer {
+                                VideoPlayer(player: player)
+                            } else {
+                                // Placeholder mientras se carga
+                                eventTheme.gradient
+                                    .overlay(
+                                        Image(systemName: "play.circle.fill")
+                                            .font(.system(size: 40))
+                                            .foregroundStyle(.white.opacity(0.9))
+                                    )
                             }
+                        }
+                        .onAppear {
+                            // Crear player solo una vez
+                            if videoPlayer == nil {
+                                let player = AVPlayer(url: url)
+                                player.isMuted = true
+                                player.play()
+                                videoPlayer = player
+                            }
+                        }
+                        .onDisappear {
+                            // Pausar cuando desaparece de la vista
+                            videoPlayer?.pause()
+                        }
                     } else {
                         // Mostrar imagen
                         AsyncImage(url: url) { phase in
