@@ -66,3 +66,17 @@ struct CreateTicketTypePayload: Codable {
         case salesEnd = "sales_end"
     }
 }
+
+struct PurchaseTicketsResult: Codable {
+    let orderId: UUID
+    let ticketsPurchased: Int
+    let totalAmount: Double
+    let currency: String
+    
+    enum CodingKeys: String, CodingKey {
+        case orderId = "order_id"
+        case ticketsPurchased = "tickets_purchased"
+        case totalAmount = "total_amount"
+        case currency
+    }
+}

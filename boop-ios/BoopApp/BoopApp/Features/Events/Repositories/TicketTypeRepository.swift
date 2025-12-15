@@ -78,18 +78,34 @@ final class TicketTypeRepository {
             .execute()
     }
     
-    func purchaseTickets(eventId: UUID, ticketTypeId: UUID, quantity: Int, userId: UUID) async throws -> [String: Any] {
+    func purchaseTickets(eventId: UUID, ticketTypeId: UUID, quantity: Int, userId: UUID) async throws -> PurchaseTicketsResult {
         guard let client = client else {
             throw NSError(domain: "TicketTypeRepository", code: -1, userInfo: [NSLocalizedDescriptionKey: "Supabase client no configurado"])
         }
         
-        let result: [String: Any] = try await client
-            .rpc("purchase_tickets", params: [
-                "p_event_id": eventId.uuidString,
-                "p_ticket_type_id": ticketTypeId.uuidString,
-                "p_quantity": quantity,
-                "p_user_id": userId.uuidString
-            ])
+        struct RPCParams: Codable {
+            let pEventId: String
+            let pTicketTypeId: String
+            let pQuantity: Int
+            let pUserId: String
+            
+            enum CodingKeys: String, CodingKey {
+                case pEventId = "p_event_id"
+                case pTicketTypeId = "p_ticket_type_id"
+                case pQuantity = "p_quantity"
+                case pUserId = "p_user_id"
+            }
+        }
+        
+        let params = RPCParams(
+            pEventId: eventId.uuidString,
+            pTicketTypeId: ticketTypeId.uuidString,
+            pQuantity: quantity,
+            pUserId: userId.uuidString
+        )
+        
+        let result: PurchaseTicketsResult = try await client
+            .rpc("purchase_tickets", params: params)
             .execute()
             .value
         
