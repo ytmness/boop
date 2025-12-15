@@ -29,27 +29,34 @@ final class EventsRepository {
         return events
     }
     
-    /// Obtiene la primera imagen de un evento desde event_media
-    func fetchFirstEventImage(eventId: UUID) async throws -> String? {
+    /// Obtiene el primer media (imagen o video) de un evento desde event_media
+    func fetchFirstEventMedia(eventId: UUID) async throws -> (url: String, type: String)? {
         guard let client = client else {
             throw NSError(domain: "EventsRepository", code: -1, userInfo: [NSLocalizedDescriptionKey: "Supabase client no configurado"])
         }
         
         struct EventMediaRow: Codable {
             let url: String
+            let type: String
         }
         
         let media: [EventMediaRow] = try await client
             .from("event_media")
-            .select("url")
+            .select("url, type")
             .eq("event_id", value: eventId.uuidString)
-            .eq("type", value: "image")
             .order("sort_order", ascending: true)
             .limit(1)
             .execute()
             .value
         
-        return media.first?.url
+        guard let first = media.first else { return nil }
+        return (url: first.url, type: first.type)
+    }
+    
+    /// Obtiene la primera imagen de un evento desde event_media (método legacy para compatibilidad)
+    func fetchFirstEventImage(eventId: UUID) async throws -> String? {
+        guard let media = try await fetchFirstEventMedia(eventId: eventId) else { return nil }
+        return media.type == "image" ? media.url : nil
     }
 
     func createEvent(payload: CreateEventPayload) async throws -> EventRow {

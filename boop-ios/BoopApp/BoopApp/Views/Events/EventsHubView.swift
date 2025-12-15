@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVKit
 
 struct EventsHubView: View {
     @State var viewModel: EventsViewModel
@@ -310,7 +311,9 @@ struct EventFeedCard: View {
     @State private var isPressed = false
     @State private var isLiked = false
     @State private var isSaved = false
-    @State private var eventImageUrl: String? = nil
+    @State private var eventMediaUrl: String? = nil
+    @State private var eventMediaType: String? = nil  // "image" o "video"
+    @State private var videoPlayer: AVPlayer? = nil
     @Environment(\.accessibilityReduceTransparency) var reduceTransparency
     @Environment(\.horizontalSizeClass) private var hSize
     
@@ -386,29 +389,44 @@ struct EventFeedCard: View {
     // MARK: - Compact Card (Instagram-style post)
     private var compactCard: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // MEDIA - Imagen real del evento o gradiente con icono
+            // MEDIA - Imagen o video real del evento o gradiente con icono
             ZStack {
-                if let imageUrl = eventImageUrl ?? event.imageUrl, let url = URL(string: imageUrl) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                        case .failure(_), .empty:
-                            eventTheme.gradient
-                                .overlay(
-                                    Image(systemName: eventTheme.icon)
-                                        .font(.system(size: eventTheme.iconSize, weight: .semibold))
-                                        .foregroundStyle(.white.opacity(0.9))
-                                )
-                        @unknown default:
-                            eventTheme.gradient
-                                .overlay(
-                                    Image(systemName: eventTheme.icon)
-                                        .font(.system(size: eventTheme.iconSize, weight: .semibold))
-                                        .foregroundStyle(.white.opacity(0.9))
-                                )
+                if let mediaUrl = eventMediaUrl ?? event.imageUrl, let url = URL(string: mediaUrl) {
+                    let isVideo = eventMediaType == "video" || mediaUrl.contains(".mp4") || mediaUrl.contains(".mov")
+                    
+                    if isVideo {
+                        // Reproducir video
+                        VideoPlayer(player: AVPlayer(url: url))
+                            .onAppear {
+                                // Auto-play silencioso
+                                if let player = AVPlayer(url: url) as? AVPlayer {
+                                    player.isMuted = true
+                                    player.play()
+                                }
+                            }
+                    } else {
+                        // Mostrar imagen
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            case .failure(_), .empty:
+                                eventTheme.gradient
+                                    .overlay(
+                                        Image(systemName: eventTheme.icon)
+                                            .font(.system(size: eventTheme.iconSize, weight: .semibold))
+                                            .foregroundStyle(.white.opacity(0.9))
+                                    )
+                            @unknown default:
+                                eventTheme.gradient
+                                    .overlay(
+                                        Image(systemName: eventTheme.icon)
+                                            .font(.system(size: eventTheme.iconSize, weight: .semibold))
+                                            .foregroundStyle(.white.opacity(0.9))
+                                    )
+                            }
                         }
                     }
                 } else {
@@ -422,12 +440,15 @@ struct EventFeedCard: View {
             .frame(maxWidth: .infinity)
             .clipped()
             .task {
-                // Cargar primera imagen de event_media si no hay imageUrl
-                if event.imageUrl == nil && eventImageUrl == nil {
+                // Cargar primer media (imagen o video) de event_media si no hay imageUrl
+                if event.imageUrl == nil && eventMediaUrl == nil {
                     do {
-                        eventImageUrl = try await eventsRepo.fetchFirstEventImage(eventId: event.id)
+                        if let media = try await eventsRepo.fetchFirstEventMedia(eventId: event.id) {
+                            eventMediaUrl = media.url
+                            eventMediaType = media.type
+                        }
                     } catch {
-                        print("❌ Error al cargar imagen del evento: \(error.localizedDescription)")
+                        print("❌ Error al cargar media del evento: \(error.localizedDescription)")
                     }
                 }
             }
@@ -526,28 +547,43 @@ struct EventFeedCard: View {
     private var wideCard: some View {
         VStack(alignment: .leading, spacing: 10) {
             ZStack {
-                // Mostrar imagen real si existe, sino gradiente con icono
-                if let imageUrl = eventImageUrl ?? event.imageUrl, let url = URL(string: imageUrl) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                        case .failure(_), .empty:
-                            eventTheme.gradient
-                                .overlay(
-                                    Image(systemName: eventTheme.icon)
-                                        .font(.system(size: 40))
-                                        .foregroundStyle(.white.opacity(0.9))
-                                )
-                        @unknown default:
-                            eventTheme.gradient
-                                .overlay(
-                                    Image(systemName: eventTheme.icon)
-                                        .font(.system(size: 40))
-                                        .foregroundStyle(.white.opacity(0.9))
-                                )
+                // Mostrar imagen o video real si existe, sino gradiente con icono
+                if let mediaUrl = eventMediaUrl ?? event.imageUrl, let url = URL(string: mediaUrl) {
+                    let isVideo = eventMediaType == "video" || mediaUrl.contains(".mp4") || mediaUrl.contains(".mov")
+                    
+                    if isVideo {
+                        // Reproducir video
+                        VideoPlayer(player: AVPlayer(url: url))
+                            .onAppear {
+                                // Auto-play silencioso
+                                if let player = AVPlayer(url: url) as? AVPlayer {
+                                    player.isMuted = true
+                                    player.play()
+                                }
+                            }
+                    } else {
+                        // Mostrar imagen
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            case .failure(_), .empty:
+                                eventTheme.gradient
+                                    .overlay(
+                                        Image(systemName: eventTheme.icon)
+                                            .font(.system(size: 40))
+                                            .foregroundStyle(.white.opacity(0.9))
+                                    )
+                            @unknown default:
+                                eventTheme.gradient
+                                    .overlay(
+                                        Image(systemName: eventTheme.icon)
+                                            .font(.system(size: 40))
+                                            .foregroundStyle(.white.opacity(0.9))
+                                    )
+                            }
                         }
                     }
                 } else {
@@ -561,12 +597,15 @@ struct EventFeedCard: View {
             .clipped()
             .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))  // ✅ Más redondeado para la imagen
             .task {
-                // Cargar primera imagen de event_media si no hay imageUrl
-                if event.imageUrl == nil && eventImageUrl == nil {
+                // Cargar primer media (imagen o video) de event_media si no hay imageUrl
+                if event.imageUrl == nil && eventMediaUrl == nil {
                     do {
-                        eventImageUrl = try await eventsRepo.fetchFirstEventImage(eventId: event.id)
+                        if let media = try await eventsRepo.fetchFirstEventMedia(eventId: event.id) {
+                            eventMediaUrl = media.url
+                            eventMediaType = media.type
+                        }
                     } catch {
-                        print("❌ Error al cargar imagen del evento: \(error.localizedDescription)")
+                        print("❌ Error al cargar media del evento: \(error.localizedDescription)")
                     }
                 }
             }
