@@ -24,7 +24,7 @@ final class StorageRepository {
         
         try await client.storage
             .from("event-media")
-            .upload(path: filePath, file: imageData, options: FileOptions(upsert: true))
+            .upload(filePath, data: imageData, options: FileOptions(upsert: true))
         
         // Obtener URL pública
         let publicURL = try client.storage
@@ -44,7 +44,7 @@ final class StorageRepository {
         
         try await client.storage
             .from("event-media")
-            .upload(path: filePath, file: videoData, options: FileOptions(upsert: true))
+            .upload(filePath, data: videoData, options: FileOptions(upsert: true))
         
         // Obtener URL pública
         let publicURL = try client.storage
